@@ -1,0 +1,369 @@
+/*!--------------------------------------------------------------
+# main.scss
+#
+# Sass file for Options-admin template.
+#
+# 
+--------------------------------------------------------------*/ 
+@import 'https://fonts.googleapis.com/css?family=Poppins:300,400,600';
+html, body {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  color: #494949;
+  font-size: 12px;
+  line-height: 1.75em;
+}
+
+@media (min-width: 600px) {
+  html, body {
+    font-size: calc( 12px + (14 - 12) * ((100vw - 600px) / (1140 - 600)));
+  }
+}
+
+@media (min-width: 1140px) {
+  html, body {
+    font-size: 14px;
+  }
+}
+
+.login-bg {
+  background-image: url("../images/photo-2.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.login-bg .login-box {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  margin-top: 150px;
+  border-radius: 4px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.login-bg-color {
+  min-height: 100vh;
+}
+
+.login-bg-color .login-box {
+  color: #292929 !important;
+  padding: 20px;
+  margin-top: 125px;
+  border-radius: 4px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.login-bg-color .login-box h1, .login-bg-color .login-box h2, .login-bg-color .login-box h3, .login-bg-color .login-box h4, .login-bg-color .login-box h5, .login-bg-color .login-box h6 {
+  color: #292929 !important;
+}
+
+.bg-black-300 {
+  background-color: #3c3c3c;
+  border-color: #3c3c3c;
+  color: #fff !important;
+}
+
+.bg-black-300 h1, .bg-black-300 h2, .bg-black-300 h3, .bg-black-300 h4, .bg-black-300 h5, .bg-black-300 h6 {
+  color: #fff;
+}
+
+.bg-black-300 .nav .open > a, .bg-black-300 .nav .open > a:focus, .bg-black-300 .nav .open > a:hover {
+  background-color: #2f2f2f;
+  color: #fff !important;
+}
+
+.bg-black-300 .nav > li > a:focus, .bg-black-300 .nav > li > a:hover {
+  background-color: #2f2f2f;
+  color: #fff !important;
+}
+
+.bg-black-300 .navbar-nav > li > a {
+  color: #fff;
+}
+
+.bg-black-300.small-nav:hover .child-nav {
+  background-color: #3c3c3c;
+}
+
+.bg-black-300.small-nav:hover .side-nav > li:not(.has-children) > a > span {
+  background-color: #3c3c3c;
+}
+
+.bg-black-100 {
+  background-color: #4f4f4f;
+  border-color: #4f4f4f;
+  color: #fff !important;
+}
+
+.bg-black-100 h1, .bg-black-100 h2, .bg-black-100 h3, .bg-black-100 h4, .bg-black-100 h5, .bg-black-100 h6 {
+  color: #fff;
+}
+
+.bg-black-100 .nav .open > a, .bg-black-100 .nav .open > a:focus, .bg-black-100 .nav .open > a:hover {
+  background-color: #434343;
+  color: #fff !important;
+}
+
+.bg-black-100 .nav > li > a:focus, .bg-black-100 .nav > li > a:hover {
+  background-color: #434343;
+  color: #fff !important;
+}
+
+.bg-black-100 .navbar-nav > li > a {
+  color: #fff;
+}
+
+.bg-black-100.small-nav:hover .child-nav {
+  background-color: #4f4f4f;
+}
+
+.bg-black-100.small-nav:hover .side-nav > li:not(.has-children) > a > span {
+  background-color: #4f4f4f;
+}
+
+.bg-black-500 {
+  background-color: #1c1c1c;
+  border-color: #1c1c1c;
+  color: #fff !important;
+}
+
+.bg-black-500 h1, .bg-black-500 h2, .bg-black-500 h3, .bg-black-500 h4, .bg-black-500 h5, .bg-black-500 h6 {
+  color: #fff;
+}
+
+.bg-black-500 .nav .open > a, .bg-black-500 .nav .open > a:focus, .bg-black-500 .nav .open > a:hover {
+  background-color: #101010;
+  color: #fff !important;
+}
+
+.bg-black-500 .nav > li > a:focus, .bg-black-500 .nav > li > a:hover {
+  background-color: #101010;
+  color: #fff !important;
+}
+
+.bg-black-500 .navbar-nav > li > a {
+  color: #fff;
+}
+
+.bg-black-500.small-nav:hover .child-nav {
+  background-color: #1c1c1c;
+}
+
+.bg-black-500.small-nav:hover .side-nav > li:not(.has-children) > a > span {
+  background-color: #1c1c1c;
+}
+
+.bg-black-600 {
+  background-color: #101010;
+  border-color: #101010;
+  color: #fff !important;
+}
+
+.bg-black-600 h1, .bg-black-600 h2, .bg-black-600 h3, .bg-black-600 h4, .bg-black-600 h5, .bg-black-600 h6 {
+  color: #fff;
+}
+
+.bg-black-600 .nav .open > a, .bg-black-600 .nav .open > a:focus, .bg-black-600 .nav .open > a:hover {
+  background-color: #030303;
+  color: #fff !important;
+}
+
+.bg-black-600 .nav > li > a:focus, .bg-black-600 .nav > li > a:hover {
+  background-color: #030303;
+  color: #fff !important;
+}
+
+.bg-black-600 .navbar-nav > li > a {
+  color: #fff;
+}
+
+.bg-black-600.small-nav:hover .child-nav {
+  background-color: #101010;
+}
+
+.bg-black-600.small-nav:hover .side-nav > li:not(.has-children) > a > span {
+  background-color: #101010;
+}
+
+.bg-black-700 {
+  background-color: #030303;
+  border-color: #030303;
+  color: #fff !important;
+}
+
+.bg-black-700 h1, .bg-black-700 h2, .bg-black-700 h3, .bg-black-700 h4, .bg-black-700 h5, .bg-black-700 h6 {
+  color: #fff;
+}
+
+.bg-black-700 .nav .open > a, .bg-black-700 .nav .open > a:focus, .bg-black-700 .nav .open > a:hover {
+  background-color: black;
+  color: #fff !important;
+}
+
+.bg-black-700 .nav > li > a:focus, .bg-black-700 .nav > li > a:hover {
+  background-color: black;
+  color: #fff !important;
+}
+
+.bg-black-700 .navbar-nav > li > a {
+  color: #fff;
+}
+
+.bg-black-700.small-nav:hover .child-nav {
+  background-color: #030303;
+}
+
+.bg-black-700.small-nav:hover .side-nav > li:not(.has-children) > a > span {
+  background-color: #030303;
+}
+
+
+.panel-heading {
+  padding: 5px;
+}
+
+.panel-heading .panel-title {
+  margin-top: 10px;
+  padding-left: 15px;
+}
+
+.panel-heading .panel-title small {
+  color: #767676;
+  font-size: 75%;
+  font-style: italic;
+  margin-left: 5px;
+}
+
+[class^="icheckbox_line"].checked {
+  opacity: 0.6;
+}
+
+.op-check.checkbox label, .op-check.radio label {
+  padding-left: 0;
+}
+
+h4{
+  margin: 0;
+  padding: 0;
+}
+
+h4, .h4 {
+  font-size: 16.8060715286px;
+  margin-top: 1.5619355157em;
+  line-height: 1.8743226189em;
+  margin-bottom: 0.3681503615em;
+}
+
+@media (min-width: 600px) {
+  h4, .h4 {
+    font-size: calc( 16.8060715286px + (19.60708345 - 16.8060715286) * ((100vw - 600px) / (1140 - 600)));
+  }
+}
+
+@media (min-width: 1140px) {
+  h4, .h4 {
+    font-size: 19.60708345px;
+    margin-top: 1.5619355157em;
+    line-height: 1.8743226189em;
+    margin-bottom: 0.3601841818em;
+  }
+}
+
+h5, .h5 {
+  font-size: 14.2011569368px;
+  margin-top: 1.8484409486em;
+  line-height: 2.2181291384em;
+  margin-bottom: 0.3696881897em;
+}
+
+
+
+input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="datetime-local"], input[type="color"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="url"], input[type="search"], textarea {
+  display: block;
+  max-width: 100%;
+  padding: 0.4375em;
+  font-size: 12px;
+  margin-bottom: 1.3125em;
+}
+
+@media (min-width: 600px) {
+  input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="datetime-local"], input[type="color"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="url"], input[type="search"], textarea {
+    font-size: calc( 12px + (14 - 12) * ((100vw - 600px) / (1140 - 600)));
+  }
+}
+
+@media (min-width: 1140px) {
+  input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="datetime-local"], input[type="color"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="url"], input[type="search"], textarea {
+    font-size: 14px;
+    margin-bottom: 0.546875em;
+  }
+}
+
+input[type="submit"], button {
+  /* display: block; */
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0.4375em 1.75em;
+  margin-bottom: 0;
+}
+
+@media (min-width: 600px) {
+  input[type="submit"], button {
+    font-size: calc( 12px + (14 - 12) * ((100vw - 600px) / (1140 - 600)));
+  }
+}
+
+@media (min-width: 1140px) {
+  input[type="submit"], button {
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+}
+
+label {
+  display: block;
+  padding-bottom: 0.21875em;
+  margin-bottom: -0.125em;
+}
+
+
+body {
+  font-family: "Poppins", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f2f2f2;
+  color: #494949;
+  text-rendering: optimizeLegibility !important;
+  letter-spacing: 0.5px;
+  overflow-x: hidden;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  box-shadow: none;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(30, 30, 30, 0.8);
+  box-shadow: none;
+  border-radius: 5px;
+}
+
+body::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(210, 210, 210, 0.4);
+}
+
+::-moz-selection {
+  background-color: #292929;
+  color: #fff;
+} 
+
+.mt-20 {
+  margin-top: 20px !important;
+} 
+
+.p-20 {
+  padding: 20px !important;
+} 

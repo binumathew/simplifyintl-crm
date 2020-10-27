@@ -1,0 +1,166 @@
+@extends('layouts.home')
+@section('content')
+<div class="wrapper">
+    <div class="container-fluid">
+        <link href="{{ asset('public/plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
+        <!-- Page-Title -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="page-title-box">
+                    <div class="btn-group pull-right">
+                        <ol class="breadcrumb hide-phone p-0 m-0">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item active">Activation Process</li>
+                        </ol>
+                    </div>
+                    <h4 class="page-title">Activation Process</h4>
+                </div>
+            </div>
+        </div>
+        <!-- end page title end breadcrumb -->
+                 
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card m-b-20">
+                    <div class="card-body">
+                        <div id="datatable_filter" class="dataTables_filter m-b-20">
+                          <form action="{{ url('/order-details')}}" method="POST" id="search-form">
+                          @csrf
+                            <div class="row">
+                                <div class="col-md-10">
+                                  <input type="text" class="form-control" name="sim_number" placeholder="Enter Customer Sim Number" required value="{{($sim_number)? $sim_number :'' }}">
+                                </div>
+                                <div class="col-md-1"><input type="submit" value="Search" class="btn btn-primary"></div>
+                                <div class="col-md-1"><a href="javascript:void(0);" onclick="(function(){ $('input[name=sim_number]').val('') })();" class="btn btn-secondary">Reset</a></div>
+                            </div>
+                          </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if(!empty($sim_request))
+            <div class="col-sm-12">
+                <div class="card m-b-20">
+                    <div class="card-body">                       
+                        @php $i=0; $active_flag = false; @endphp           
+                        <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>                                    
+                                    <th width="25%">Name:  {{$sim_request[0]->user->name}}</th>
+                                    <th width="25%">Email: {{$sim_request[0]->user->email}}</th>
+                                    <th width="25%">Phone: {{str_replace('+44','0',$sim_request[0]->user->phone)}}</th>
+                                    <th width="25%">Date: {{ Helper::date_format($sim_request[0]->created_at) }}</th>
+                                </tr>
+                            </thead>
+                           <tbody>
+                            @foreach ($sim_request as $sm_request)
+                                <tr class="odd">
+                                   <td colspan="2">Sim List: {{$sm_request->getSimList()}}</td>
+                                    <td colspan="2">Address: {{$sm_request->getShippingAddress()}}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>                
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
+
+<script src="{{ asset('public/plugins/jquery-steps/jquery.steps.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#smartwizard').smartWizard({
+                selected: 0,
+                theme: 'arrows',
+                transitionEffect:'fade',
+                useURLhash: false,
+                showStepURLhash: false,
+                toolbarSettings: {
+                    toolbarButtonPosition: 'right',
+                    showPreviousButton: false,
+                },
+                anchorSettings: {
+                    anchorClickable: false, 
+                },
+            });
+        });
+
+        $(function ()
+        {
+            $("#form-horizontal").steps({
+                headerTag: "h3",
+                bodyTag: "fieldset",
+                transitionEffect: "slide"
+            });
+        });
+</script>
+<!-- <script type="text/javascript">
+	$(document).ready(function(){
+		
+
+		$(document).on('click','.manage_promocode',function (e) {
+			var id = $(this).attr('data-id');		
+			var html = '<form method="post">@csrf<input type="hidden" id="order_id" name="order_id" value="'+id+'"><input type="text" name="promocode" placeholder="Promocode" class="form-control"><br/><a class="btn btn-success update_promo_code">UPDATE</a></form>';
+			$('#delivery_status_hldr').html(html);
+			$('#delvryProgressModalTitle').text('Manage Promocode');
+			$('#delvryProgressModal').modal('show');
+		});
+		
+		$(document).on('click','.update_promo_code',function (e) {	
+			var order_id = $('#order_id').val();
+			var promocode = $('input[name="promocode"]').val();	
+			$.ajax({
+				headers: {
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				},
+				type: 'POST',                                                
+				url: base_url+'/update-promocde',
+				data: {order_id:order_id,promocode:promocode},
+				success:function(data){					
+					$('#delvryProgressModal').modal('hide');
+				}
+			});
+		});
+
+		$(document).on('click','#save_enq_history',function (e) {		
+		var id = $('#enq_request_id').val();
+		var note = $('#enquiry_note').val();
+		$('#dlvry_status_error').html('');
+		$('#dlvry_status_error').hide();
+		if (note == "") {
+			
+			$('#dlvry_status_error').append('<li>Please add a note</li>');
+			$('#dlvry_status_error').show();
+		} else {
+			$('#loadingsign').show();
+			$.ajax({
+				headers: {
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				},
+				type: 'POST',                                                
+				url: 'save-enquiry-detail',
+				data: {id:id,note:note},
+				success:function(data){	
+					$('#loadingsign').hide();
+					if (data.error) {
+						$('#delivery_status_hldr').html('<div class="alert alert-danger">'+data.message+'</div>');
+					} else {
+						$('#delivery_status_hldr').html('<div class="alert alert-success">Updated successfully</div>');
+						$('#dlvry_status_error').html('');
+						$('#dlvry_status_error').hide();
+					}
+
+				}
+			});
+		}
+
+	});
+</script> -->
+@endsection

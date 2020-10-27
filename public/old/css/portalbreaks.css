@@ -1,0 +1,194 @@
+@charset "utf-8";
+
+@media only screen and (min-width : 1200px){
+.Cwrapper.Open{margin-left:240px;}
+a.Mibtn,a.Pibtn,a.Cibtn{ margin:5px;}
+.pparthead{padding:0 50px 0;}
+/*.payformbg, .payactionbg{ padding:30px 50px;}*/
+.pparthead h1{ font-size:43px;line-height:50px;}
+.addCreclass h1{line-height:65px;}
+ul.paynav li > a{margin:0 25px;}
+}
+@media only screen and (max-width: 992px) {
+.Cwrapper,.Cwrapper.Open{margin-left:0;padding:60px 0 15px 0;}
+.header,.header.Open{left:0px;}
+.Advt, .billDetails{ margin:25px 0 0 0;}
+.header.Open .navclick{left:240px;}
+
+/*Payments start*/
+.paymenu{display:block;width:100%; float:none; margin-top:10px;}
+    .paymenu > ul{display:none;position:relative;z-index:1; background-color:#ececec;}
+    .paymenu > ul > li{float:none;display:block;}
+    .paymenu > ul > li > a{ border-radius: 0;border:none;}
+    .paymenu > ul > li > a:hover, .paymenu > ul > li > a.active{border:none;}
+    .paymenu > ul > li:first-child > a, .paymenu > ul > li:last-child > a {border-radius:0;}
+    .paymenu > ul > li:last-child > a{border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;}
+    .Payresptopmenu{display:block;}
+.paycontent {width: 100%;float: none; padding-bottom:15px; min-height:100px; border:none;}	
+.Spersonal{top:30px; width:600px; margin-left:-300px;padding:25px 10px 25px;}
+.optionbg p{margin:0 10px 0 0; width:100px;}
+.billhistory{margin:15px 0 0 0;}
+a.Mibtn,a.Pibtn,a.Cibtn{ margin:5px;}
+.changepasspop{ top:60px; }
+.bdsblue{width:300px;}
+.paypart{width: calc(100% - 300px);padding:30px 0 0 0;}
+.pparthead{padding:0 10px;}
+.pparthead .Ravoobg{ float:none;}
+ul.paynav li > a{margin:0 5px;}
+.payaddress{ border-bottom:1px dotted #ccc; border-right:none;}
+.borderdot{ border:none;border-top:1px dotted #ccc; padding-left:0;}
+.magicform{ position: static;width: auto; margin: 15px;}
+.magicform .Conferform{ background-color:#fff;border:1px solid #e8e8e8;}
+.plansecs .c24,.plansecs .c76{ width:100%; min-height:auto;}
+.uiconS{ padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #f1f1f1;}
+.msecpart {padding: 0 15px 0 25px;}
+.bgcreCon{ padding-left: 10px; padding-right: 10px;}
+.roundCre{ display: none;}
+}
+@media only screen and (max-width: 767px) {
+.plansecs .c65, .plansecs .c35,.plansecs .c70, .plansecs .c30{ width:100%}.plansecs .c50{ width:40%}.plansecs .c25{ width:30%}
+.fbox{ padding-left:50px;}
+.fbox > span{ width:40px; height:40px;}
+a.btns, a.btns.red, a.btns.green{ margin:6px 0;}
+.Cleftpart h1 {font-size: 26px;line-height: 32px}
+.Wbg {margin-top: 15px;}
+.Advt{ margin:15px 0 0 0;}
+.header > ul > li.user > a > b{ display:none;}
+
+/*Payments start*/
+.billDetails{ margin:15px 0 0 0;}
+.Ravoobg {padding: 15px 0 15px 40px;}
+.Ravoobg:after {top: 12px;}
+a.howdo{padding:8px; text-indent:-9999px; margin-top:15px; margin-right:5px}
+a.howdo:after{top:-3px; left:10px;font-size:30px;text-indent:0px;}
+a.howdo i{ display:none;}
+.Spersonal{top:20px; width:400px; margin-left:-200px;padding:15px 10px 15px;}
+.Spersonal h2 {font-size: 30px;line-height: 38px;}
+.Spersonal h3 {font-size: 16px;line-height: 24px;margin-bottom: 5px;}
+.optionbg p{ width:90px;}
+.paysuccess{ position:relative; padding:15px 10px 15px 60px;}
+.paysuccess h2{font-size:25px; line-height:28px;}
+.paysuccess:after {left: 15px;top: 8px;font-size: 35px;}
+.billto{margin:5px 0; padding:10px;}
+.billto b{ font-size:16px;line-height:20px;}
+
+.no-plans{ padding:15px 15px 15px 80px;min-height:100px; font-size:16px;line-height:20px;}
+.no-plans:after{width:60px; height:60px;left:10px; top:10px;}
+.no-plans h3{ font-size:20px;line-height:30px; margin-top:3px;}
+
+.cancelask{ padding:20px 15px 20px 115px;}
+.cancelask:after{ left:15px; top:15px; width:80px; height:80px; background-size:100%;}
+.cancelask h2 {font-size: 20px;line-height: 28px;padding-bottom: 15px;}
+#udrop{width: 90px; text-align:center;}
+#udrop:after{left:63px;}
+.dataTables_wrapper .dataTables_filter input{ width:200px;}
+.dataTables_wrapper .dataTables_filter:after {right: 50%;margin-right: -119px;}
+table.dataTable tbody th, table.dataTable tbody td {padding: 8px 10px;}
+ul.EAbtnbg{ margin-top:10px;}
+.addCformbg{ padding-left:10px;}
+.addCformbg:after{ display:none; }
+a.Mibtn,a.Pibtn,a.Cibtn{ margin:2px;}
+.bdsblue{ position:static; width:auto; padding-top:5px;}
+.paypart{width:100%;padding:15px 0 0 0;}
+.bdtable{ padding:5px 20px; display:none;}
+.bdsblue h1 span{ display:block;}
+.payformbg {padding:15px;}
+.bdsblue h1{ font-size:22px;padding:0 20px;line-height:30px; margin:10px 0;}
+.paychbg {padding: 10px 20px;}
+.paychbg table{ font-size:16px;}
+.addCreclass{border-radius:10px; padding:10px;}
+.addCreclass h1{line-height:35px; font-size:25px; float:none;margin-bottom:10px;}
+.addCreclass ul{ float:none;}
+.addCreclass ul li{padding:5px;border-radius:5px; margin:3px;}
+.addCreclass ul li b{font-size:13px;}
+.addCreclass ul li i{font-size:9px;}
+.setdelbox{ text-align: left;}	
+.msecpart b{ margin-bottom: 5px;}
+.creConatab > ul > li > a{ padding:36px 5px 10px 5px; margin: 0 3px 0 0 ; font-size: 13px; line-height: 14px; text-align: center;}
+.creConatab > ul > li > a > span{left: 50%; margin-left: -12px; top: 8px; margin-top: 0px; width: 24px; height: 24px;line-height: 25px; font-size: 15px;}
+.creminh .fbox{ margin-bottom: 10px;}
+.checkulli ul li{float: none; width: 100%; }
+}	
+	
+@media only screen and (max-width: 479px) {
+.plansecs {padding: 10px 5px;}
+.plansecs .c65,.plansecs .c35,.plansecs .c50,.plansecs .c26,.plansecs .c76{ width:100%; min-height:auto;}
+.plansecs .c50{ padding-bottom:10px;}
+.plansecs .c25{ width:50%;min-height:50px;}
+.honmob{ display:none; padding-left:50px;}
+.number .honmob{padding-left:40px;}
+.plansecs .c35 > span,.plansecs .c24 > span{ display:block;}
+.distxtbg{padding:5px 10px 5px 10px; text-align:center;}
+.controlbg{ position:static;height:40px; margin:5px auto;}
+.Othersearch, .Wbg h3{ width:100%; float:none;}
+.Cleftpart h1 {font-size: 22px;line-height:30px}
+.Paymentsbg { margin-top:10px;}
+
+/*Payments start*/
+.billDetails .tablebg {padding: 10px 3px;}
+.Ravoobg {padding: 15px 0 10px 40px;}
+.Ravoobg > h3 {font-size: 16px;}
+.greensec{ margin-top:0;}
+.greensec h3 {font-size: 15px; line-height:20px;}
+.paycontent{ padding:5px 5px 15px 5px;}
+.onetouchtable b {font-size: 15px;line-height: 20px;}
+a.paynowbtn{ margin:15px auto; float:none; width:160px; height:34px; line-height:34px;}
+.enabletxt.paytxt{ font-size:14px;}
+.Spersonal{top: 70px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    margin-left: 0;
+    padding: 10px 0px 20px;
+    z-index: 9865;
+}
+.Spersonal h3 {font-size: 14px;line-height: 18px;margin-bottom: 0px;}
+.Spersonal h2 {font-size: 28px;}
+.popTbox{ padding-top:15px;}
+.checktabs p {margin: 10px 7px 0 0;}
+.checktabs [type="radio"]:checked + label, .checktabs [type="radio"]:not(:checked) + label {position: relative;padding-left: 23px;font-size: 13px;}
+.paycard h1 > a{float:none; display:block; margin-top:5px;}
+.optionbg p{ width:70px;}
+.optionbg p select{ padding:0 5px;}
+.paysuccess h2{font-size:20px; line-height:22px;}
+.smallall{ text-align:center;}
+a.invoicebtn{margin:5px 2px 20px 2px;font-size:14px;padding:7px 36px 7px 15px; float:none; display:inline-block;}
+a.invoicebtn:before{right:12px; top:7px; font-size:17px;}
+.Redeemcheck{left:12px; top:20px;}
+.Topupdrop h2{display:block;}
+.Topupdrop select{ display:block; margin:10px 0; width:100%;}
+.no-plans{ padding:75px 10px 10px 20px;min-height:auto; font-size:13px; text-align:center;}
+.no-plans:after{width:50px; height:50px;left:50%; top:15px; margin-left:-25px;}
+.no-plans h3{ font-size:18px;line-height:24px;}
+.cancelask{ padding:15px;}
+.cancelask:after{ display:none;}
+.cancelask h2 {font-size:18px;line-height: 24px;padding-bottom: 10px;}
+.cancelask p {font-size: 16px;line-height: 24px;margin: 15px 0;}
+.cancelask p > i{font-size: 14px;}
+a.Cbtn, a.gplan {padding: 0 15px;margin-right: 10px;font-size: 14px;}
+.canbox {padding: 70px 7px 20px;}
+.canbox > a {line-height: 15px;padding: 5px;border-radius: 5px;font-size: 13px;}
+.canbox > h1 {font-size: 16px;line-height: 20px;}
+.canbox:after {top: 0px;font-size: 50px;}
+.ADevicebg{width:auto;top:10px;margin-left:0; padding:15px 10px; bottom:10px; right:10px; left:10px; overflow:auto;}
+.ADevicebg p, .ADevicebg span{ margin-bottom:10px;}
+.ADevicebg h1{ margin-bottom:10px;}
+ul.Ulinenav > li > a{ font-size:15px; padding:0 5px;}
+.upload-path {right:80px;}
+.upload {width:80px;}
+.changepasspop{ width:auto;padding-bottom:15px;left:15px; top:30px;margin-left:auto; right:15px;}
+.cpformbg{ padding:15px;}
+.cpclose{right:-3px; top:-30px;}
+.pparthead h1{ font-size:30px;line-height:35px;}
+.payactionbg .greenbtn{ font-size:17px; border-radius:0; padding:6px 18px; margin-left:10px;}
+ul.paynav{ margin-top:5px;}
+ul.paynav li > a{ font-size:14px;}
+.bdtable .tablebg tr td, .bdtable .tablebg tr th{ padding:6px 0;}
+.uiconS {padding-bottom: 5px;margin-bottom: 5px;border-bottom: none;}
+.creConatab > ul > li > a{ padding:36px 2px 10px 2px; margin: 0 1px 0 0 ; font-size: 11px; line-height: 13px;}
+.creminh .fbox{ margin-bottom: 10px;}
+.creminh .honmob {display: none;padding-left: 5px;}
+.ashbg{padding: 10px;}
+.concoftb ul{ float: left;}
+}		
+
