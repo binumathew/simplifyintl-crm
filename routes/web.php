@@ -115,6 +115,9 @@ Route::post('/cal-credit-debit', 'UserController@cal_credit_debit');
 Route::post('/credit-debit-gateway', 'UserController@credit_debit_gateway');
 Route::get('/direct-debit/{id?}','UserController@direct_debit');
 Route::post('/direct-debit-manage','UserController@direct_debit_manage');
+Route::get('/opted-services','UserController@opted_services');
+Route::get('/user-services','UserController@user_services');
+Route::post('/user-services','UserController@user_services');
 
 /* Staff & Dealer */
 Route::get('/staff-list', 'StaffController@staff_list');
@@ -339,6 +342,9 @@ Route::post('/comm-breakdown', 'CommissionController@comm_breakdown');
 Route::post('/pay-commission', 'CommissionController@pay_commission');
 
 
+/* Invoice  */
+Route::get('/invoice-list', 'InvoiceController@invoice_list');
+Route::get('/generate-invoices/{id}', 'InvoiceController@generate_invoices');
 
 
 //Route::post('/update-port-status', 'ActivationController@change_port_status');
