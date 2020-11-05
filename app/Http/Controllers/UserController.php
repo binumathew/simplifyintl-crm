@@ -44,9 +44,10 @@ use App\Mail\UserSelfPaymentLink;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
-
 use App\Models\ClawbackPayments;
 use \App\Models\Clawback;
+use Twilio\Rest\Client;
+use Twilio\Exceptions\RestException;
 
 class UserController extends Controller
 {
@@ -282,6 +283,9 @@ class UserController extends Controller
                 case 'settings':
                     $html = view('user.settings', compact('user'))->render();
                 break;            
+                case 'invoice':
+                    $html = view('user.invoice', compact('user'))->render();
+                break;           
                 default:
                     $html = 'error';
             }  
@@ -462,6 +466,7 @@ class UserController extends Controller
     }
 
     public function change_user_status(Request $request) {
+
         DB::beginTransaction();
         try {
             $user_id = Crypt::decrypt($request->user_id);
@@ -492,11 +497,9 @@ class UserController extends Controller
             $sim_list = SimList::where('user_id',$user_id)->first();
             if($sim_list){
                 $autoplanid = $sim_list->autoplan_id;
+
                 /* disable &enable entry of user whose payment not given in commission */
                 $c = $this->user_status_trigger($user_id,$autoplanid,$user->status);
-                // PaymentCommission::where('autoplan_id', $autoplanid)
-                //             ->where('is_paid',0)
-                //             ->update(['user_active' => $user->status]); //disable &enable entry of user whose payment not given in commission
             }
 
             DB::commit();
@@ -963,34 +966,251 @@ class UserController extends Controller
         $i_account      = $user->i_account;
         $currency       = $user->country->currency;
         $tax            = $user->country->tax;
-        $payment_method = $request->payment_method;
-        $creditid       = Crypt::decrypt($request->credit_amount);
-        $getcredit      = DB::table('credits')->whereId($creditid)->first();
-        $amount         = $getcredit->amount;
-        $tax_amount     = round(($amount * ($tax/100)),2);
-        $total_amount   = round(($amount + $tax_amount),2);
+        $country_code   = $user->country->short_code;
 
-        $payment = ['total_amount' => $total_amount, 'currency' => $currency,  'payment_method' => $payment_method, 'payment_for' => 'Credit Added', 'user_id' => $user_id, 'amount' => $amount, 'tax_amount' => $tax_amount, 'category' => 'switch', 'buy_price' => 0];                
-        $payment['transaction_id'] = $request->custom_txn_id;
-        $payment['description'] = $request->custom_description.' - processed by '.Auth::user()->first_name.' '.Auth::user()->last_name;
-        $method     = 'accountCredit';
+        $getamount      = $this->credit_debit_amount($request,$tax);
+
+        $gateway        = $request->gateway;
+        $paymentType    = $request->payment_for;
+
+        $paymentypes  = ['addcredit'=>'Credit Added','debit'=>'Amount Debit','deduct'=>'Amount Deduct','addcard'=>'New Card'];
+
+        $payment_for            = $paymentypes[$paymentType];
+
+        $data['user_id']        = $user_id;
+        $data['i_account']      = $i_account;
+        $data['currency']       = $currency;              
+        $data['net_amount']     = $getamount->amount;
+        $data['vat_amount']     = $getamount->tax_amount;
+        $data['total_amount']   = $getamount->total_amount;
+        $data['buy_price']      = 0;
+        $data['payment_for']    = ucwords($payment_for);
+        $data['description']    = ucwords($request->custom_description).' - processed by '. Auth::user()->first_name.' '.Auth::user()->last_name;
+        $data['category']        = 'switch';
+        $data['discount_amount'] = "";
+        $data['discount_coupon'] = "";
         
-        $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, $getcredit->amount, $currency);
-        $temp = SwitchHelper::call_switch_api($credit_xml);
-        
-        if (array_key_exists("fault", $temp)) {
-            $payment['status'] = 2;
-            $payment_id = UserPayment::insertGetId($payment);
-            $notification = NotificationLog::create(['user_id'=>$user_id, 'message' => 'Manual AddCredit Failed','description'=>'Payment Id:'.$payment_id.', msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']);
-            return response()->json(['status' => 422, 'message' => 'Payment added successfully. Account Credit to switch failed']);
-        }else{
-            $payment['status'] = 1;
-            $payment_id = UserPayment::insertGetId($payment);
+        if($request->gateway != 'Stripe'){
+            if($request->credit_card != 'new'){
+                $data['card_id'] = Crypt::decrypt($request->credit_card);
+            }else{
+                $data['card_number'] = urlencode(str_replace('-', '', $request->card_number));
+                $data['expiry_month'] = str_pad($request->expiry_month, 2, '0', STR_PAD_LEFT);
+                $data['card_type'] = ucfirst($request->card_type);
+                $data['expiry_year'] = '20'.$request->expiry_year;
+                $data['card_cvv'] = $request->card_cvv;
+                $data['card_holder'] = $request->card_holder;
+                $data['card_street'] = $request->card_street;
+                $data['card_city'] = '';
+                $data['card_state'] = '';
+                $data['card_postcode'] = $request->card_postcode;  
+                $data['country_code'] = $country_code;
+            }
+        } 
+
+        if($paymentType == 'addcredit' || $paymentType == 'debit' || $paymentType == 'addcard'){
+
+            if($gateway == 'Stripe'){
+                $data['card_id']         = ($request->credit_card != 'new') ? Crypt::decrypt($request->credit_card) : '';
+                $data['stripeToken'] = $request->stripeToken;
+                $response = Helper::stripe_payment_process($data);
+
+            }else if($gateway == 'Braintree'){
+                $response = Helper::braintree_payment_process($data);
+            }else if($gateway == 'Paypal'){
+                $response = Helper::paypal_payment_process($data);
+            }
+            else if($gateway == 'Cash'){
+                $payment_method = $request->payment_method;
+                $payment = ['total_amount' => $data['total_amount'], 'currency' => $data['currency'],  'payment_method' => $payment_method, 'payment_for' => $payment_for, 'user_id' => $user_id, 'amount' => $data['net_amount'], 'tax_amount' => $data['vat_amount'], 'category' => $data['category'], 'buy_price' => 0];
+                $payment['transaction_id'] = $request->custom_txn_id;
+                $payment['description']    = $data['description'];
+
+                $response['status']  = 1;
+            }
+        }else if($paymentType == 'deduct'){
+
             $user_balance = Account::where('user_id',$user_id)->first();
-            $balance['balance_amount'] = $user_balance->balance_amount + $getcredit->amount;
-            Account::where('user_id', $user_id)->update($balance);
-            return response()->json(['status' => 200, 'message' => 'Credit added successfully']);
+
+            if($user_balance->balance_amount < $data['total_amount']){
+             return response()->json(['status' => 422, 'message' => 'Amount trying to deduct is greater than the account balance']);  
+            }else{
+                $method = 'accountDebit';
+                $debit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, $data['net_amount'], $data['currency']);
+                $temp = SwitchHelper::call_switch_api($debit_xml); 
+                if (array_key_exists("fault", $temp)) {
+
+                    $notification = NotificationLog::create(['user_id'=>$user_id, 'message' => ' Amount Deduct Failed','description'=>'msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']);
+                    return response()->json(['status' => 422, 'message' => 'Deduct payment failed.']);
+                }else{
+                    $payment = ['total_amount' => $data['total_amount'], 'currency' => $data['currency'],  'payment_method' => $paymentType, 'payment_for' => $payment_for, 'user_id' => $user_id, 'amount' => $data['net_amount'], 'tax_amount' => $data['vat_amount'], 'category' => $data['category'], 'buy_price' => 0,'description'=>$data['description'],'status'=>4];
+
+                    $payment_id = UserPayment::insertGetId($payment);
+
+                    $user_balance = Account::where('user_id',$user_id)->first();
+                    $balance['balance_amount'] = $user_balance->balance_amount - $data['total_amount'];
+                    Account::where('user_id', $user_id)->update($balance);
+                    return response()->json(['status' => 200, 'message' => 'Amount deducted successfully']);
+                } 
+            }
         }
+
+        /* Payment Success */
+        if($response['status']){
+
+            if($paymentType == 'addcredit'){
+
+                $method     = 'accountCredit';
+                $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, $data['net_amount'], $data['currency']);
+                $temp       = SwitchHelper::call_switch_api($credit_xml);
+
+                if (array_key_exists("fault", $temp)) {
+                    if($gateway == 'Cash'){
+                        $payment['status'] = 2;
+                        $payment_id = UserPayment::insertGetId($payment);
+                    }else{  
+                       $payment_id =  $response['payment_id'];
+                    }
+                    $notification = NotificationLog::create(['user_id'=>$user_id, 'message' => $gateway.' AddCredit Failed','description'=>'Payment Id:'.$payment_id.', msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']);
+                    return response()->json(['status' => 422, 'message' => 'Payment added successfully. Account Credit to switch failed']);
+                }else{
+                    if($gateway == 'Cash'){
+                        $payment['status'] = 1;
+                        $payment_id = UserPayment::insertGetId($payment);
+                    }
+                    $user_balance = Account::where('user_id',$user_id)->first();
+                    $balance['balance_amount'] = $user_balance->balance_amount + $data['net_amount'];
+                    Account::where('user_id', $user_id)->update($balance);
+                    return response()->json(['status' => 200, 'message' => 'Credit added successfully']);
+                } 
+
+            }else if($paymentType == 'debit'){
+                if($gateway == 'Cash'){
+                    $payment['status'] = 1;
+                    $payment_id = UserPayment::insertGetId($payment);
+                }
+                if(isset($request->notify) && $request->notify == 1){
+                    $msg  = "Info from ".config('settings.app_name')." Mobile.".$request->custom_message;
+                    $phone = $user->phone;
+                    $this->send_sms($msg,$phone);
+                }
+                return response()->json(['status' => 200, 'message' => 'Amount debited successfully']);
+
+            }else if($paymentType == 'addcard'){
+                $payment = UserPayment::where('id', $response['payment_id'])->first();
+                if($payment){
+                    switch($payment->payment_method){
+                        case 'Paypal':
+                            $refund = Helper::paypal_refund_process($payment, $data['total_amount'], $data['description']);
+                        break;
+                        case 'Braintree':
+                            $refund = Helper::braintree_refund_process($payment, $data['total_amount'], $data['description']);
+                        break;
+                        case 'Stripe':
+                            $refund = Helper::stripe_refund_process($payment, $data['total_amount'], $data['description']);
+                        break;
+                        default:
+                            $refund = ['status' => 422, 'message' => 'Refund process doesn\'t support for this transaction'];
+                        break;
+                    }
+                    if($refund['error']){
+                        NotificationLog::create(['user_id' => $user_id, 'message' => 'Card change refund amount '.$data['total_amount'].' failed', 'description' => 'Payment id:'. $response['payment_id'] .' ', 'status' => '0']);
+                        return response()->json(['status' => 422, 'message' => 'New card added successfully. Failed to initate refund.']);  
+                    }else{
+                       return response()->json(['status' => 200, 'message' => 'New card added successfully. Refund initiated']);  
+                    }
+                }
+            }
+        }else{
+          return response()->json(['status' => 422, 'message' => 'Payment failed.']);   
+        }
+    }
+    private function credit_debit_amount($request,$tax){
+
+        if($request->custom_amount_check == 1){
+            $amount  = $request->custom_amount;
+        }else{
+            if($request->payment_for == 'addcard'){
+                $request->tax_type = 3; /*No tax calculation */
+                if($request->gateway == 'Stripe'){
+                    $amount = (float)0.10;
+                }else{
+                    $amount = (float)0.10;
+                } 
+            }else{
+                $creditid       = Crypt::decrypt($request->credit_amount);
+                $getcredit      = DB::table('credits')->whereId($creditid)->first();
+                $amount         = $getcredit->amount;
+            }
+        }
+        if($request->tax_type == 1){           /* Tax Included */
+            $getamount     = Helper::vatreduceCalculation($amount,$tax);
+        }else if($request->tax_type == 2){    /* Tax Excluded */
+            $getamount     = Helper::vataddCalculation($amount,$tax);
+        }else if($request->tax_type == 3){   /* No tax */
+            $getamount = new \stdClass;
+            $getamount->amount       = $amount;
+            $getamount->tax_amount   = 0;
+            $getamount->total_amount = $amount;
+        }
+        return $getamount;
+    }
+    private function send_sms($msg,$phone){
+
+        $account_sid    = Helper::get_option('twilio_account_sid');
+        $auth_token     =  Helper::get_option('twilio_auth_token');
+        $twilio_number  = Helper::get_option('twilio_number');                            
+        try {             
+            $client = new Client($account_sid, $auth_token);
+            $client->messages->create(
+                $phone,
+                array(
+                    'from' => $twilio_number,
+                    'body' => $msg
+                )
+            );
+        } catch (RestException $exception) {                  
+            
+        }
+    }
+    /**
+    * calculate credit debit amount.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function cal_credit_debit(Request $request)
+    {
+        $user_id        = Crypt::decrypt($request->user_id);
+        $user           = User::find($user_id); 
+        $tax            = $user->country->tax;
+
+        $getamount      = $this->credit_debit_amount($request,$tax);
+        $html = view('user.credit-debit-dynamic', compact('request','getamount','user',''))->render();
+        return response()->json(['status'=>200,'page'=>$html]);
+    }
+    /**
+    * credit debit payment gateways.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function credit_debit_gateway(Request $request)
+    {
+        $gateway_id = ($request->gateway == 'Cash') ? 'Cash' : $request->gateway;
+        if($gateway_id != 'Cash'){
+            $gateway    = PaymentGateway::where('id', $gateway_id)->first();
+        }else{
+          $gateway = new \stdClass();  
+          $gateway->gateway    = 'Cash';  
+        }
+        $gateways    = PaymentGateway::get();
+
+        $user_id    = Crypt::decrypt($request->user_id);
+        if($user_id)
+        $user = User::find($user_id);
+        $cards = UserCreditCard::where(['user_id' => $user_id, 'gateway' => $gateway_id])->get();
+
+        $html = view('user.credit-debit-dynamic', compact('gateway', 'cards','user','gateways'))->render();
+        return response()->json(['error' => false, 'html' => $html]);
     }
     /**
     * Clawback and commission payment stop when user is inactive.
@@ -1283,6 +1503,122 @@ class UserController extends Controller
             default:
                 # code...
                 break;
+        }
+    }
+        /**
+    * Show the application user opted feature.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function opted_services(){
+        // if (!Helper::has_permission('reports')) {
+        //     abort(403,'Access denied');
+        // }
+        return view('user.opted-services');
+    }
+    /**
+    * Show the application user opted services.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function user_services(Request $request){
+
+        $optedservices   = DB::table('opted_services as os')
+                        ->select('os.*','us.name','us.phone','us.email','ps.short_code','ps.service_name','ps.provider','os.status as opted_status',DB::raw("CONCAT(a.first_name, ' ',a.last_name) AS doneby"))
+                        ->join('users as us', 'us.id', '=', 'os.user_id')
+                        ->join('provider_services as ps', 'ps.id', '=', 'os.service_id')
+                        ->leftJoin('admins as a', 'a.id', '=', 'os.done_by')
+                        ->orderBy('created_at', 'DESC');
+
+        if ($request->has('number') && $request->get('number') != "") {
+                $optedservices->where('us.phone', 'like', "+{$request->get('number')}%");
+        }
+        if ($request->has('opted_status') && $request->get('opted_status') != "") {
+                $optedservices->where('os.status',$request->get('opted_status'));
+                
+        }             
+        $result = Datatables::of($optedservices)
+                    ->editColumn('created_at', function ($date) {
+                     return $date->created_at ? with(new Carbon($date->created_at))->format('d-m-Y H:i:s') : '';
+                    })
+                    ->editColumn('opted_status', function ($user) {
+                        $stat = "";
+                        switch ($user->status) {
+                            case 0:
+                                $stat = "Request received";
+                                break;
+                            case 1:
+                                $stat = "Processed";
+                                break;
+                            case 2:
+                                $stat = "Failed";
+                                break;
+                        }
+                        return $stat;
+                    })
+                    ->editColumn('action', function ($data) {
+                        if($data->opted_status != 1){
+                            $opteddetails = Crypt::encrypt($data->id);
+                            $btn_type = ($data->opted_key == 'Yes' || $data->opted_key == 1) ? 'btn-info' : 'btn-warning';
+                            return '<a href="javascript:void(0)" class="btn '.$btn_type.' btn-sm service_actions" data-opted="'.$opteddetails.'" data-tag="'.$data->opted_value.'">'.$data->opted_value.'</a>';
+                        }else { return '';}
+                    })
+                    ->make(true);
+        return $result;
+    }
+    /**
+    * Application user opted services api call.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function services_change(Request $request){
+
+        if(isset($request->dataid)){
+            $dataid  = Crypt::decrypt($request->dataid);
+        }else{
+            $service_id = Crypt::decrypt($request->bar_id);
+            $services   = DB::table('provider_services')->whereId($service_id)->first();
+            if(!empty($services)){
+                $servicevalue = json_decode($services->service_value,TRUE);
+                $opted_key = $request->action;
+                $opted_value = $servicevalue[$opted_key];
+                $toggle_value   = ( array_search($servicevalue[$opted_key],array_values($servicevalue)) == 0) ? array_values($servicevalue)[1] : array_values($servicevalue)[0];
+                $toggle_key   = ( array_search($servicevalue[$opted_key],array_values($servicevalue)) == 0) ? array_keys($servicevalue)[1] : array_keys($servicevalue)[0];
+                $dataid = DB::table('opted_services')->insertGetId(
+                    ['user_id'=>Crypt::decrypt($request->user_id),'service_id'=>$service_id,'opted_key'=>$opted_key,'opted_value'=>$opted_value]
+                ); 
+            }
+        }
+        $getdata = DB::table('opted_services as os')
+                            ->select('os.*','us.name','tss.phone_number','us.email','ps.short_code','ps.service_key','ps.service_short_code','ps.service_name')
+                            ->join('users as us', 'us.id', '=', 'os.user_id')
+                            ->join('tbl_sim_stock as tss', 'tss.id', '=', 'us.stock_id')
+                            ->join('provider_services as ps', 'ps.id', '=', 'os.service_id')
+                            ->where('os.id', $dataid)->first();
+
+        if(!empty($getdata)){
+            $provider = $getdata->short_code;
+            switch ($provider) {
+                case 'AT_T':
+                    $change = AttHelper::sim_service_modify_features($getdata);
+                    if($change->status == 200){
+                        $servstatus      = 1;
+                        $userservice = DB::table('user_services')
+                                        ->updateOrInsert(['user_id' => $getdata->user_id, 'service_id' => $getdata->service_id],['service_status' => $getdata->opted_key]);
+
+                        $update = DB::table('opted_services')->whereId($dataid)->update(['status'=>$servstatus,'description'=>implode(',',$change->response),'done_by'=>Auth::id()]);
+                        return response()->json(['status' => $change->status, 'message' => $getdata->service_name.' '.$opted_value.' Successfully','toggle_key'=>$toggle_key,'toggle_value'=>$toggle_value]);
+                    }else{
+                        $servstatus      = 2;
+                        $update = DB::table('opted_services')->whereId($dataid)->update(['status'=>$servstatus,'description'=>implode(',',$change->response),'done_by'=>Auth::id()]);
+                        return response()->json(['status' => $change->status, 'message' => implode(',',$change->response)]);
+                    }
+                    break;
+                
+                default:
+                    break;
+            }
+
         }
     }
 }

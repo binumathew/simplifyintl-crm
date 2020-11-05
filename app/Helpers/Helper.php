@@ -212,22 +212,15 @@ class Helper
     /* Paypal Payment Process */
     public static function paypal_payment_process($data)
     {   
-        $user_id        =  $data['user_id'];
-        $currency       = $data['currency'];
-        $i_account      = $data['i_account'];
-        $total_amount   = $data['total_amount'];
+        $user_id =  $data['user_id'];
+        $currency = $data['currency'];
+        $custom = 'APP'.$user_id;
+        $total_amount = $data['total_amount'];
         $environment    = Helper::get_option('paypal_nvp_mode');
         $api_endpoint   = 'https://api-3t.paypal.com/nvp';
         $api_user       = Helper::get_option('paypal_nvp_username');
         $api_password   = Helper::get_option('paypal_nvp_password');
         $api_signature  = Helper::get_option('paypal_nvp_signature');
-
-        if('sandbox' === $environment) {
-            $api_endpoint   = "https://api-3t.sandbox.paypal.com/nvp";
-            $api_user       =  Helper::get_option('paypal_nvp_username_sandbox');
-            $api_password   = Helper::get_option('paypal_nvp_password_sandbox');
-            $api_signature  = Helper::get_option('paypal_nvp_signature_sandbox');
-        }    
 
         $version        = urlencode('86.0');
         $payment_type   = urlencode('Sale'); 
@@ -237,30 +230,24 @@ class Helper
             $card_expire = $card_data->card_expiry;
             $transaction_id = $card_data->transaction_id;
             $method_name = 'DoReferenceTransaction';
-            $nvp_str = "&PAYMENTACTION=$payment_type&AMT=$total_amount&REFERENCEID=$transaction_id&CURRENCYCODE=$currency&CUSTOM=$i_account";
+            $nvp_str = "&PAYMENTACTION=$payment_type&AMT=$total_amount&REFERENCEID=$transaction_id&CURRENCYCODE=$currency&CUSTOM=$custom";
         }else{
-            // $return['status'] = 0;
-            // $return['payment_id'] = 0;
-            // $return['transaction_id'] =  '';
-            //  $return['message'] = 'This transaction not support!';
-            // return $return;
-
             $user = User::find($user_id);
             $method_name = 'DoDirectPayment';
-            $firstname = $data['card_holder'];
-            $lastname = '';
+            $firstname = urlencode($data['first_name']);
+            $lastname = urlencode($data['last_name']);
             $email = $user->email;          
-            $state = $data['card_city'];
-            $city = $data['card_state'];
-            $address = $data['card_street'];
+            $state = urlencode($data['card_state']);
+            $city = urlencode($data['card_city']);
+            $address = urlencode($data['card_street']);
             $card_number = $data['card_number'];
             $exp_month = $data['expiry_month'];
             $exp_year = $data['expiry_year'];
             $cvv = $data['card_cvv'];
-            $postal_code = $data['card_postcode'];
+            $postal_code = urlencode($data['card_postcode']);
             $country_code = $data['country_code'];
             $card_type = $data['card_type'].' ****'.substr($card_number, -4);
-            $nvp_str = "&PAYMENTACTION=$payment_type&AMT=$total_amount&ACCT=$card_number&EXPDATE=$exp_month$exp_year&CVV2=$cvv&FIRSTNAME=$firstname&LASTNAME=$lastname&CURRENCYCODE=$currency&CUSTOM=$i_account&EMAIL=$email&COUNTRYCODE=$country_code&STATE=$state&CITY=$city&STREET=$address&ZIP=$postal_code";
+            $nvp_str = "&PAYMENTACTION=$payment_type&AMT=$total_amount&ACCT=$card_number&EXPDATE=$exp_month$exp_year&CVV2=$cvv&FIRSTNAME=$firstname&LASTNAME=$lastname&CURRENCYCODE=$currency&CUSTOM=$custom&EMAIL=$email&COUNTRYCODE=$country_code&STATE=$state&CITY=$city&STREET=$address&ZIP=$postal_code";
         }        
         $nvp_req = "METHOD=$method_name&VERSION=$version&PWD=$api_password&USER=$api_user&SIGNATURE=$api_signature$nvp_str";
 
@@ -816,6 +803,32 @@ class Helper
         $response['transaction_id'] = $txn_card_id;
         return $response;  
     }
+    //Create functionality to calculate tax
+    public static function taxCalculation($price,$country,$notax = false) {
+        $country_name  = $country->short_code;
+        $taxtype       = $country->tax_type;
+        $tax           = $country->tax;
+
+        switch ($taxtype) {
+            case 1:
+                $net_amount = 100/(100+$tax) * $price;
+                $tax_amount = number_format(($price - $net_amount),2);
+                break;
+            case 2:
+                $tax_amount = (($price * $tax) / 100);
+                $net_amount = $price;
+                break;
+            
+            default:
+                break;
+        }
+        $total_amount = $net_amount + $tax_amount;
+        $amountdata = new \stdClass;
+        $amountdata->amount       = number_format($net_amount,2);
+        $amountdata->tax_amount   = number_format($tax_amount,2);
+        $amountdata->total_amount = number_format($total_amount,2);
+        return $amountdata;
+    }
     //subtract vat against the amount
     public static function vatreduceCalculation($amount,$tax,$approved = 0) {
 
@@ -950,6 +963,21 @@ class Helper
             $obj->response = $res;
            return $obj; 
         }  
+    }
+    //return as international format
+    public static function phoneInter_format($phone,$dial_code) {
+        $dial_code = str_replace("+","",$dial_code);
+        //Remove any parentheses and the numbers they contain:
+        $phone  = preg_replace("/\([0-9]+?\)/", "", $phone);  
+        //Strip spaces and non-numeric characters:
+        $phone  = preg_replace("/[^0-9]/", "", $phone);
+        //Strip out leading zeros:
+        $phone = ltrim($phone, '0');
+        //Check if the number doesn't already start with the correct dialling code:
+        if ( !preg_match('/^'.$dial_code.'/', $phone)  ) {
+            $phone = '+'.$dial_code.$phone;
+        }else { $phone = '+'.$phone;}
+        return $phone;
     }
 
 }

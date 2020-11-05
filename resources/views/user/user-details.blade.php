@@ -1,14 +1,20 @@
 @extends('layouts.home')
 @section('content')
 <style type="text/css">
-    .error{
+    #credit_amount-error{
         position: absolute;
         top: 100%;
     }
+    #custom_message-error{
+        position: absolute;
+        top: 100%;
+    }
+
 </style>
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
+            <link href="{{ asset('public/plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
             <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
@@ -102,8 +108,8 @@
                             </div>
 
                             <div class="customer-nav-1">
-                                <ul>
-                                    <li><a href="#" class="user-details selected" data-view="overview"><i class="mdi mdi-home"></i> Overview </a></li>
+                                <ul class="customer-details">
+                                    <li><a href="#" class="user-details selected " data-view="overview"><i class="mdi mdi-home"></i> Overview </a></li>
                                     <li><a href="#" class="user-details" data-view="basic_details"><i class="mdi mdi-table-edit"></i> Edit Details </a></li>
                                     <li><a href="#" class="user-details" data-view="auto_subscription"><i class="mdi mdi-autorenew"></i> Subscription </a></li>
                                     <li><a href="#" class="user-details" data-view="credit_debit"><i class="mdi mdi-wallet"></i> Credit/Debit </a></li>
@@ -113,6 +119,7 @@
                                     <li><a href="#" class="user-details" data-view="transaction"><i class="mdi mdi-credit-card"></i> Transaction </a></li>
                                     <li><a href="#" class="user-details d-none" data-view="settings"><i class="mdi mdi-settings"></i> Settings </a></li>
                                     <li><a href="#" class="user-details d-none" data-view="invoice"><i class="mdi mdi-file-document-box"></i> Invoices </a></li>
+                                    <li><a href="#" class="user-details invoice" data-view="invoice"><i class="mdi mdi-receipt"></i> Invoice </a></li>
                                 </ul>
                             </div>
                         </div>
@@ -250,11 +257,11 @@
                                         <div class="tab-pane p-3" id="mobile-plan" role="tabpanel">
                                             <div class="row plan-data-listing">
                                                 <div class="col-md-6">Balance Credit</div>
-                                                <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{$user->balance->balance_amount}}</span></div></div>
+                                                <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{isset($user->balance->balance_amount) ? $user->balance->balance_amount : 0}}</span></div></div>
                                             </div>                                             
                                             <div class="row plan-data-listing">
                                                 <div class="col-md-6">Balance Minutes</div>
-                                                <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{$user->balance->balance_minutes}} min</span>Out of {{ '-' }} min</div></div>
+                                                <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{isset($user->balance->balance_minutes) ? $user->balance->balance_minutes : 0 }} min</span>Out of {{ '-' }} min</div></div>
                                             </div>                                                                                       
                                         </div>
                                         @endif
@@ -268,7 +275,7 @@
                                     <div class="cus-right-box"><h6>Parent Account</h6><br />
                                         <div class="row">
                                             <div class="col-md-1 col-xs-1"><i class="mdi mdi-sim sim-color"></i></div>
-                                            <div class="col-md-10 col-xs-10"><span><b>{{$parent->name }}</b></span> {{'0'.ltrim($parent->phone,'+44')}}</div>
+                                            <div class="col-md-10 col-xs-10"><span><b>{{$parent->name }}</b> (Prepaid Vodafone)</span> {{'0'.ltrim($parent->phone,'+44')}}</div>
                                             <div class="col-md-1 col-xs-1">
                                                 <form id="show_user_{{$parent->id}}" method="post" action="{{url('/user-details')}}">
                                                     @csrf<input type="hidden" name="identifier" value="{{$parent->phone}}">
@@ -283,7 +290,7 @@
                                         @php $plan_data = $child->userPlan(); @endphp
                                         <div class="row cus-bor-btm">
                                             <div class="col-md-1 col-xs-1"><i class="mdi mdi-sim sim-color"></i></div>
-                                            <div class="col-md-10 col-xs-10"><span><b>{{$child->name}}</b> </span> 0{{ltrim($child->phone,'+44') }}</div>
+                                            <div class="col-md-10 col-xs-10"><span><b>{{$child->name}}</b> (Prepaid)</span> 0{{ltrim($child->phone,'+44') }}</div>
                                             <div class="col-md-1 col-xs-1">
                                                 <form id="show_user_{{$child->id}}" method="post" action="{{url('/user-details')}}">
                                                     @csrf<input type="hidden" name="identifier" value="{{$child->phone}}">
@@ -386,7 +393,7 @@
                     </div> -->
                     <!-- <div class="row m-b-20">
                         <div class="col-md-8"><div class="mini-stat-info"><span class="counter text-purple">Balance Credit</span></div></div>
-                        <div class="col-md-4 text-right">{{$user->balance->balance_amount}}</div>
+                        <div class="col-md-4 text-right">{{isset($user->balance->balance_amount) ? $user->balance->balance_amount : 0}}</div>
                         <! -- <button type="button" class="btn btn-outline-secondary waves-effect">Recharge</button> - - >
                     </div>  -->                                                           
                 </div>
@@ -420,170 +427,398 @@
             <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
             <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
+            <script src="{{ asset('public/js/jquery.creditCardValidator.js') }}"></script>  
+            <script src="{{ asset('public/js/jquery.mask.js') }}"></script> 
+            <script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
+
             <script type="text/javascript">
                 $(document).ready(function(){
+                    
                     // $('#dataTable').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});
-                    // var stripe   = Stripe("{{ config('app.stripe_api_key') }}");
-                    // var card;
-                    // var elements = stripe.elements({
-                    //   fonts: [
-                    //     {
-                    //       family: 'Open Sans',
-                    //       weight: 400,
-                    //       src: 'local("Open Sans"), local("OpenSans"), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3ZBw1xU1rKptJj_0jans920.woff2) format("woff2")',
-                    //       unicodeRange: 'U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215',
-                    //     },
-                    //   ]
-                    // });
-                    // function stripeElements(){
-                    //     card = elements.create('card', {
-                    //       hidePostalCode: true,
-                    //       style: {
-                    //         base: {
-                    //           iconColor: '#F99A52',
-                    //           color: '#32315E',
-                    //           lineHeight: '48px',
-                    //           fontWeight: 400,
-                    //           fontFamily: '"Open Sans", "Helvetica Neue", "Helvetica", sans-serif',
-                    //           fontSize: '15px',
+                    var stripe   = Stripe("{{ config('app.stripe_api_key') }}");
+                      var card;
+                      var elements = stripe.elements({
+                        fonts: [
+                          {
+                            family: 'Open Sans',
+                            weight: 400,
+                            src: 'local("Open Sans"), local("OpenSans"), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3ZBw1xU1rKptJj_0jans920.woff2) format("woff2")',
+                            unicodeRange: 'U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215',
+                          },
+                        ]
+                      });
+                      function stripeElements(){
+                          card = elements.create('card', {
+                            hidePostalCode: true,
+                            style: {
+                              base: {
+                                iconColor: '#F99A52',
+                                color: '#32315E',
+                                lineHeight: '48px',
+                                fontWeight: 400,
+                                fontFamily: '"Open Sans", "Helvetica Neue", "Helvetica", sans-serif',
+                                fontSize: '15px',
 
-                    //           '::placeholder': {
-                    //             color: '#CFD7DF',
-                    //           }
-                    //         },
-                    //       }
-                    //     });
-                    //     card.mount('#card-element');
+                                '::placeholder': {
+                                  color: '#CFD7DF',
+                                }
+                              },
+                            }
+                          });
+                          card.mount('#card-element');
 
-                    //     card.on('change', function(event) {
-                    //         setOutcome(event);
-                    //     });
-                    // }
-                    // function setOutcome(result) {
-                    //   var errorElement = document.querySelector('.error');
-                    //   errorElement.classList.remove('visible');
-                    //   if (result.token) {
-                    //     // Use the token to create a charge or a customer
-                    //     // https://stripe.com/docs/charges
-                    //     //successElement.querySelector('.token').textContent = result.token.id;
-                    //     $(".confirm_payment").html('Processing..');
-                    //     var stripeToken = result.token.id;
-                    //     var formData = new FormData($('#card_payment')[0]);
-                    //     formData.append('stripeToken', stripeToken);
-                    //     var code_type = $('input[name="promocode"]:checked').val();
-                    //     var promo_code = $('input[name="promo_code"]').val();
-                    //     var referal_code = $('input[name="referral_code"]').val();
-                    //     formData.append('code_type', code_type);
-                    //     formData.append('promo_code', promo_code);
-                    //     formData.append('referal_code', referal_code);
-                    //     $.ajax({
-                    //         headers: {
-                    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    //         },
-                    //         type: 'POST',
-                    //         url: base_url+'/paymentddsfd',
-                    //         data: formData,
-                    //         processData: false,
-                    //         contentType: false,
-                    //         dataType: 'json',
-                    //         success:function(data){                     
-                    //             if(data.status == 1) {
-                    //                 window.location.href = base_url+'/success';
-                    //             }else{
-                    //                 $(".confirm_payment").html('Pay Now');
-                    //                 $(".confirm_payment").removeClass("disabled").prop("disabled", false);
-                    //                 $('#payment-error').html(data.message);
-                    //             }
-                    //         }
-                    //     });
-                    //   } else if (result.error) {
-                    //     errorElement.textContent = result.error.message;
-                    //     errorElement.classList.add('visible');
-                    //     $(".confirm_payment").html('Pay Now');
-                    //     $(".confirm_payment").addClass("disabled").prop("disabled", false);
-                    //   }
-                    // }
-                    // $(document).on( 'click', '.confirm_payment', function(){
-                    //     var paymenttype = $(this).attr('data-payment');
-                    //     var card_type   = $('#credit_card').val();
-                    //     var user_id     = $("#user_id").val();
+                          card.on('change', function(event) {
+                              setOutcome(event);
+                              $(".stripe-error").html('');
+                          });
+                      }
+                      if($('#card-element').length){
+                        stripeElements();
+                      }
 
-                    //     if(paymenttype == 'stripe' && card_type == 'new'){
-                    //         $(".confirm_payment").addClass("disabled").prop("disabled", true);
-                    //         stripe.createToken(card).then(setOutcome);
-                    //     }else{
-                    //         if($("#pay-form").valid()){
+                        var btnFinish = $('<button></button>').text('Finish')
+                                      .addClass('btn btn-info finishBtn')
+                                      .css('display','none');
 
-                    //             $(".confirm_payment").html('Processing..');
-                                
-                    //             $('#payment-error').html('');
-                    //             $(".confirm_payment").addClass("disabled").prop("disabled", true);          
-                    //             var formData = new FormData($('#pay-form')[0]);
-                    //             formData.append('user_id', user_id);
-                    //             $.ajax({
-                    //                 headers: {
-                    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    //                 },
-                    //                 type: 'POST',
-                    //                 url: base_url+'/credit-debit-manage',
-                    //                 data: formData,
-                    //                 processData: false,
-                    //                 contentType: false,
-                    //                 dataType: 'json',
-                    //                 success:function(data){                     
-                    //                     if(data.status == 1) {
-                    //                         //window.location.href = base_url+'/success';
-                    //                     }else{
-                    //                         $(".confirm_payment").html('Pay Now');
-                    //                         $(".confirm_payment").removeClass("disabled").prop("disabled", false);
-                    //                         $('#payment-error').html(data.message);
-                    //                     }
-                    //                 }
-                    //             });
-                    //         }
-                    //     }
-                    // });
-                    $(document).on( 'click', '.confirm_payment', function(){
-                        var $this       = $(this);
+                        $(document).on('click','.finishBtn',function(e){
+                            e.preventDefault();
+                            finishPayment();
+                        });
+
+                        function init_creditdebit_wizard(){
+                            $('#creditdebitWizard').smartWizard({
+                                selected: 0,
+                                theme: 'arrows',
+                                transitionEffect:'fade',
+                                autoAdjustHeight: true,
+                                enableFinishButton: true,
+                                enableURLhash:true,
+                                toolbarSettings: {
+                                    toolbarPosition: 'bottom', // both bottom
+                                    toolbarExtraButtons: [btnFinish]
+                                },
+                                keyboardSettings: {
+                                  keyNavigation: false
+                              },
+                            });
+                            $("#creditdebitWizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
+                                $('.finishBtn').hide();
+                                $('.btn-next').show();
+                                if(stepPosition == 'last'){
+                                  $('.finishBtn').show();
+                                  $('.btn-next').hide();
+                                }
+                            });
+                      
+                            $("#creditdebitWizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
+
+                              var payment_for = $('input[name="payment_for"]:checked').val();
+
+                              if(stepNumber == 0){
+                                $(".debit_div,.debit_msg_div,.calculated_div").hide();
+                                $('.tax_div,.amount_div').show();
+                                if(payment_for == 'debit'){
+                                  $(".debit_div").show();
+                                }else if(payment_for == 'addcard'){
+                                  getcalculated();
+                                  $('.tax_div,.amount_div').hide();
+                                }
+                              }else if(stepNumber == 1){
+                                if(stepDirection == 'forward'){
+
+                                    if(payment_for != 'addcard'){
+                                        $validate = step2validate();
+                                        if($validate){
+                                            if(payment_for == 'deduct'){
+                                                creditDebit();
+                                                return false;
+                                            }
+                                        }else{
+                                            return false;
+                                        }
+                                    }
+                                }
+                              }
+                              return true;
+                            });
+                        }
+                        function step2validate(){
+                           if($("#custom_amount").val() == "" && $( "#credit_amount option:selected" ).val() == ""){
+                            $('.amt_error').html('This field is required');
+                            return false;
+                           }else if($('.notify').val() == 1){
+                            $('.msg_error').html('This field is required');
+                            return false
+                           }
+                           return true;
+                        }
+                      function finishPayment(event){
+                        $('.finishBtn').prop('disabled',true);
+                        var card_type   = $('input[name="credit_card"]').val();
+                        var gateway     = $('input[name="gateway"]').val();
+                        
+                        if($("#pay-form").valid()){
+                          if(gateway == 'Stripe' && card_type == 'new'){
+                              stripe.createToken(card).then(setOutcome);
+                          }else{
+                             creditDebit(); 
+                          }
+                        }
+                      }
+                      function creditDebit(stripeToken = ''){
+                        var $this       = $('.finishBtn');
+                        var formData    = new FormData($('#pay-form')[0]);
                         var user_id     = $("#user_id").val();
-                        if($("#cashpay-form").valid()){
-                            var formData = new FormData($('#cashpay-form')[0]);
-                            formData.append('user_id', user_id); 
+                        formData.append('user_id', user_id);
+                        if(stripeToken != ""){
+                          formData.append('stripeToken', stripeToken);
+                        }
+                        $.ajax({
+                          headers: {
+                              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                          },
+                          type: 'POST',
+                          url: base_url+'/credit-debit-manage',
+                          data: formData,
+                          processData: false,
+                          contentType: false,
+                          dataType: 'json',
+                          beforeSend: function(){
+                              $this.html('Processing..');
+                              $this.addClass("disabled").prop("disabled", true);
+                          },
+                          complete: function(){
+                              $this.html('Finish');
+                              $this.removeClass("disabled").prop("disabled", false);
+                          },
+                          success:function(data){                     
+                              if(data.status == 200) {
+                                  alertify.success(data.message);
+                                  $("ul.customer-details li:first-child a").click();
+                              }else{
+                                  $("ul.customer-details li:first-child a").click();
+                                  alertify.error(data.message);
+                              }
+                          }
+                        });
+                      }
+                      function setOutcome(result) {
+                        var errorElement = document.querySelector('.stripe-error');
+                        errorElement.classList.remove('visible');
+                        if (result.token) {
+                          // Use the token to create a charge or a customer
+                          // https://stripe.com/docs/charges
+                          //successElement.querySelector('.token').textContent = result.token.id;
+                          var stripeToken = result.token.id;
+                          creditDebit(stripeToken);
+
+                        } else if (result.error) {
+                          errorElement.textContent = result.error.message;
+                          errorElement.classList.add('visible');
+                        }
+                      }
+                        $(document).on( 'click', '#custom_amount_check', function(){
+                            if($(this).is(':checked')){
+                                $(".cust_amt").show();
+                                $(".dropdwn_amt").hide();
+                                $("input[name='custom_amount']").prop('required',true);
+                                $(this).val(1);
+                                $("#credit_amount option:selected").prop("selected", false)
+                            }else{
+                                $(".cust_amt").hide();
+                                $(".dropdwn_amt").show();
+                                $("input[name='custom_amount']").prop('required',false);
+                                $(this).val(0);
+                            }
+                        });
+                        $(document).on('click', '.notify', function(){
+                           if($(this).is(':checked')){
+                            $(".debit_msg_div").show();
+                            $(this).val(1);
+                            $("input[name='custom_message']").prop('required',true);
+                           }else{
+                            $(".debit_msg_div").hide();
+                            $(this).val(0);
+                            $("input[name='custom_message']").prop('required',false);
+                           } 
+                        });
+                        $(document).on('click', '.radio_card_list', function(){
+                            var creditcard = $(this).val();
+                            $('input[name="credit_card"]').val(creditcard);
+                            card.clear(); 
+                            $('.card_form').addClass('d-none');          
+                        });
+                        $(document).on('click', '.gateway', function(e){
+                            $('.gateway').removeClass('active');
+                            $(this).addClass('active'); 
+                            var gateway = $(this).data('gateway');
+                            var user_id = $('#user_id').val();
+                            var gatewayname = $(this).attr('gateway-name');
+
                             $.ajax({
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',
-                                url: base_url+'/credit-debit-manage',
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                dataType: 'json',
-                                beforeSend: function(){
-                                    $this.html('Processing..');
-                                    $this.addClass("disabled").prop("disabled", true);
-                                },
-                                complete: function(){
-                                    $this.html('submit');
-                                    $this.removeClass("disabled").prop("disabled", false);
-                                },
-                                success:function(data){                     
-                                    if(data.status == 200) {
-                                        alertify.success(data.message);
-                                        $('#cashpay-form')[0].reset();
-                                    }else{
-                                        alertify.error(data.message);
-                                    }
+                                type: 'POST',                                                
+                                url: base_url+'/credit-debit-gateway',
+                                data: {gateway:gateway,user_id:user_id},                            
+                                success:function(data){
+                                    $('.payform_div').html(data.html);
+                                    if(gatewayname == 'Stripe'){
+                                      if(card != undefined){
+                                        card.destroy();
+                                      }
+                                      stripeElements();
+                                    }                                  
                                 }
-                            });
+                            }); 
+                        });
+
+                        $(document).on( 'change', '.collect_amount,.payment_for,.custom_amount_check', function(){
+                          if($("#custom_amount").val() != "" || $( "#credit_amount option:selected" ).val() != ""){
+                            getcalculated();
+                          }
+                          $('.amt_error').html('');
+                        });
+                        function getcalculated(){
+                          var user_id     = $("#user_id").val();
+                          var formData    = new FormData($('#pay-form')[0]);
+                          formData.append('user_id', user_id); 
+                          $.ajax({
+                              headers: {
+                                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                              },
+                              type: 'POST',
+                              url: base_url+'/cal-credit-debit',
+                              data: formData,
+                              processData: false,
+                              contentType: false,
+                              dataType: 'json',
+                              success:function(data){
+                                  $(".calculated_div").html('');                     
+                                  if(data.status == 200) {
+                                   $(".calculated_div").html(data.page);
+                                   $('.calculated_div').show();     
+                                  }
+                              }
+                          });
+                        }
+
+                        $(document).on('click', '.btn_add_new_card', function(e){ 
+                            $('.card_form').removeClass('d-none');
+                            $("input[name='card_list']").prop('checked',false);
+                            if(!$('.card_form').hasClass('d-none')){                                                    
+                                $("input[name='credit_card']").val('new');
+                                $("input[name='card_list']").prop('required',false);
+                            }else{
+                                $("input[name='card_list']").prop('required',true);
+                            }
+                        });
+
+                    $("#pay-form").validate({
+                        // errorClass: "invalid form-error",
+                        // errorElement: 'div',
+                        errorPlacement: function(error, element) {                       
+                            element.addClass('border border-danger');
+                            error.insertAfter(element);
+                        },
+                        ignore: ":hidden",
+                        rules: {
+                            card_number:{
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']").val() == 'new')?true:false; 
+                                    }
+                                },
+                                regex:/^[0-9-]{19}$/,
+                            },
+                            card_holder:{
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    }
+                                },
+                                lettersonly: true
+                            },
+                            expiry_year: {
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    }
+                                },
+                                maxlength: 2,
+                                minlength: 2,
+                                min: 20
+                            },
+                            expiry_month: {
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    }
+                                },
+                                maxlength: 2,
+                                minlength: 1,
+                                max: 12,min: 1
+                            },
+                            card_cvv: {
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    }
+                                },
+                                maxlength: 4,
+                                minlength: 3,
+                                number:true,
+                            },
+                            card_postcode: {
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    }
+                                },
+                                regex:/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/
+                            },
+                            card_street: {
+                                required: {
+                                    depends: function () { 
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    }
+                                },
+                            },
+                            credit_card: 'required',
+                        },
+                        messages: {
+                            card_holder:{
+                                lettersonly:"Enter a valid card holder name!",
+                            }, 
+                            card_postcode: {
+                                required:"Enter your postal code!",
+                                regex:"Invalid Postalcode",               
+                            },
+                            expiry_year: "Enter card expiry year!", 
+                            expiry_month: "Enter card expiry month!",                  
+                            terms_cond: 'Agree the Terms and Conditions to proceed!.', 
+                            credit_card: 'Please choose a credit card or add a new one'                
                         }
                     });
 
-                    $(document).on('click', '.btn_add_new_card', function(e){ 
-                        $('.card_form').toggleClass('d-none');
-                        $("input[name='card_list']").prop('checked',false);
-                        if(!$('.card_form').hasClass('d-none')){                                                    
-                            $("input[name='credit_card']").val('new');
+                    $.validator.addMethod(
+                        "regex",
+                        function(value, element, regexp) {
+                            var re = new RegExp(regexp);
+                            return this.optional(element) || re.test(value);
+                        },
+                        "Please check your input."
+                    );
+
+                    $('.card_number').mask('0000-0000-0000-0000');
+
+                    $(document).on( 'change', '#card_number', function(){                  
+                        var result = $("#card_number").validateCreditCard();
+                        if(result.card_type !== null){
+                            $('#card_type').val(result.card_type.name);
+                        }else{
+                            $('#card_type').val('Card');
                         }
                     });
 
@@ -604,13 +839,24 @@
                             type: 'POST',                                                
                             url: base_url+'/user-data',
                             data: {user_id:user_id,page:view},
+                            beforeSend: function(){
+                                $("#preloader,#status").show();
+                            },
+                            complete: function(){
+                                $("#preloader,#status").hide();
+                            },
                             success:function(data){ 
                                 // $('#preloader').hide();
                                 if (data.error) {
                                     $('#detail-view').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
                                     $('#detail-view').html(data.html);
-                                    //stripeElements();                                    
+                                    if(view == 'credit_debit'){
+                                        init_creditdebit_wizard();
+                                    }
+                                    // if(view == 'invoice'){
+                                    //     invoiceDatatable();
+                                    // }                                  
                                     $('.dataTables_filter input').attr('placeholder', 'Search');
                                 }
                             }
@@ -860,6 +1106,78 @@
                         });
                     });
 
+                    function invoiceDatatable(){
+                        var table = $('#invoicetable').DataTable({
+                            dom: 'Bfrltip',
+
+                            responsive: true,
+                            "bSort" : false,
+                            language: { search: "" },
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: 'invoice-list',
+                                data: function (d) {
+                                    d.from    = $('input[name=from]').val();
+                                    d.to      = $('input[name=to]').val();
+                                    d.user_id  = $('#user_id').val();
+                                }
+                            },
+                            // "createdRow": function (row, data, rowIndex) {
+                            //     $.each($('td', row), function (colIndex) {
+                            //         $(this).attr('data-th', theaddata[colIndex]);
+                            //     });
+                            // },
+                            "dataType": "jsonp",
+                            "columns": [
+                            {"data": "DT_RowIndex", "name": "DT_RowIndex"},
+                            // {"data" : function (data) {
+                            //     return moment(data.invoicedate).format('YYYY');
+                            // },"name":"year"},
+                            // {"data" : function (data) {
+                            //     return moment(data.invoicedate).format('MMMM');
+                            // },"name":"month"},
+                            {"data" : "year","name":"year"}, 
+                            {"data" : "month","name":"month"}, 
+                            {"data" : "amount","name":"amount"},                       
+                            {"data" : "vat","name":"vat"},
+                            {"data" : "total","name":"total"},
+                            { 
+                                "data": "downloadurl",
+                                "render": function(data, type, row, meta){
+                                    // data = '<button class="single_option btn_small btn_br_20" id="searchBtn">Generate</button>'
+                                    data = '<a href="'+base_url+'/print-pdf/'+data+'"><button class="single_option btn_small btn_br_20" >Generate</button></a>'
+                                    return data;
+                                }
+                            } 
+                            ],
+                            "columnDefs": [
+                            {"defaultContent": "-","targets": "_all"}
+                            ]
+                            // "fnDrawCallback": function(oSettings) {                 
+                            // if (oSettings._iDisplayLength >= oSettings.fnRecordsDisplay()) {
+                            // $(oSettings.nTableWrapper).find('#invoicetable_previous,#invoicetable_next').hide();
+                            // }
+                            // }
+
+                        });
+                    }
+                    $(document).on('click', '#createinvoice', function(e) {
+                        alertify.dismissAll();
+                        if($("#invoice_form").valid()){
+                            var selmonth = $("#invoice_month").val();
+                            var selyear  = $("#invoice_year").val();
+                            var seldate  = new Date(atob(selyear),atob(selmonth));
+                            var current  = new Date();
+                            var user_id  = $("#user_id").val();
+                            if(Date.parse(seldate) > Date.parse(current)){
+                               alertify.error('Unable to generate current month and future months invoice');
+                               return false;
+                            }
+                            var URL = base_url+'/generate-invoices/'+user_id+'-'+selmonth+'-'+selyear;
+                            window.location = URL;
+                        }
+                    });
                 });
             </script>
         </div>

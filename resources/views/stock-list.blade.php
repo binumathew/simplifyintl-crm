@@ -258,7 +258,7 @@
                             
                         }
                     });                    
-                });  
+                });    
                 
                 $(document).on('click', '#import-stock', function(e) {                     
                     $('#orderCustomLabel').text('Import Stock Item');

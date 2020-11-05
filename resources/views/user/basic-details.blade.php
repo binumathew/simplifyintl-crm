@@ -254,8 +254,8 @@
                                         <div class="form-group">                                                                                 
                                             <label class="col-form-label">Access Number Support</label>
                                             <div class="custom-control custom-switch">
-                                                <input type="hidden" name="access_support" value="0">
-                                                <input type="checkbox" class="custom-control-input" id="accessnumber_support" name="accessnumber_support" value="1" {{ ($call_settings->accessnumber_support)? 'checked':'' }}>
+                                                <input type="hidden" name="accessnumber_support" value="0">
+                                                <input type="checkbox" class="custom-control-input" id="access_support" name="accessnumber_support" value="1" {{ ($call_settings->accessnumber_support)? 'checked':'' }}>
                                                 <label class="custom-control-label" for="access_support"></label>
                                             </div>
                                         </div>
@@ -348,7 +348,7 @@
                                         <div class="col-md-2">{{ Helper::date_format($recharge->card_expiry, 'M d, Y') }}</div>
                                         <div class="col-md-1">                                            
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="recharge_{{$recharge->id}}" name="" value="1" {{ ($recharge->status)? 'checked':'' }}>
+                                                <input type="checkbox" class="custom-control-input auto_recharge" id="recharge_{{$recharge->id}}" data-id="{{$recharge->id}}" {{ ($recharge->status)? 'checked':'' }}>
                                                 <label class="custom-control-label" for="recharge_{{$recharge->id}}"></label>
                                             </div>                                            
                                         </div>
