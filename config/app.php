@@ -438,7 +438,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
 
         Maatwebsite\Excel\ExcelServiceProvider::class,
-
+        Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class
 
 
     ],
@@ -554,7 +554,7 @@ return [
         'Carbon' => '\Carbon\Carbon',
 
         'AttHelper' => App\Helpers\AttHelper::class,
-
+        'MPDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class
     ],
 
 
