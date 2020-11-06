@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\AutoPlanSubscription::class,
         \App\Console\Commands\AdvPaidSubscription::class,
         \App\Console\Commands\AddonUsage::class,
+        \App\Console\Commands\ActivationNotify::class,
     ];
 
     /**
@@ -62,6 +63,8 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('14:00');
         $schedule->command('addon:usage')                 
                 ->dailyAt('19:00');
+        $schedule->command('notify:activation')
+                ->hourly();  
                 
         // $schedule->command('addon:usage')                 
         //         ->cron('* * * * *');

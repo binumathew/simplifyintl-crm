@@ -14,33 +14,33 @@ class DwpHelper
 
 	{
 
-	    $end_point = Helper::get_option('dwp_api_endpoint'); //'https://onramp-api.daisywholesale.com'; 
+	    // $end_point = Helper::get_option('dwp_api_endpoint'); //'https://onramp-api.daisywholesale.com'; 
 
-	    $end_point = 'https://api.daisywholesale.com';
+	    // $end_point = 'https://api.daisywholesale.com';
 
 	  
 
-	    $ch = curl_init($end_point);
+	    // $ch = curl_init($end_point);
 
-	    // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	    // // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
-	    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+	    // // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
-	    curl_setopt($ch, CURLOPT_POST, 1);
+	    // curl_setopt($ch, CURLOPT_POST, 1);
 
-	    // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+	    // // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
 
-	    curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
+	    // curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
 
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-	    $output = curl_exec($ch);
+	    // $output = curl_exec($ch);
 
-	    curl_close($ch);
+	    // curl_close($ch);
 
-	    return $output;
+	    // return $output;
 
-	    // return DwpHelper::testresponse();
+	    return DwpHelper::testresponse();
 
 	}
 
@@ -593,7 +593,137 @@ class DwpHelper
     
 
   	public static function testresponse(){
-
+      return $xml_data ='<?xml version="1.0"?>
+      <Response id="4e14ce7d248e10c3b6df008860226fb8">
+        <status no="0"/>
+        <block name="orders">
+          <block>
+            <block name="components">
+              <block>
+                <a name="acquisition-method" format="text">new</a>
+                <a name="appointment-datetime" format="datetime">2015-07-21 18:54:07</a>
+                <a name="appointment-slot" format="text">AM</a>
+                <a name="completion-date" format="date">2015-09-09</a>
+                <a name="component-id" format="counting">30923</a>
+                <block name="data">
+                  <a name="order-type" format="text">Mobile Connection Request</a>
+                  <a name="required-by-date" format="date">2015-11-13</a>
+                </block>
+                <a name="last-update" format="datetime">2015-12-02 08:44:21</a>
+                <a name="mobile-number" format="phone">070016668558</a>
+                <a name="port-date" format="datetime">2015-09-03 20:23:54</a>
+                <a name="rejection-reason" format="text">Lorem ipsum</a>
+                <a name="sim-serial" format="text">89441000300307293021</a>
+                <a name="state" format="text">lemur</a>
+                <a name="state-reason" format="text">termite</a>
+                <a name="status" format="text">In Progress</a>
+                <a name="supplier-error-code" format="text">iguana</a>
+                <a name="type" format="text">new</a>
+                <a name="user-name" format="text">poodle</a>
+              </block>
+              <block>
+                <a name="acquisition-method" format="text">migration</a>
+                <a name="appointment-datetime" format="datetime">2015-01-25 15:40:59</a>
+                <a name="appointment-slot" format="text">PM</a>
+                <a name="completion-date" format="date">2015-02-13</a>
+                <a name="component-id" format="counting">12750</a>
+                <block name="data">
+                  <a name="order-type" format="text">Mobile Connection Request</a>
+                  <a name="required-by-date" format="date">2015-12-27</a>
+                </block>
+                <a name="last-update" format="datetime">2015-02-12 19:11:22</a>
+                <a name="mobile-number" format="phone">071843858382</a>
+                <a name="port-date" format="datetime">2015-08-08 06:02:29</a>
+                <a name="rejection-reason" format="text">crab</a>
+                <a name="sim-serial" format="text">puce</a>
+                <a name="state" format="text">egret</a>
+                <a name="state-reason" format="text">fowl</a>
+                <a name="status" format="text">cyan</a>
+                <a name="supplier-error-code" format="text">ivory</a>
+                <a name="type" format="text">portin</a>
+                <a name="user-name" format="text">beaver</a>
+              </block>
+            </block>
+            <a name="customer-reference" format="text">cricket</a>
+            <a name="expected-completion-date" format="date">2015-04-08</a>
+            <a name="id" format="counting">49105</a>
+            <block name="order-details">
+              <a name="customer-purchase-number" format="counting">38953</a>
+              <a name="order-id" format="counting">65090</a>
+              <a name="status" format="text">Complete</a>
+            </block>
+            <a name="request-stage" format="text">ostrich</a>
+            <a name="state" format="text">parrot</a>
+            <a name="status" format="text">rooster</a>
+          </block>
+          <block>
+            <block name="components">
+              <block>
+                <a name="acquisition-method" format="text">raccoon</a>
+                <a name="appointment-datetime" format="datetime">2015-11-17 04:27:17</a>
+                <a name="appointment-slot" format="text">stork</a>
+                <a name="completion-date" format="date">2015-09-24</a>
+                <a name="component-id" format="counting">11319</a>
+                <block name="data">
+                  <a name="order-type" format="text">blackbird</a>
+                  <a name="required-by-date" format="date">2015-05-16</a>
+                </block>
+                <a name="last-update" format="datetime">2015-11-03 09:44:38</a>
+                <a name="mobile-number" format="phone">071375423152</a>
+                <a name="port-date" format="datetime">2015-06-04 20:39:29</a>
+                <a name="rejection-reason" format="text">sepia</a>
+                <a name="sim-serial" format="text">anteater</a>
+                <a name="state" format="text">dormouse</a>
+                <a name="state-reason" format="text">oyster</a>
+                <a name="status" format="text">celeste</a>
+                <a name="supplier-error-code" format="text">narwhal</a>
+                <a name="type" format="text">parakeet</a>
+                <a name="user-name" format="text">quail</a>
+              </block>
+              <block>
+                <a name="acquisition-method" format="text">prawn</a>
+                <a name="appointment-datetime" format="datetime">2015-08-20 21:11:02</a>
+                <a name="appointment-slot" format="text">beetle</a>
+                <a name="completion-date" format="date">2015-04-12</a>
+                <a name="component-id" format="counting">70648</a>
+                <block name="data">
+                  <a name="order-type" format="text">arrow</a>
+                  <a name="required-by-date" format="date">2015-07-03</a>
+                </block>
+                <a name="last-update" format="datetime">2015-10-01 22:32:45</a>
+                <a name="mobile-number" format="phone">072708610587</a>
+                <a name="port-date" format="datetime">2015-06-09 15:08:52</a>
+                <a name="rejection-reason" format="text">leopon</a>
+                <a name="sim-serial" format="text">tyrannosaurus</a>
+                <a name="state" format="text">completed</a>
+                <a name="state-reason" format="text">boa</a>
+                <a name="status" format="text">prawn</a>
+                <a name="supplier-error-code" format="text">pony</a>
+                <a name="type" format="text">hound</a>
+                <a name="user-name" format="text">pigeon</a>
+              </block>
+            </block>
+            <a name="customer-reference" format="text">worm</a>
+            <a name="expected-completion-date" format="date">2015-00-00</a>
+            <a name="id" format="counting">6744</a>
+            <block name="order-details">
+              <a name="customer-purchase-number" format="counting">63877</a>
+              <a name="order-id" format="counting">33926</a>
+              <a name="status" format="text">warbler</a>
+            </block>
+            <a name="request-stage" format="text">Complete</a>
+            <a name="state" format="text">orca</a>
+            <a name="status" format="text">silverfish</a>
+          </block>
+        </block>
+        <block name="pagination">
+          <a name="direction" format="text">lizard</a>
+          <a name="page" format="counting">46263</a>
+          <a name="pages" format="counting">45388</a>
+          <a name="sort" format="text">falcon</a>
+          <a name="total" format="counting">20380</a>
+        </block>
+      </Response>';
   		/*$xml_data = '<?xml version="1.0"?>
 
   <Response id="4e14ce7d248e10c3b6df008860226fb8">
@@ -903,6 +1033,19 @@ class DwpHelper
 	    return DwpHelper::element_to_obj($dom->documentElement);
 
 	}
+  public static function dwp_response($children)
+  {
+    foreach($children as $details){
+        if(isset($details->children)){
+            $key = (isset($details->name))?$details->name:((isset($details->tag))?$details->tag:((isset($details->id))?$details->id:'key'));
+            $dwp[$key] = DwpHelper::dwp_response($details->children);
+        }else{
+            $key = (isset($details->name))?$details->name:((isset($details->tag))?$details->tag:((isset($details->id))?$details->id:'key'));
+            $dwp[$key] = (isset($details->html))?$details->html:$details;
+        }
+    }
+    return $dwp;
+  }
 
   public static function initiate_soap_client() {
 

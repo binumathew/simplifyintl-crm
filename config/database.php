@@ -48,9 +48,9 @@ return [
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'esimpane_nexrise'), //forge
-            'username' => env('DB_USERNAME', 'esimpane_nexrise'), //forge
-            'password' => env('DB_PASSWORD', 'Rp)}Q+M6n$%I'), //''
+            'database' => env('DB_DATABASE', 'avooconference'), //forge
+            'username' => env('DB_USERNAME', 'root'), //forge
+            'password' => env('DB_PASSWORD', ''), //''
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',

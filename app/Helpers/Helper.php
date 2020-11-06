@@ -951,6 +951,20 @@ class Helper
            return $obj; 
         }  
     }
-
+    //return as international format
+	public static function phoneInter_format($phone,$dial_code) {
+        $dial_code = str_replace("+","",$dial_code);
+        //Remove any parentheses and the numbers they contain:
+        $phone  = preg_replace("/\([0-9]+?\)/", "", $phone);  
+        //Strip spaces and non-numeric characters:
+        $phone  = preg_replace("/[^0-9]/", "", $phone);
+        //Strip out leading zeros:
+        $phone = ltrim($phone, '0');
+        //Check if the number doesn't already start with the correct dialling code:
+        if ( !preg_match('/^'.$dial_code.'/', $phone)  ) {
+            $phone = '+'.$dial_code.$phone;
+        }else { $phone = '+'.$phone;}
+        return $phone;
+    }
 }
 ?>
