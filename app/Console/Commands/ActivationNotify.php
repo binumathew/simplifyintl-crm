@@ -11,6 +11,7 @@ use Helper;
 
 use App\Models\ScheduledTask;
 use App\Models\SimList;
+use App\Models\NotificationLog;
 use App\Jobs\NotifyActivation;
 use Cron\CronExpression;
 class ActivationNotify extends Command
@@ -55,6 +56,7 @@ class ActivationNotify extends Command
             ->get();
             if($simlist->isNotEmpty()){
                 $notifyusers = [];
+                $notifylog = [];
                 foreach($simlist as $key => $list){
 
                     if(in_array($list->stock->provider,['O2','EE_O2','VUK'])){
@@ -72,12 +74,15 @@ class ActivationNotify extends Command
                                 $user = $list->sim_request->user;
                                 $msisdn = Helper::phoneInter_format($list->stock->phone_number,$user->country->dial_code);
                                 $obj = (object)['order_id'=>$list->sim_request->order_id,'user_id'=>$user->id,'name' => $user->first_name.' '.$user->last_name, 'msisdn' => $msisdn];
+                                array_push($notifylog,['user_id'=>$user->id,'message' => 'Activation completed for the user '.$msisdn,'description'=>'Order:'.$list->sim_request->order_id.', name '.$user->name,'status'=>'0']);
                                 $notifyusers[$list->stock->dealer_id][] = $obj;
                             }               
                         }
                     }
                 }
+
                 if(!empty($notifyusers)){
+                    NotificationLog::insert($notifylog); 
                     NotifyActivation::dispatch($notifyusers)
                     ->delay(Carbon::now()->addSeconds(10));  
                 }

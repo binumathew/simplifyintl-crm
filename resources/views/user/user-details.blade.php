@@ -275,7 +275,7 @@
                                     <div class="cus-right-box"><h6>Parent Account</h6><br />
                                         <div class="row">
                                             <div class="col-md-1 col-xs-1"><i class="mdi mdi-sim sim-color"></i></div>
-                                            <div class="col-md-10 col-xs-10"><span><b>{{$parent->name }}</b> (Prepaid Vodafone)</span> {{'0'.ltrim($parent->phone,'+44')}}</div>
+                                            <div class="col-md-10 col-xs-10"><span><b>{{$parent->name }}</b> </span> {{'0'.ltrim($parent->phone,'+44')}}</div>
                                             <div class="col-md-1 col-xs-1">
                                                 <form id="show_user_{{$parent->id}}" method="post" action="{{url('/user-details')}}">
                                                     @csrf<input type="hidden" name="identifier" value="{{$parent->phone}}">
@@ -290,7 +290,7 @@
                                         @php $plan_data = $child->userPlan(); @endphp
                                         <div class="row cus-bor-btm">
                                             <div class="col-md-1 col-xs-1"><i class="mdi mdi-sim sim-color"></i></div>
-                                            <div class="col-md-10 col-xs-10"><span><b>{{$child->name}}</b> (Prepaid)</span> 0{{ltrim($child->phone,'+44') }}</div>
+                                            <div class="col-md-10 col-xs-10"><span><b>{{$child->name}}</b> </span> 0{{ltrim($child->phone,'+44') }}</div>
                                             <div class="col-md-1 col-xs-1">
                                                 <form id="show_user_{{$child->id}}" method="post" action="{{url('/user-details')}}">
                                                     @csrf<input type="hidden" name="identifier" value="{{$child->phone}}">
