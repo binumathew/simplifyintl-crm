@@ -118,7 +118,10 @@
                                     <li><a href="#" class="user-details" data-view="call_history"><i class="mdi mdi-phone-outgoing"></i> CDRs </a></li>
                                     <li><a href="#" class="user-details" data-view="transaction"><i class="mdi mdi-credit-card"></i> Transaction </a></li>
                                     <li><a href="#" class="user-details d-none" data-view="settings"><i class="mdi mdi-settings"></i> Settings </a></li>
-                                    <li><a href="#" class="user-details d-none" data-view="invoice"><i class="mdi mdi-file-document-box"></i> Invoices </a></li>
+                                    @if($user->stock_id)
+                                    <li><a href="#" class="user-details sim-services" data-view="services"><i class="mdi mdi-wrench"></i> Sim/Services </a></li>
+                                    <!-- <li><a href="#" class="user-details sim-info" data-view="sim_info"><i class="mdi mdi-sim"></i> Sim Info </a></li> -->
+                                    @endif
                                     <li><a href="#" class="user-details invoice" data-view="invoice"><i class="mdi mdi-receipt"></i> Invoice </a></li>
                                 </ul>
                             </div>
@@ -832,6 +835,9 @@
                         var view = $(this).data('view');
                         var user_id = $('#user_id').val();
                         // $('#preloader').show();
+                        if(view == 'services'){
+                            servicelist = [];
+                        }
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1177,6 +1183,63 @@
                             var URL = base_url+'/generate-invoices/'+user_id+'-'+selmonth+'-'+selyear;
                             window.location = URL;
                         }
+                    });
+                    var servicelist = [];
+                    $(document).on('click', '.custom_manage_bars', function(e) {
+                        var $this     = $(this);
+                        var status = $this.attr('data-status');    
+                        var bar_id = $this.attr('data-bar_id');
+                        status = (status == 1) ? 0 : 1;
+                        $(this).attr('data-status',status);
+                        var index = servicelist.findIndex(o => o.bar_id === bar_id);
+                        if (index > -1) {
+                            servicelist.splice(index, 1);
+                        }else{
+                            servicelist.push({bar_id, status});
+                        }
+                    });
+                    $(document).on('click', '.custom_bar_apply', function(e) {
+                        e.preventDefault();
+                        var $this = $(this);
+                        var user_id  = $('#user_id').val(); 
+                        if(servicelist.length == 0){
+                            alertify.error('Choose any bars to apply changes');
+                            return;
+                        }
+                        alertify.confirm('Bars Confirmation', 'Are you sure you want to apply changes?',
+                        function(){                                  
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                type: 'POST',                                                
+                                url: base_url+'/services-change',
+                                data: { bars:JSON.stringify(servicelist),user_id:user_id },
+                                beforeSend: function(){
+                                    $("#preloader,#status").show();
+                                },
+                                complete: function(){
+                                    $("#preloader,#status").hide();
+                                },
+                                success:function(data){                                         
+                                    if(data.status == 200){
+                                        alertify.success(data.message);
+                                    }else{
+                                        $.each(servicelist,function(index,val){
+                                            if($("[data-bar_id="+val.bar_id+"]").is(':checked')){
+                                                $("[data-bar_id="+val.bar_id+"]").prop('checked',false);
+                                            }else{
+                                                $("[data-bar_id="+val.bar_id+"]").prop('checked',true); 
+                                            }
+                                          var status = (val.status == 1) ? 0: 1;
+                                          $("[data-bar_id="+val.bar_id+"]").attr('data-status',status);
+                                        });
+                                        servicelist = [];
+                                        alertify.error(data.message);
+                                    }
+                                }
+                            });  
+                        },function(){ alertify.error('Option cancelled')});
                     });
                 });
             </script>

@@ -118,6 +118,7 @@ Route::post('/direct-debit-manage','UserController@direct_debit_manage');
 Route::get('/opted-services','UserController@opted_services');
 Route::get('/user-services','UserController@user_services');
 Route::post('/user-services','UserController@user_services');
+Route::post('/services-change','UserController@services_change');
 
 /* Staff & Dealer */
 Route::get('/staff-list', 'StaffController@staff_list');
