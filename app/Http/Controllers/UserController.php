@@ -289,6 +289,12 @@ class UserController extends Controller
                     $simstatus   = $html= '';
                     $bars = (!is_null($user->stock_id)) ? DB::table('provider_services')
                     ->where('short_code',$user->msisdn->provider)->where('status',1)->get() : collect([]);
+                    $user_services = DB::table('user_services')->where('user_id',$user->id)->get()->keyBy('service_id')->toArray();
+                    $recentlyopted = DB::table('opted_services')
+                                    ->where('user_id',$user->id)
+                                    ->where('status',1)
+                                    ->where('updated_at','>=',Carbon::now()->subMinute(15)->format('Y-m-d H:i:s'))->get()->keyBy('service_id')->toArray();
+
                     if($bars->isNotEmpty()){
                         $service_info = collect([]);
                         $provider     = $user->msisdn->provider;
@@ -300,43 +306,53 @@ class UserController extends Controller
                             $sim_xml        = DwpHelper::dwp_check_sim_xml($simdata);
                             $response       = DwpHelper::dwp_process_api($sim_xml);
                             $response       = json_decode(DwpHelper::dwp_response_handler($response));
-                            // if($response->children[0]->no == 0){
-                            //     $simstatus  = $response->children[1]->html;
-                            // }
-                            $simstatus = 0;
+                            if($response->children[0]->no == 0){
+                                $simstatus  = $response->children[1]->html;
+                            }
+
                             $data['cli']    = $phone_number;//07766742689;
                             $bars_xml       = DwpHelper::dwp_check_mobile_bars_xml($data);
                             $response       = DwpHelper::dwp_process_api($bars_xml);
                             $response       = json_decode(DwpHelper::dwp_response_handler($response));
+                            $service_info   = [];
+                            $network_info   = [];
+                            
                             if($response->children[0]->no == 0){
                                 $servicereq = $response->children[1]->children;
-                                $service_info = [];
-                                foreach($servicereq as $key => $list){
-                                    if(isset($list->children[1]) && $list->children[1]->name == 'name'){
-                                        if(isset($list->children[2]) && $list->children[2]->name == 'value'){
-                                            $value = $list->children[2]->html;
-                                        }else{
-                                            $value = 0;
-                                        }
-                                        $service_info[$list->children[1]->html] = $value;
-                                    }
-                                }
+                                
+                                $service_info = DwpHelper::dwp_service_response($servicereq);
+                                
                                 $data['active_bars'] = join(',',array_keys($service_info, 1));
                                 $compact_xml  = DwpHelper::dwp_service_compact($data);
-                                $response     = DwpHelper::dwp_process_api1($compact_xml);
+                                $response     = DwpHelper::dwp_process_api($compact_xml);
                                 $response     = json_decode(DwpHelper::dwp_response_handler($response));
+
                                 if($response->children[0]->no == 0){
-                                    $activereq = $response->children[1]->children;
                                     $compact   = [];
-                                    foreach($activereq as $key => $list){
-                                        array_push($compact,$list->children[0]->html);
+                                    if(isset($response->children[1]->children)){
+                                        $activereq = $response->children[1]->children;
+                                        foreach($activereq as $key => $list){
+                                            array_push($compact,$list->children[0]->html);
+                                        }
+                                        foreach($service_info as $key => $alist){
+                                            if($alist == 1)
+                                            array_push($compact,$key); 
+                                        }
+                                        $service_info = array_intersect_key($service_info, array_flip($compact));
                                     }
-                                    $service_info = array_intersect_key($service_info, array_flip($compact));
                                 }
-                                $html = view('user.services', compact('provider','user','bars','service_info','simstatus'))->render();
-                            }else{
-                                $html = $response->children[0]->text; 
                             }
+
+                            $services_xml   = DwpHelper::dwp_check_mobile_service_xml($data);
+                            $response       = DwpHelper::dwp_process_api1($services_xml);
+                            $response       = json_decode(DwpHelper::dwp_response_handler($response));
+                            
+                            if($response->children[0]->no == 0){
+                                $servicereq = $response->children[1]->children;
+                                $network_info = DwpHelper::dwp_service_response($servicereq);
+                            }
+                            
+                            $html = view('user.services', compact('provider','user','bars','service_info','simstatus','network_info','user_services','recentlyopted'))->render();
                         }
                     }  
                 break;          
@@ -1581,7 +1597,7 @@ class UserController extends Controller
     public function user_services(Request $request){
 
         $optedservices   = DB::table('opted_services as os')
-                        ->select('os.*','us.name','us.phone','us.email','ps.short_code','ps.service_name','ps.provider','os.status as opted_status',DB::raw("CONCAT(a.first_name, ' ',a.last_name) AS doneby"))
+                        ->select('os.*','us.name','us.phone','us.email','ps.short_code','ps.service_name','ps.provider','ps.type','os.status as opted_status',DB::raw("CONCAT(a.first_name, ' ',a.last_name) AS doneby"))
                         ->join('users as us', 'us.id', '=', 'os.user_id')
                         ->join('provider_services as ps', 'ps.id', '=', 'os.service_id')
                         ->leftJoin('admins as a', 'a.id', '=', 'os.done_by')
@@ -1616,8 +1632,9 @@ class UserController extends Controller
                     ->editColumn('action', function ($data) {
                         if($data->opted_status != 1){
                             $opteddetails = Crypt::encrypt($data->id);
+                            $user_id      = Crypt::encrypt($data->user_id);
                             $btn_type = ($data->opted_key == 'Yes' || $data->opted_key == 1) ? 'btn-info' : 'btn-warning';
-                            return '<a href="javascript:void(0)" class="btn '.$btn_type.' btn-sm service_actions" data-opted="'.$opteddetails.'" data-tag="'.$data->opted_value.'">'.$data->opted_value.'</a>';
+                            return '<a href="javascript:void(0)" class="btn '.$btn_type.' btn-sm service_actions" data-opted="'.$opteddetails.'" data-tag="'.$data->opted_value.'" data-user="'.$user_id.'" data-type="'.$data->type.'">'.$data->opted_value.'</a>';
                         }else { return '';}
                     })
                     ->make(true);
@@ -1630,8 +1647,9 @@ class UserController extends Controller
     */
     public function services_change(Request $request){
 
-        $user     = User::find(Crypt::decrypt($request->user_id));
-        $provider = $user->msisdn->provider;
+        $user       = User::find(Crypt::decrypt($request->user_id));
+        $provider   = $user->msisdn->provider;
+        $requesttype = $request->requesttype; 
         if(isset($request->dataid)){
             $dataid  = Crypt::decrypt($request->dataid);
         }else{
@@ -1664,22 +1682,31 @@ class UserController extends Controller
                         ->join('provider_services as ps', 'ps.id', '=', 'os.service_id')
                         ->whereIn('os.id', $dataid)->get();
 
-            $baroption = ['bars_off','bars_on'];
-            $bararray  = [];
-            $datalist  = [];
-            foreach($getdata as $key => $list){
-                $bararray[$baroption[$list->opted_key]][] = $list->service_key;
-            }
-            $datalist[$baroption[0]] = isset($bararray[$baroption[0]]) ? join(',',$bararray[$baroption[0]]) : '';
-            $datalist[$baroption[1]] = isset($bararray[$baroption[1]]) ? join(',',$bararray[$baroption[1]]) : '';
-
-            $datalist['order_id'] = $user->order->order_id;
+            $datalist['order_id'] = isset($user->order) ? $user->order->order_id : $user->parent->order->order_id;
             $datalist['phone']    = '0'.ltrim($user->msisdn->phone_number,$user->country->dial_code);
-            print_r($datalist);
-            die();
-            $bars_xml = DwpHelper::dwp_set_bar($datalist);
-            $response  = DwpHelper::dwp_process_api($bars_xml);
-            $response  = json_decode(DwpHelper::dwp_response_handler($response));
+
+            if($requesttype ==1){
+                $reqtype   = "Bars";
+                $baroption = ['bars_off','bars_on'];
+                $bararray  = [];
+                foreach($getdata as $key => $list){
+                    $bararray[$baroption[$list->opted_key]][] = $list->service_key;
+                }
+                $datalist[$baroption[0]] = isset($bararray[$baroption[0]]) ? join(',',$bararray[$baroption[0]]) : '';
+                $datalist[$baroption[1]] = isset($bararray[$baroption[1]]) ? join(',',$bararray[$baroption[1]]) : '';
+
+                $xml_data = DwpHelper::dwp_set_bar($datalist);
+            }else if($requesttype == 2){
+                $reqtype      = "Services";
+                $networkarray = [];
+                foreach($getdata as $key => $list){
+                    $networkarray[$list->service_key] = $list->opted_key;
+                }
+                $datalist['services'] = $networkarray;
+                $xml_data = DwpHelper::dwp_set_services($datalist);
+            }
+            $response    = DwpHelper::dwp_process_api($xml_data);
+            $response    = json_decode(DwpHelper::dwp_response_handler($response));
             if($response->children[0]->no == 0){
                 $servstatus      = 1;
                 foreach($getdata as $key => $list){
@@ -1687,7 +1714,7 @@ class UserController extends Controller
                                 ->updateOrInsert(['user_id' => $user->id, 'service_id' => $list->service_id],['service_status' => $list->opted_key]);
                 }
                 $update = DB::table('opted_services')->whereIn('id',$dataid)->update(['status'=>$servstatus,'description'=>'','done_by'=>Auth::id()]);
-                return response()->json(['status' => 200, 'message' => 'Bars changed Successfully']);
+                return response()->json(['status' => 200, 'message' => $reqtype.' changed Successfully']);
             }else{
                 $servstatus      = 2;
                 $errormsg        = isset($response->children[0]->text) ? $response->children[0]->text: 'Failed to change services';

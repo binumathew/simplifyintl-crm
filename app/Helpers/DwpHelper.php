@@ -43,7 +43,40 @@ class DwpHelper
 	    return DwpHelper::testresponse();
 
   }
-  
+  public static function dwp_process_api1($xml_data)
+
+	{
+    return DwpHelper::testresponse1();
+  }
+  public static function testresponse1()
+  {
+    return $xml_data ='<?xml version="1.0"?>
+    <Response id="c105a1f597582600729d2300e969e7f2">
+      <status no="0"/>
+      <block name="services">
+        <block>
+          <a name="label" format="text">4G Allowed</a>
+          <a name="name" format="text">4GBOLTON</a>
+          <a name="type" format="text">boolean</a>
+          <a name="value" format="text">1</a>
+        </block>
+        <block>
+          <a name="description" format="text">5G compatible sim is required, 4G services must also be enabled</a>
+          <a name="label" format="text">5G Service</a>
+          <a name="name" format="text">5GBOLTON</a>
+          <a name="type" format="text">boolean</a>
+          <a name="value" format="text">1</a>
+        </block>
+        <block>
+          <a name="label" format="text">Conference calling enabled</a>
+          <a name="name" format="text">CONFERENCE</a>
+          <a name="type" format="text">boolean</a>
+          <a name="value" format="text">0</a>
+        </block>
+      </block>
+    </Response>';
+  }
+
 	public static function dwp_response_handler($xml_data)
 
 	{
@@ -383,7 +416,41 @@ class DwpHelper
     return $xml_data;
 
   }
+  public static function dwp_check_mobile_service_xml($data)
 
+  {
+
+    $api_user = Helper::get_option('dwp_auth_username');
+
+    $api_pwd  = Helper::get_option('dwp_auth_password');
+
+
+
+    $xml_data = '<?xml version="1.0"?>
+
+    <Request module="dwapi" call="mobile_services" id="'.Helper::unique_code(32).'" version="1.0">
+
+      <block name="auth">
+
+        <a name="username" format="text">'. $api_user .'</a>
+
+        <a name="password" format="password">'. $api_pwd .'</a>
+
+        <a name="client-id" format="text">1</a>
+
+      </block>          
+
+      <a name="mobile-number" format="phone">'.$data['cli'].'</a>
+
+      <a name="refresh" format="boolean">0</a>         
+
+    </Request>';
+
+
+
+    return $xml_data;
+
+  }
 
 
 	public static function dwp_order_search($data)
@@ -631,12 +698,12 @@ class DwpHelper
           <block>
             <a name="label" format="text">Admin</a>
             <a name="name" format="text">ADMIN</a>
-            <a name="value" format="boolean">1</a>
+            <a name="value" format="boolean">0</a>
           </block>
           <block>
             <a name="label" format="text">International</a>
             <a name="name" format="text">INTERNATIONAL</a>
-            <a name="value" format="boolean">0</a>
+            <a name="value" format="boolean">1</a>
           </block>
         </block>
         <a name="last-refreshed" format="datetime">2020-07-28T17:20:38</a>
@@ -964,6 +1031,27 @@ class DwpHelper
     return $dwp;
   }
 
+  public static function dwp_service_response($children)
+  {
+    $dwp = [];
+    foreach($children as $key => $list){
+        $keyname = '';
+        $keyval  = -1;
+        foreach($list->children as $ch => $clist){
+            if(isset($clist->name) && $clist->name =='name'){
+                $keyname = isset($clist->html) ? $clist->html : '';
+            }
+            if(isset($clist->name) && $clist->name =='value'){
+                $keyval = isset($clist->html) ? $clist->html : -1;
+            }
+            if(!isset($dwp[$keyname]) && $keyval != -1){
+                $dwp[$keyname] = $keyval;
+            }
+        }
+    }
+    return $dwp;
+  }
+
   public static function initiate_soap_client() {
 
     $WSDL_uri   = "https://api.affinity.akjl.co.uk/gencom/AffinityAPIService.svc?WSDL";
@@ -984,7 +1072,8 @@ class DwpHelper
     try{
       $SOAPClient = new SoapClient($WSDL_uri, $options);
     }
-    catch(\Exception $e) {
+    catch(\SoapFault $e) {
+      //$e->faultstring
       return false;
     }
     

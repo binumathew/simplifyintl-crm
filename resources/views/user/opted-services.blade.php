@@ -152,6 +152,8 @@ $(document).ready(function(){
       var $this   = $(this);
       var dataid  = $(this).attr('data-opted');
       var datatag = $(this).attr('data-tag');
+      var datauser = $(this).attr('data-user');
+      var reqtype  = $(this).attr('data-type');
       alertify.confirm('Service Confirmation', 'Are you sure to '+datatag+' ?',
         function() {
             $.ajax({
@@ -160,7 +162,7 @@ $(document).ready(function(){
                 },
                 type: 'POST',                                                
                 url: base_url+'/services-change',
-                data: {dataid:dataid},
+                data: {dataid:dataid,user_id:datauser,requesttype:reqtype},
                 beforeSend: function(){
                     $this.html('changing..');
                 },

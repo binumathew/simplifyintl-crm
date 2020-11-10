@@ -9,7 +9,6 @@
         position: absolute;
         top: 100%;
     }
-
 </style>
     <!-- page wrapper start -->
     <div class="wrapper">
@@ -837,6 +836,7 @@
                         // $('#preloader').show();
                         if(view == 'services'){
                             servicelist = [];
+                            networklist = [];
                         }
                         $.ajax({
                             headers: {
@@ -1185,6 +1185,7 @@
                         }
                     });
                     var servicelist = [];
+                    var networklist = [];
                     $(document).on('click', '.custom_manage_bars', function(e) {
                         var $this     = $(this);
                         var status = $this.attr('data-status');    
@@ -1214,7 +1215,7 @@
                                 },
                                 type: 'POST',                                                
                                 url: base_url+'/services-change',
-                                data: { bars:JSON.stringify(servicelist),user_id:user_id },
+                                data: { bars:JSON.stringify(servicelist),user_id:user_id,requesttype:1 },
                                 beforeSend: function(){
                                     $("#preloader,#status").show();
                                 },
@@ -1224,23 +1225,80 @@
                                 success:function(data){                                         
                                     if(data.status == 200){
                                         alertify.success(data.message);
-                                    }else{
                                         $.each(servicelist,function(index,val){
-                                            if($("[data-bar_id="+val.bar_id+"]").is(':checked')){
-                                                $("[data-bar_id="+val.bar_id+"]").prop('checked',false);
-                                            }else{
-                                                $("[data-bar_id="+val.bar_id+"]").prop('checked',true); 
-                                            }
-                                          var status = (val.status == 1) ? 0: 1;
-                                          $("[data-bar_id="+val.bar_id+"]").attr('data-status',status);
+                                            $("[data-bar_id="+val.bar_id+"]").prop('disabled',true); 
                                         });
-                                        servicelist = [];
+                                    }else{
+                                        revertOpted(servicelist);
                                         alertify.error(data.message);
                                     }
+                                    servicelist = [];
                                 }
                             });  
-                        },function(){ alertify.error('Option cancelled')});
+                        },function(){ alertify.error('Option cancelled'); revertOpted(servicelist); servicelist = [];});
                     });
+                    $(document).on('click', '.custom_manage_network', function(e) {
+                        var $this     = $(this);
+                        var status = $this.attr('data-status');    
+                        var bar_id = $this.attr('data-bar_id');
+                        status = (status == 1) ? 0 : 1;
+                        $(this).attr('data-status',status);
+                        var index = networklist.findIndex(o => o.bar_id === bar_id);
+                        if (index > -1) {
+                            networklist.splice(index, 1);
+                        }else{
+                            networklist.push({bar_id, status});
+                        }
+                    });
+                    $(document).on('click', '.custom_network_apply', function(e) {
+                        e.preventDefault();
+                        var $this = $(this);
+                        var user_id  = $('#user_id').val(); 
+                        if(networklist.length == 0){
+                            alertify.error('Choose any services to apply changes');
+                            return;
+                        }
+                        alertify.confirm('Services Confirmation', 'Are you sure you want to apply changes?',
+                        function(){                                  
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                type: 'POST',                                                
+                                url: base_url+'/services-change',
+                                data: { bars:JSON.stringify(networklist),user_id:user_id,requesttype:2 },
+                                beforeSend: function(){
+                                    $("#preloader,#status").show();
+                                },
+                                complete: function(){
+                                    $("#preloader,#status").hide();
+                                },
+                                success:function(data){                                         
+                                    if(data.status == 200){
+                                        alertify.success(data.message);
+                                        $.each(networklist,function(index,val){
+                                            $("[data-bar_id="+val.bar_id+"]").prop('disabled',true); 
+                                        });
+                                    }else{
+                                        revertOpted(networklist);
+                                        alertify.error(data.message);
+                                    }
+                                    networklist = [];
+                                }
+                            });  
+                        },function(){ alertify.error('Option cancelled'); revertOpted(networklist); networklist = [];});
+                    });
+                    function revertOpted(list){
+                        $.each(list,function(index,val){
+                            if($("[data-bar_id="+val.bar_id+"]").is(':checked')){
+                                $("[data-bar_id="+val.bar_id+"]").prop('checked',false);
+                            }else{
+                                $("[data-bar_id="+val.bar_id+"]").prop('checked',true); 
+                            }
+                            var status = (val.status == 1) ? 0: 1;
+                            $("[data-bar_id="+val.bar_id+"]").attr('data-status',status);
+                        });
+                    }
                 });
             </script>
         </div>

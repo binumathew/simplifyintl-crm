@@ -25,12 +25,12 @@
                     </a>
                 </li>
 
-                <!-- <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link " data-toggle="tab" href="#services" role="tab">
                         <span class="d-none d-md-block">Services</span>
                         <span class="d-block d-md-none"><i class="mdi mdi-home-variant h5"></i></span>
                     </a>
-                </li> -->
+                </li>
 
             </ul>
             <div class="tab-content">
@@ -64,15 +64,25 @@
                         }else{
                             $dwpkey    = $service_info[$bar->service_key];
                             $label     = $servicevalue[$dwpkey];
-                            $checked   = ($label == 'Yes') ? 'checked' : '';
+                            $disable   = '';
+                            if(isset($recentlyopted[$bar->id])){
+                                $disable = 'disabled';
+                                if(isset($user_services[$bar->id])){
+                                    $checked   = ($user_services[$bar->id]->service_status == 1) ? 'checked' : '';
+                                    $status = $user_services[$bar->id]->service_status;
+                                }
+                            }else{
+                                $status    = $dwpkey;
+                                $checked   = ($dwpkey == 1) ? 'checked' : '';
+                            }
                         } 
                         @endphp
                         <tr height="50px;">
                             <td width="70%" class="td_pad">{{ $bar->service_name }}</td>
                             <td width="30%" class="td_pad">
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input custom_manage_bars" id="bars_{{ $key }}" title="{{ $bar->service_name }}" data-bar_id="{{ $bar->id }}" data-status="{{ $dwpkey }}" {{ $checked }} >
-                                <label class="custom-control-label" for="bars_{{ $key }}"> {{ $label  }}</label>
+                                <input type="checkbox" class="custom-control-input custom_manage_bars" id="bars_{{ $key }}" title="{{ $bar->service_name }}" data-bar_id="{{ $bar->id }}" data-status="{{ $status }}" {{ $checked }} {{ $disable }}>
+                                <label class="custom-control-label" for="bars_{{ $key }}"> </label>
                             </div>
                             </td>
                         </tr>
@@ -87,7 +97,56 @@
                         </div>
                     </div>
                 </div>
+                <div class="tab-pane p-3" id="services" role="tabpanel">
+                    <div class="row p-3">
+                    
+                    <hr><br>
 
+                        <table class="table table-striped table-bordered">
+                        <thead> </thead>
+                        <tbody>
+                        @foreach($bars as $key => $bar)
+                        @php 
+                        $servicevalue = json_decode($bar->service_value,TRUE);
+                        if(empty($network_info) || !isset($network_info[$bar->service_key])){
+                            continue;
+                        }else{
+                            
+                            $dwpkey    = $network_info[$bar->service_key];
+                            $label     = $servicevalue[$dwpkey];
+                            $disable   = '';
+                            if(isset($recentlyopted[$bar->id])){
+                                $disable = 'disabled';
+                                if(isset($user_services[$bar->id])){
+                                    $checked   = ($user_services[$bar->id]->service_status == 1) ? 'checked' : '';
+                                    $status = $user_services[$bar->id]->service_status;
+                                }
+                            }else{
+                                $status    = $dwpkey;
+                                $checked   = ($dwpkey == 1) ? 'checked' : '';
+                            }
+                        } 
+                        @endphp
+                        <tr height="50px;">
+                            <td width="70%" class="td_pad">{{ $bar->service_name }}</td>
+                            <td width="30%" class="td_pad">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input custom_manage_network {{ $disable }}" id="bars_{{ $key }}" title="{{ $bar->service_name }}" data-bar_id="{{ $bar->id }}" data-status="{{ $status }}" {{ $checked }} {{ $disable }}>
+                                <label class="custom-control-label" for="bars_{{ $key }}"> </label>
+                            </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                        </table>
+                        <div class="col-md-6">
+                        <!-- <button type="button" class="btn btn-primary btn-sm waves-effect waves-light" >Discard changes</button> -->
+                        </div>
+                        <div class="col-md-6">
+                        <button type="button" class="btn btn-success btn-sm waves-effect waves-light pull-right custom_network_apply">Apply changes</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         @endif
