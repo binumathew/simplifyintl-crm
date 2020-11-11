@@ -64,7 +64,7 @@ $accountno   = $arraydata['account_no'];
 <htmlpageheader name="page-header">
 <table width="100%">
     <tr>
-    <td align="left"> {{ Carbon::now()->format('d M Y') }}</td>
+    <td align="left"><h5> Invoice Period <br><span class="cls_001"> {{ Carbon::now()->format('d M Y') }} </span></br></h5> </td></td>
     <td><h5> Your account Number <br><span class="cls_001"> {{ $accountno }} </span></br></h5> </td></td>
     <td><h5> Your Invoice Number <br><span class="cls_001"> {{ $arraydata['invoicedata']['invoice_number'] }} </span></br></h5> </td></td>
     <td align="right">
@@ -105,6 +105,7 @@ $accountno   = $arraydata['account_no'];
 <br><br><br><br><br><br><br><br>
 <div style="left:31.85px;font-size:18px;"><span >Hello {{ $arraydata['name'] }},</span></div>
 <div style="left:31.85px;"><span>Your bill total is </span><span> <b>{{ $sym.$arraydata['invoicedata']['total_amount']}}</b></span></div>
+<div style="left:500.47px;position:absolute;margin-top:-40px;"><span><b>Payment status </b>- Uptodate</span></div>
 <br><br><br>
 
 <table class="summarytable" width="100%">
@@ -139,6 +140,7 @@ $accountno   = $arraydata['account_no'];
     @endif
     @if(isset($arraydata['child']))
     @foreach($arraydata['child'] as $ckey => $clist)
+    @if(isset($clist->plan))
     <tr>
         <td>({{ $clist->msisdn }})</td>
         <td>{{ $sym }}{{ isset($clist->plan) ? $clist->plantotal : (float)0.00 }}</td>
@@ -155,6 +157,7 @@ $accountno   = $arraydata['account_no'];
         </td>
         <td>{{$sym}}{{ isset($clist->plan) ? $clist->planplusaddtotalamount: (float)0.00 }}<br><span>{{$sym}}{{ isset($clist->plan) ? $clist->planplusaddamount : (float)0.00 }} (exc.vat/tax)</span></td>
     </tr>
+    @endif
     @endforeach
     @endif
     <tr>
