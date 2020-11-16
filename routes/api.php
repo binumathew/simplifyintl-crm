@@ -13,4 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/user', 'API\UserController@get_user');
+Route::get('/test', 'UserController@test');
+

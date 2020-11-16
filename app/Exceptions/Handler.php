@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use GlueDev\Laravel\Stackdriver\StackdriverExceptionHandler;
+
 
 class Handler extends ExceptionHandler
 {
@@ -34,6 +36,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        StackdriverExceptionHandler::report($exception);
         parent::report($exception);
     }
 

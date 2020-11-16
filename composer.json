@@ -12,6 +12,7 @@
         "braintree/braintree_php": "^4.5",
         "carlos-meneses/laravel-mpdf": "^2.1",
         "fideloper/proxy": "^4.0",
+        "gluedev/laravel-stackdriver": "^0.2.2",
         "gocardless/gocardless-pro": "^4.5",
         "guzzlehttp/guzzle": "^6.3",
         "hashids/hashids": "^4.0",

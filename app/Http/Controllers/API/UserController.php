@@ -1,27 +1,31 @@
 <?php
-namespace App\Http\Controllers\API;  
+namespace App\Http\Controllers\API;
 
-use Auth;
-use App\User;
 
-class UserController extends Controller 
+use App\Http\Controllers\Controller;
+use Log;
+
+class UserController extends Controller
 {
-    /**
-    * Create a new controller instance.
-    * @return void
-    */
+
     public function __construct()
     {
-        $this->middleware('auth:api');
+
     }
 
-	/** 
-	* details api 
-	* @return \Illuminate\Http\Response 
-	*/ 
-	public function get_user() 
-	{  				    
-        return response()->json(['success' => Auth::user()]); 
+	public function test()
+	{
+            try{
+                Log::info('An informational message.');
+                return [
+                    'result' => true
+                ];
+            }catch(\Exception $e){
+                return [
+                    'result'    => false,
+                    'error' =>  $e->getMessage()
+                ];
+            }
 	}
 }
 

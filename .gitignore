@@ -18,3 +18,4 @@ yarn.lock
 /storage/app/*
 /storage/framework/*
 /storage/logs/*
+/resources/keys/*
