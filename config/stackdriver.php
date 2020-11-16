@@ -5,7 +5,7 @@ return [
      * Should the entire Stackdriver package be enabled or disabled
      * By default, it is enabled when the app_env is not local
      */
-    'enabled' => env('STACKDRIVER_ENABLED', false),
+    'enabled' => env('STACKDRIVER_ENABLED', true),
 
     /**
      * There are multiple way to authenticate in order to send data to Google Stackdriver

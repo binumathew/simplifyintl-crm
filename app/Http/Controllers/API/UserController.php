@@ -21,6 +21,7 @@ class UserController extends Controller
                     'result' => true
                 ];
             }catch(\Exception $e){
+                dd($e);
                 return [
                     'result'    => false,
                     'error' =>  $e->getMessage()
