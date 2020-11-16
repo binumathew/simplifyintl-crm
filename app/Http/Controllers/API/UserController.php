@@ -16,12 +16,10 @@ class UserController extends Controller
 	public function test()
 	{
             try{
-                Log::info('An informational message.');
                 return [
                     'result' => true
                 ];
             }catch(\Exception $e){
-                dd($e);
                 return [
                     'result'    => false,
                     'error' =>  $e->getMessage()
