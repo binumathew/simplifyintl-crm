@@ -1,10 +1,10 @@
 @extends('layouts.home')
 @section('content')
-    <!-- page wrapper start -->      
+    <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-      
+
 
 			<div class="row">
 				<div class="col-md-9">
@@ -32,14 +32,14 @@
 									<thead>
 										<tr>
 											<th>Product</th>
-											<th>Provider</th>										
+											<th>Provider</th>
 											<th>Connection Type</th>
 											<th>Number To Keep</th>
 											<th>Pac Code</th>
 											<th>Transfer/Activation Date</th>
 										</tr>
 									</thead>
-									<tbody>		
+									<tbody>
 										@foreach($selected_plans as $selected)
 					                    @foreach($selected->list as $list)
 					                    <tr class="info">
@@ -70,19 +70,19 @@
 														<span class="input-group-text">
 															<i class="mdi mdi-calendar"></i>
 														</span>
-													</div>									
+													</div>
 												</div>
 											</td>
 					                    </tr>
 					                    @endforeach
-					                @endforeach					
+					                @endforeach
 									</tbody>
 								</table>
 								<div>
 					                <a href="javascript:void(0)" class="btn btn-success waves-effect waves-light pull-right" id="provision_process"><strong>Continue</strong></a>
 					            </div>
 				            </form>
-						</div>			
+						</div>
 					</div>
 				</div>
 
@@ -107,7 +107,7 @@
 	</div>
 	<!-- page wrapper end -->
 
-	<script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+	<script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			var today = new Date();
@@ -121,7 +121,7 @@
 	        });
 
 			$(document).on('change','.connection_type',function () {
-	            var list_id = $(this).attr('data-list_id');            
+	            var list_id = $(this).attr('data-list_id');
 	            if($(this).val() == 1){
 	            	$('.list_item_'+list_id).prop('readonly', false);
 	            }else{
@@ -138,42 +138,42 @@
 	                headers: {
 	                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	                },
-	                type: 'POST',                                                
+	                type: 'POST',
 	                url: base_url+'/verify-pac-code',
 	                data: {pac_code:pac_code,list_id:list_id,cli:cli},
-	                success:function(data){ 
-	                  if (data.error) { 
+	                success:function(data){
+	                  if (data.error) {
 	                      $this.addClass('text-danger');
-	                      $this.attr('title',data.message);     
+	                      $this.attr('title',data.message);
 	                  }else{
-	                      $this.attr('title',''); 
+	                      $this.attr('title','');
 	                      $this.addClass('text-success');
-	                  } 
+	                  }
 	                }
 	            });
-	        }); 
+	        });
 
-	        $(document).on('click', '#provision_process', function () {  
-	            var $this = $(this);             
+	        $(document).on('click', '#provision_process', function () {
+	            var $this = $(this);
                 var provision = $("#provision-form").serialize();
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: base_url+'/provision',
                     data: {provision:provision},
-                    success:function(data){ 
-                        if (data.error) {                                 
+                    success:function(data){
+                        if (data.error) {
                             alert(data.message);
                         } else {
                             location.href = base_url+'/billing';
                         }
                     }
                 });
-	            
-	        }); 
-						
+
+	        });
+
 		});
 	</script>
 @endsection

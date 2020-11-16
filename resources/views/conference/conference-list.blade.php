@@ -3,9 +3,9 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -81,7 +81,7 @@
                         <p class=" mb-0 m-t-10 text-muted">Completed<span class="pull-right">
                             </span></p>
                     </div>
-                </div>               
+                </div>
             </div>
             @endif
             <div class="row">
@@ -91,7 +91,7 @@
                             <div class="order-search">
                                 <form action="{{ url('/conference-list') }}" id="conf-form" method="POST">
                                     @csrf
-                                    <div class="row">                                        
+                                    <div class="row">
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <input class="form-control" name="sendcli" id="sendcli" type="text" placeholder="CLI" autocomplete="off">
@@ -128,7 +128,7 @@
                                                     <option value="">All</option>
                                                     @foreach($bridgeips as $bridge)
                                                     <option value="{{$bridge->id}}">{{$bridge->server}}</option>
-                                                    @endforeach                                               
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
@@ -138,21 +138,21 @@
                                                     <option value="">All</option>
                                                     @foreach($bridgeips as $bridge)
                                                     <option value="{{$bridge->serviceno}}">{{$bridge->service_no}}</option>
-                                                    @endforeach                                               
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="form-group">                            
+                                            <div class="form-group">
                                                 <select name="conf_status" id="conf_status" class="form-control custom-select">
                                                     <option value="1">Active List</option>
-                                                    <option value="2">Upcomming</option> 
+                                                    <option value="2">Upcomming</option>
                                                     <option value="3">Completed</option>
-                                                    <option value="custom">Custom</option> 
+                                                    <option value="custom">Custom</option>
                                                     <option value="4">All</option>
                                                 </select>
                                             </div>
-                                        </div>                                                                                
+                                        </div>
                                         <div class="col-md-12">
                                                 @if(Helper::has_permission('reports'))
                                                 <button type="submit" class="btn btn-info" id="export" name="exportdata" value="1">Export</button>
@@ -166,9 +166,9 @@
                             <div style="width: 100%; float: left; overflow: scroll;">
                                 <table id="conferenceList" class="table table-striped table-vertical table-responsive b-0 fixed-solution" width="100%" cellspacing="0">
                                     <thead>
-                                        <tr>    
-                                            <th style="width:1% !important">Bridge ID</th> 
-                                            <th>Company</th>                                       
+                                        <tr>
+                                            <th style="width:1% !important">Bridge ID</th>
+                                            <th>Company</th>
                                             <th>Conference Name</th>
                                             <th>Host</th>
                                             <th style="width:1% !important">Host Pin</th>
@@ -176,14 +176,14 @@
                                             <th style="width:1% !important">Ports</th>
                                             <th style="width:2% !important">Service No</th>
                                             <th>CLI</th>
-                                            <th>Start At</th>                                            
+                                            <th>Start At</th>
                                             <th>End At</th>
                                             <th>Created On</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                       
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -194,13 +194,13 @@
 
             <!-- <iframe src="http://149.36.7.16/iCallMateAEC1/faces/audioConfLive.xhtml?audioconfid=5251&serviceno=443339980048" title="Conf"></iframe> -->
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#conferenceList').DataTable({
@@ -211,7 +211,7 @@
                         processing: true,
                         serverSide: true,
                         ajax: {
-                            'url': 'conference-list', 
+                            'url': 'conference-list',
                             data: function (d) {
                                 d.sendcli = $('#sendcli').val();
                                 d.conf_name = $('#conf_name').val();
@@ -221,7 +221,7 @@
                                 d.bridge_id = $('#bridge_id').val();
                                 d.serviceno = $('#serviceno').val();
                                 d.conf_status = $('#conf_status').val();
-                            }              
+                            }
                         },
                         drawCallback:function(settings)
                         {
@@ -240,9 +240,9 @@
                             {'data': 'name', 'name': 'u.name'},
                             {'data': 'chairperson_pin', 'name': 'chairperson_pin'},
                             {'data': 'participant_pin', 'name': 'participant_pin'},
-                            {'data': 'ports', 'name': 'ports','searchable':false},  
-                            {'data': 'serviceno', 'name': 'serviceno'},                 
-                            {'data' : 'sendcli', 'name': 'sendcli'},            
+                            {'data': 'ports', 'name': 'ports','searchable':false},
+                            {'data': 'serviceno', 'name': 'serviceno'},
+                            {'data' : 'sendcli', 'name': 'sendcli'},
                             {'data' : 'startdatetime','name' : 'startdatetime'},
                             {'data' : 'enddatetime', 'name' : 'enddatetime'},
                             {'data' : 'created_at', 'name' : 'created_at'},
@@ -259,7 +259,7 @@
                                     break;
                                 }
                             },'name':'status'},
-                            
+
                             {'data': 'action', 'name': 'action','orderable': false, 'searchable': false},
                         ],
                         'order':[[9, 'asc']],
@@ -275,27 +275,27 @@
                     $(document).on('click','.delete_conference',function(){
                         var id = $(this).data('id');
                         $('#orderCustomLabel').text('Delete Conference');
-                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this conference?<div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_delete_conference" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>'); 
+                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this conference?<div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_delete_conference" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>');
                         $('#orderCustomModal').modal('show');
                     });
-                    $(document).on('click','#action_delete_conference',function(){ 
+                    $(document).on('click','#action_delete_conference',function(){
                         var conference_id = $(this).data('id');
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/delete-conference',
                             data: {conference_id:conference_id},
-                            success:function(data){                                 
+                            success:function(data){
                                 if (data.error) {
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
                                     $('#custom_status').html('<div class="text-success">Conference deleted successfully</div>');
-                                    $('#conferenceList').DataTable().draw();    
+                                    $('#conferenceList').DataTable().draw();
                                 }
                             }
-                        });                                    
+                        });
                     });
 
                     $(document).on('click','.show_conference_details',function(){
@@ -304,26 +304,26 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/conference-details',
                             data: {conference_id:conference_id},
-                            success:function(data){                                 
+                            success:function(data){
                                 if (data.error) {
                                     $('#orderCustombody').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
-                                    $('#orderCustombody').html(data.html);   
+                                    $('#orderCustombody').html(data.html);
                                 }
                                 $('#orderCustomModal').modal('show');
                             }
                         });
-                    });                    
+                    });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).data('id');                
+                    $(document).on('click', '.show_user_data', function(e) {
+                        e.preventDefault();
+                        var id = $(this).data('id');
                         $('#show_user_'+id).submit();
                     });
-                    
+
                     $(document).on('change', '#conf_status', function(e) {
                         if($(this).val() != 'custom'){
                             $('.datepicker').attr('disabled',true);
@@ -334,7 +334,7 @@
                     });
 
                     $('.custom-select').on('change', function(e) {
-                        $('#conferenceList').DataTable().draw();                        
+                        $('#conferenceList').DataTable().draw();
                     });
 
                     $('#searchBtn').on('click', function(e) {

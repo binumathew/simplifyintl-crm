@@ -5,10 +5,10 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Admin Login</title>
-        <link rel="stylesheet" href="{{ asset('public/css/bootstrap.min.css') }}" media="screen" >
-        <link rel="stylesheet" href="{{ asset('public/css/blue.css') }}" >
-        <link rel="stylesheet" href="{{ asset('public/css/main.css') }}" media="screen" >
-        <link rel="shortcut icon" href="{{ asset('public/images/favicon.ico') }}" type="image/icon">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" media="screen" >
+        <link rel="stylesheet" href="{{ asset('css/blue.css') }}" >
+        <link rel="stylesheet" href="{{ asset('css/main.css') }}" media="screen" >
+        <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/icon">
     </head>
     <body>
         <div class="main-wrapper">
@@ -18,7 +18,7 @@
                         <div class="panel login-box">
                             <div class="panel-heading">
                                 <div class="panel-title text-center">
-                                    <h4>Avoo Mobile Admin</h4>                                    
+                                    <h4>Avoo Mobile Admin</h4>
                                 </div>
                             </div>
                             <div class="panel-body p-20">
@@ -34,7 +34,7 @@
                                         <span class="help-block">
                                             <strong>{{ $errors->first('email') }}</strong>
                                         </span>
-                                        @endif 
+                                        @endif
                                     </div>
                                     <div class="form-group">
                                         <label for="password">Password</label>
@@ -64,13 +64,13 @@
                         <p class="text-muted text-center"><small>Copyright © Avoo @php echo date('Y'); @endphp</small></p>
                     </div>
                 </div>
-            </div>        
+            </div>
         </div>
 
-        <!-- <script src="{{ asset('public/js/jquery.min.js') }}"></script> -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
+        <!-- <script src="{{ asset('js/jquery.min.js') }}"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="{{ asset('public/js/icheck.min.js') }}"></script>
+        <script src="{{ asset('js/icheck.min.js') }}"></script>
         <script>
             $(function(){
                 $('input.flat-blue-style').iCheck({
@@ -78,6 +78,6 @@
                 });
             });
         </script>
-    
+
     </body>
 </html>

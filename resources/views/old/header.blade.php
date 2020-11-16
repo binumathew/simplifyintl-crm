@@ -8,29 +8,29 @@
 		<meta name="base-url" content="{{ url('/') }}" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1.0, maximum-scale=1.0">
 
-		<link href="{{ asset('public/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
-		
-		<link href="{{ asset('public/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
 
-		<link href="{{ asset('public/css/font.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/animate.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/sweetalert.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/portalstyle.css?version=1.2') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/portalbreaks.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/progress-wizard.min.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css">
 
-		<link href="{{ asset('public/css/smart_wizard.min.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/smart_wizard_theme_arrows.min.css') }}" rel="stylesheet" type="text/css">
-		
-		<link href="{{ asset('public/css/avoo.css') }}" rel="stylesheet" type="text/css">
-		<link href="{{ asset('public/css/homestyle.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/font.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/animate.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/sweetalert.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/portalstyle.css?version=1.2') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/portalbreaks.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/progress-wizard.min.css') }}" rel="stylesheet" type="text/css">
+
+		<link href="{{ asset('css/smart_wizard.min.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/smart_wizard_theme_arrows.min.css') }}" rel="stylesheet" type="text/css">
+
+		<link href="{{ asset('css/avoo.css') }}" rel="stylesheet" type="text/css">
+		<link href="{{ asset('css/homestyle.css') }}" rel="stylesheet" type="text/css">
 
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.1/css/buttons.dataTables.min.css">
-		
-		<link rel="shortcut icon" href="{{ asset('public/images/favicon.ico') }}" type="image/icon">
+
+		<link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/icon">
 		<script type="text/javascript">
             var base_url = '<?php echo url('/'); ?>';
         </script>
@@ -47,7 +47,7 @@
 				width: 100%;
 				height: 100%;
 				z-index: 9999;
-				background: url('{{ asset('public/images/Preloader_1.gif') }}')  center no-repeat #fff;
+				background: url('{{ asset('images/Preloader_1.gif') }}')  center no-repeat #fff;
 			}
 			.bill1{
 				height:400px;
@@ -84,27 +84,27 @@
 			}
 		</style>
 		<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script> 
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 
-		<script src="{{ asset('public/js/jquery.min.js') }}"></script>
-		<script src="{{ asset('public/js/jquery.validate.min.js') }}"></script>
-		<script src="{{ asset('public/js/additional-methods.min.js') }}"></script>
-		<script src="{{ asset('public/js/modernizr.js') }}"></script>
-		<script src="{{ asset('public/js/jquery-ui.js') }}"></script>
-		
+		<script src="{{ asset('js/jquery.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+		<script src="{{ asset('js/additional-methods.min.js') }}"></script>
+		<script src="{{ asset('js/modernizr.js') }}"></script>
+		<script src="{{ asset('js/jquery-ui.js') }}"></script>
+
 	</head>
 
 	<body>
 		<div class="se-pre-con"></div>
 		<div id="loadingsign" ></div>
 		<div class="leftnav" id="top">
-			<h1 class="logo"><a href="{{ url('/dashboard') }}">Avoo Mobile </a></h1>			
+			<h1 class="logo"><a href="{{ url('/dashboard') }}">Avoo Mobile </a></h1>
 			<ul>
 				<li>
-					<a href="{{ url('/dashboard') }}" class="fa fa-home {{ request()->is('dashboard') ? 'nav-active' : '' }}">Avoo Mobile</a>			
+					<a href="{{ url('/dashboard') }}" class="fa fa-home {{ request()->is('dashboard') ? 'nav-active' : '' }}">Avoo Mobile</a>
 				</li>
 				@if(Helper::has_permission('users'))
 				<li>
@@ -133,36 +133,36 @@
 				<li class="drop {{ (Route::currentRouteName() == 'commission')? 'open' : '' }}">
 					<a href="#" class="fa fa-gift">Commission</a>
 					<div class="bigdrop">
-						<ul>							
+						<ul>
 							<li class="{{ request()->is('comm-userlist') ? 'nav-active' : '' }}">
 								<a href="{{ url('comm-userlist') }}" class="fa fa-money">User</a>
 							</li>
 							<li class="{{ request()->is('comm-payment-list') ? 'nav-active' : '' }}">
 								<a href="{{ url('comm-payment-list') }}" class="fa fa-money">Dealer Commission</a>
-							</li>													
+							</li>
 						</ul>
 					</div>
 				</li>
 				@endif
-							
+
 				@if(Helper::has_permission('discount_coupons'))
 
 				<li class="{{ request()->is('discount-coupon') ? 'nav-active' : '' }}">
 					<a href="{{ url('/discount-coupon') }}" class="fa fa-percent">Discount Coupons</a>
 				</li>
 				@endif
-				@if(Helper::has_permission('fraudsters'))							
+				@if(Helper::has_permission('fraudsters'))
 
 				<li class="{{ request()->is('fraudster-list') ? 'nav-active' : '' }}">
 					<a href="{{ url('/fraudster-list') }}" class="fa fa-user-secret">Fraudsters</a>
 				</li>
 				@endif
-				
+
 				@if(Helper::has_permission('plan_purchase'))
 				<li class="{{ request()->is('plan-purchase') ? 'nav-active' : '' }}">
 					<a href="{{ url('/plan-purchase') }}" class="fa fa-phone">Plan Purchase</a>
 				</li>
-				@endif								
+				@endif
 				@if(Helper::has_permission('delivery'))
 				<li class="{{ request()->is('delivery-management') ? 'nav-active' : '' }}">
 					<a href="{{ url('/delivery-management') }}" class="fa fa-truck">Delivery Management</a>
@@ -182,7 +182,7 @@
 					<li class="{{ request()->is('porting') ? 'nav-active' : '' }}">
 						<a href="{{ url('porting') }}" class="fa fa-recycle">Porting</a>
 					</li>
-				@endif										
+				@endif
 				@if(Helper::has_permission('settings'))
 				<li class="drop {{ (Route::currentRouteName() == 'settings')? 'open' : '' }}">
 					<a href="#" class="fa fa-cogs">Settings</a>
@@ -235,7 +235,7 @@
 								<a href="{{ url('comm-staff-list') }}" class="fa fa-money">Staff Commission</a>
 							</li>
 
-							@if(Helper::has_permission('did_pool'))											
+							@if(Helper::has_permission('did_pool'))
 							<li class="{{ request()->is('did-pool') ? 'nav-active' : '' }}">
 								<a href="{{ url('/did-pool') }}" class="fa fa-phone">DID Pool</a>
 							</li>
@@ -249,7 +249,7 @@
 						</ul>
 					</div>
 				</li>
-				@endif	
+				@endif
 				@if(Helper::has_permission('reports'))
 				<li class="drop {{ (Route::currentRouteName() == 'reports')? 'open' : '' }}">
 					<a href="#" class="fa fa-pie-chart">Reports</a>
@@ -260,7 +260,7 @@
 							</li>
 							<li class="{{ request()->is('report-port') ? 'nav-active' : '' }}">
 								<a href="{{ url('report-port') }}" class="fa fa-paper-plane">Porting</a>
-							</li>							
+							</li>
 							<li class="{{ request()->is('report-eelog') ? 'nav-active' : '' }}">
 								<a href="{{ url('report-eelog') }}" class="fa fa-phone">EE Log</a>
 							</li>
@@ -289,53 +289,53 @@
 					<a href="{{ url('/payment-history') }}" class="fa fa-money">Payment History</a>
 				</li>
 				@endif
-				@if(Helper::has_permission('call_history'))	
+				@if(Helper::has_permission('call_history'))
 
 				<li class="{{ request()->is('call-history') ? 'nav-active' : '' }}">
 					<a href="{{ url('/call-history') }}" class="fa fa-phone">Call History</a>
 				</li>
-				@endif	
-				
+				@endif
+
 				@if(Helper::has_permission('plan_management'))
 				<li class="drop {{ (Route::currentRouteName() == 'plan')? 'open' : '' }}">
-					<a href="#" class="fa fa-product-hunt">Plans</a> 
+					<a href="#" class="fa fa-product-hunt">Plans</a>
 					<div class="bigdrop">
 						<ul>
 						<li class="{{ request()->is('plan-management') ? 'nav-active' : '' }}">
 							<a href="{{ url('/plan-management') }}" class="fa fa-star">Plan Management</a>
-						</li>						
+						</li>
 
 						<li class="{{ request()->is('package-management') ? 'nav-active' : '' }}">
 							<a href="{{ url('/package-management') }}" class="fa fa-star">Packages Management</a>
 						</li>
-						
+
 						</ul>
 					</div>
 				</li>
-				@endif		
-				@if(Helper::has_permission('fraudsters'))			
+				@endif
+				@if(Helper::has_permission('fraudsters'))
 				<li class="{{ request()->is('throttles') ? 'nav-active' : '' }}">
 					<a href="{{ url('/throttles') }}" class="fa fa-laptop">Login Attempts</a>
 				</li>
-				@endif		
+				@endif
 				<li>
-					<a class="fa-sign-out" href="{{ route('logout') }}"> Log Out </a>		
+					<a class="fa-sign-out" href="{{ route('logout') }}"> Log Out </a>
 				</li>
 			</ul>
 		</div>
-		
+
 		<div class="header clearfix">
 			<div class="navclick fa fa-bars"></div>
 			<ul>
-				@if(Helper::has_permission('settings') || Auth::user()->role == 3)											
+				@if(Helper::has_permission('settings') || Auth::user()->role == 3)
 				<li class="bell"><a href="{{ url('notification-log') }}" class="fa fa-bell"></a>
-				@endif	
+				@endif
 					<!-- <span class="badge badge-notify">3</span></li> -->
 				<li class="user">
-					<a href="{{ url('my-account') }}" class="fa fa-user-circle-o"> 
+					<a href="{{ url('my-account') }}" class="fa fa-user-circle-o">
 						<b>{{ Auth::user()->first_name }}</b>
 					</a>
 				</li>
-	
+
 			</ul>
 		</div>

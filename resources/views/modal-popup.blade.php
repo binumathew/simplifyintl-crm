@@ -478,7 +478,7 @@ $currency    = strtolower($purchase->currency);
         data-amount="{{ $amount }}"
         data-name="Order Payment"
         data-description=""
-        data-image="{{ asset('public/images/logo.png') }}"
+        data-image="{{ asset('images/logo.png') }}"
         data-locale="auto"
         data-currency="{{$currency}}">
 

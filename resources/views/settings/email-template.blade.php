@@ -8,17 +8,17 @@
 }
 /* Track */
 #style-1::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 #style-1::-webkit-scrollbar-thumb {
-  background: #028fab; 
+  background: #028fab;
 }
 
 /* Handle on hover */
 #style-1::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 </style>
     <!-- page wrapper start -->
@@ -27,9 +27,9 @@
 
             <div class="container-fluid">
 
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
                 <div class="row">
 
@@ -68,13 +68,13 @@
 
                         <div class="card m-b-20">
 
-                            
+
 
                             <div class="card-body right-nav">
 
                                 <ul>
 
-                                    <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                    <li><a href="{{ url('/settings') }}">General</a></li>
 
                                     <li><a href="{{url('/template')}}" class="selected">Email Template</a></li>
 
@@ -124,7 +124,7 @@
 
                                     <li><a href="#">Misc</a></li> -->
 
-                                </ul>                           
+                                </ul>
 
                             </div>
 
@@ -133,7 +133,7 @@
                     </div>
         <div class="col-md-10">
             <div class="card m-b-20">
-                <div class="card-body my-setting-page">   
+                <div class="card-body my-setting-page">
                     <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#tab-1" role="tab">
@@ -164,7 +164,7 @@
                             <a class="nav-link active" data-toggle="tab" href="#tab-6" role="tab">
                                 <span class="d-none d-md-block">Dynamic Content</span><span class="d-block d-md-none"><i class="mdi mdi-account h5"></i></span>
                             </a>
-                        </li>  
+                        </li>
                     </ul>
             <div class="tab-content">
                 <div class="tab-pane p-3" id="tab-1" role="tabpanel"><h5>General</h5></div>
@@ -202,8 +202,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
-                        </div> 
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <div class="right-nav">
@@ -248,13 +248,13 @@
 
 
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
             </div>
 
@@ -262,7 +262,7 @@
 
         <!-- page wrapper end -->
  <!--Wysiwig js-->
-<script src="{{ asset('public/plugins/tinymce/tinymce.min.js') }}"></script>
+<script src="{{ asset('plugins/tinymce/tinymce.min.js') }}"></script>
 <script>
 $(document).ready(function () {
         if($("#email_template_editor").length > 0){

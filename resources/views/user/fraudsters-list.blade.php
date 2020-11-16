@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -27,28 +27,28 @@
                                 <table id="userList" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>                                           
+                                            <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone No</th>
                                             <th>Blocked On</th>
                                             <th>Action</th>
-                                        </tr>                                    
+                                        </tr>
                                     </thead>
-                                    <tbody> 
+                                    <tbody>
                                         @php $i=0; @endphp
                                         @foreach ($fraudsters as $user)
                                             <tr id="user_{{$user->id}}">
-                                                <td>{{ $user->name }}</td>                            
+                                                <td>{{ $user->name }}</td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $user->phone }}</td>
-                                                <td>{{ Helper::date_format($user->created_at) }}</td>                                                
+                                                <td>{{ Helper::date_format($user->created_at) }}</td>
                                                 <td>
                                                     @if(Helper::has_permission('fraudsters','delete'))
                                                         <a title="" href="javascript:void(0);" data-original-title="Delete" data-toggle="tooltip" class="delete_fraudster text-danger" data-list_id={{$user->id}}><i class="mdi mdi-delete mdi-24px"></i></a>
                                                     @endif
                                                 </td>
                                             </tr>
-                                        @endforeach                                     
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -57,12 +57,12 @@
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#userList').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});

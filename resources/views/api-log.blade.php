@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -22,7 +22,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card m-b-20">
-                            <div class="card-body">                             
+                            <div class="card-body">
                                 <table id="api-log" class="table table-striped dt-responsive table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
@@ -35,7 +35,7 @@
                                             <th>Response</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
 
                                     </tbody>
                                 </table>
@@ -44,10 +44,10 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -74,14 +74,14 @@
                         {data: 'exec_time', name: 'al.exec_time'},
                         {data: 'created_at', name: 'al.created_at'},
                         {data: 'request', name: 'al.request'},
-                        {data: 'response', name: 'al.response'},            
+                        {data: 'response', name: 'al.response'},
                     ],
                     columnDefs: [
-                       { width: '100px', targets: 2 } 
+                       { width: '100px', targets: 2 }
                     ]
                 });
 
-                $('.dataTables_filter input').attr("placeholder", "Search");                
+                $('.dataTables_filter input').attr("placeholder", "Search");
             });
         </script>
 @endsection

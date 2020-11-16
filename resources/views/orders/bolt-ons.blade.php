@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-      
+
             <div class="row">
                 <div class="col-md-9">
                     <div class="card m-b-20">
@@ -41,7 +41,7 @@
                                         </span>
                                     </a>
                                 </li>
-                                @endforeach 
+                                @endforeach
                                 @if($mobileapp)
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab" href="#app" role="tab">
@@ -51,7 +51,7 @@
                                             </span>
                                         </a>
                                     </li>
-                                @endif                                   
+                                @endif
                             </ul>
 
                             <div class="tab-content">
@@ -61,7 +61,7 @@
                                         <h6><b>Additional Bolt-ons</b></h6>
                                         <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                             <thead>
-                                                <tr>                                                    
+                                                <tr>
                                                     <th>Product</th>
                                                     <th class="text-right">Charge</th>
                                                     <th>Add</th>
@@ -73,10 +73,10 @@
                                                     <td>{{ $plan->plan_name }}</td>
                                                     <td class="text-right">£{{ Helper::number_format($plan->sell_price) }}</td>
                                                     <td style="width: 1px">
-                                                        <a href="javascript:void(0);" class="text-muted add_bolt_ons" data-provider="{{$provider->id}}" data-toggle="tooltip" data-bolt="{{$plan->id}}" data-placement="top" title="" data-original-title="Add"><i class="mdi mdi-plus mdi-18px"></i></a> 
+                                                        <a href="javascript:void(0);" class="text-muted add_bolt_ons" data-provider="{{$provider->id}}" data-toggle="tooltip" data-bolt="{{$plan->id}}" data-placement="top" title="" data-original-title="Add"><i class="mdi mdi-plus mdi-18px"></i></a>
                                                     </td>
                                                 </tr>
-                                                @endforeach                                                
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -88,7 +88,7 @@
                                         <h6><b>Additional Bolt-ons</b></h6>
                                         <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                             <thead>
-                                                <tr>                                                    
+                                                <tr>
                                                     <th>Product</th>
                                                     <th class="text-right">Charge</th>
                                                     <th>Add</th>
@@ -103,7 +103,7 @@
                                                         <a href="javascript:void(0);" class="text-muted add_bolt_ons" data-provider="app" data-toggle="tooltip" data-placement="top" data-bolt="{{$plan->id}}" title="" data-original-title="Add"><i class="mdi mdi-plus mdi-18px"></i></a>
                                                     </td>
                                                 </tr>
-                                                @endforeach                                                
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -134,16 +134,16 @@
                         </div>
                     </div>
                 </div>
-            </div>        
+            </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function () {
-                    $('.datatable').DataTable();  
+                    $('.datatable').DataTable();
 
                     $(document).on('click', '.add_bolt_ons', function(e){
                         var provider = $(this).data('provider');
@@ -152,10 +152,10 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/selected-plan',
-                            data: {bolt:bolt, provider:provider},                          
-                            success:function(data){ 
+                            data: {bolt:bolt, provider:provider},
+                            success:function(data){
                                 $('#orderCustomLabel').text('Additional Bundle');
                                 if (data.error) {
                                     $('#orderCustombody').html('<div class="text-danger">'+data.message+'</div>');
@@ -166,9 +166,9 @@
                                 }
                             }
                         });
-                    }); 
+                    });
 
-                    $(document).on('click', '#manage_bolt_ons', function(e){ 
+                    $(document).on('click', '#manage_bolt_ons', function(e){
                         $('#orderCustomModal').modal('hide');
                         $('.add_to_all').prop('disabled',false);
                         var formData = new FormData($('#bolt-form')[0]);
@@ -176,13 +176,13 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/manage-bolt-ons',
                             data: formData,
                             cache: false,
                             contentType: false,
                             processData: false,
-                            success:function(data){ 
+                            success:function(data){
                                 $('#orderCustomLabel').text('Additional Bundle');
                                 if (data.error) {
                                     $('#orderCustombody').html('<div class="text-danger">'+data.message+'</div>');
@@ -203,8 +203,8 @@
                         }
                     });
 
-                });                                        
-            </script>   
+                });
+            </script>
         </div>
         <!-- end container-fluid -->
     </div>

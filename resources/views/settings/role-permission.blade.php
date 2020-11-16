@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -23,10 +23,10 @@
                 <div class="row">
                     <div class="col-md-2">
                         <div class="card m-b-20">
-                            
+
                             <div class="card-body right-nav">
                                 <ul>
-                                    <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                    <li><a href="{{ url('/settings') }}">General</a></li>
                                     <li><a href="{{ url('/template') }}">Email Template</a></li>
                                     <li><a href="{{ url('/roles') }}" class="selected">Roles</a></li>
                                     <li><a href="{{ url('/countries') }}">Countries</a></li>
@@ -51,54 +51,54 @@
                                     <li><a href="#">Pusher.com</a></li>
                                     <li><a href="#">Google</a></li>
                                     <li><a href="#">Misc</a></li> -->
-                                </ul>                           
+                                </ul>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-10">                     
+                    <div class="col-md-10">
                         <div class="card m-b-20">
                             <div class="card-body">
                                 <form id="permisssion-form">
-                                    @csrf   
+                                    @csrf
                                     <div class="col-md-6 pull-left">
                                         <div class="form-group">
                                             <label for="name" class="control-label">Role Name</label>
                                             <input type="hidden" name="role_id" value="{{ ($role)?Crypt::encrypt($role->id):''}}">
                                             <input type="text" name="name" class="form-control" autofocus="1" value="{{($role)?$role->name:''}}" required>
-                                        </div>               
+                                        </div>
                                     </div>
                                     <div class="col-md-6 pull-right">
                                         <div class="form-group">
                                             <label for="name" class="control-label">Short Code</label>
                                             <input type="text" name="short_code" class="form-control" autofocus="1" value="{{($role)?$role->short_code:''}}" required>
-                                        </div>               
+                                        </div>
                                     </div>
 
                                     <table class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th class="bold">Permission</th>
-                                                <th class="text-center bold">View Own</th>  
-                                                <th class="text-center bold">View</th>               
+                                                <th class="text-center bold">View Own</th>
+                                                <th class="text-center bold">View</th>
                                                 <th class="text-center bold">Create</th>
                                                 <th class="text-center bold">Edit</th>
                                                 <th class="text-center text-danger bold">Delete</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="font-24">                                            
-                                            @foreach($permissions as $permission)   
-                                            @php    
+                                        <tbody class="font-24">
+                                            @foreach($permissions as $permission)
+                                            @php
                                                 $p_id = $permission->permission_id;
-                                                $view_own_checked = ($permission->can_view_own)?'checked':'';                                        
+                                                $view_own_checked = ($permission->can_view_own)?'checked':'';
                                                 $view_checked = ($permission->can_view)?'checked':'';
                                                 $create_checked = ($permission->can_create)?'checked':'';
                                                 $edit_checked = ($permission->can_edit)?'checked':'';
                                                 $delete_checked = ($permission->can_delete)?'checked':'';
                                             @endphp
-                                                <tr>                                                
-                                                    <td> 
-                                                        {{ $permission->name }}                 
+                                                <tr>
+                                                    <td>
+                                                        {{ $permission->name }}
                                                         <input type="hidden" name="permission_id[]" value="{{$p_id}}">
                                                     </td>
                                                     <td class="text-center">
@@ -142,16 +142,16 @@
                                         </div>
                                     </div>
                                 </form>
-                                    
+
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -164,17 +164,17 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'POST',                                                
+                        type: 'POST',
                         url: base_url+'/save-role',
                         data: formData,
                         cache: false,
                         contentType: false,
                         processData: false,
-                        success:function(data){ 
+                        success:function(data){
                             if (data.error) {
                                 $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                             } else {
-                                $('#custom_status').html('<div class="text-success">'+data.message+'</div>');   
+                                $('#custom_status').html('<div class="text-success">'+data.message+'</div>');
                             }
                         }
                     });

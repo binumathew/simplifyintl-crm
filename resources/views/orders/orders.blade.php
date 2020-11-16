@@ -3,9 +3,9 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-            <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+            <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -82,12 +82,12 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="form-group">                            
+                                            <div class="form-group">
                                                 <select name="delivery_status" id="delivery_status" class="form-control">
-                                                    <option value="">Status</option>  
+                                                    <option value="">Status</option>
                                                     <option value="1" selected>To Activate</option>
-                                                    <option value="2">Welcome Call</option> 
-                                                    <option value="3">Not Packed</option> 
+                                                    <option value="2">Welcome Call</option>
+                                                    <option value="3">Not Packed</option>
                                                     <option value="4">All</option>
                                                 </select>
                                             </div>
@@ -107,7 +107,7 @@
                                                 <input type="text" class="form-control" name="sim_number" id="sim_number" placeholder="Serial Number">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-md-12">
                                                 <div class="btn btn-warning" style="display: inline-block; float: left; text-align: center;">
                                                     <a href="{{url('/new-order')}}" style="color: #FFF;">New Order</a>
@@ -126,7 +126,7 @@
                                         <div class=" col-md-6">
                                             <div class="alert alert-success new-orderbutton" role="alert" style="display: inline-block; float: left; text-align: center;">
                                                 <a href="#" style="color: #FFF;"><strong>New Order</strong></a>
-                                            </div>                                   
+                                            </div>
                                         </div> -->
                                     </div>
                                 </form>
@@ -141,9 +141,9 @@
                                         <th>Contact Number</th>
                                         <th>Shipping Date</th>
                                         <th>Sim</th>
-                                        <th>Sim Number</th>                                               
-                                        <th>Agent Name</th>                                               
-                                        <th>Status</th>                                           
+                                        <th>Sim Number</th>
+                                        <th>Agent Name</th>
+                                        <th>Status</th>
                                         <th>Action</th>
 
                                     </tr>
@@ -172,7 +172,7 @@
                                     @foreach($dealers as $dealer)
                                         <option value="{{$dealer->promocode}}">{{$dealer->promocode}}</option>
                                     @endforeach
-                                </select> <br />                                   
+                                </select> <br />
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="button" id="update_promo_code" class="btn btn-success pull-right">Update</button>
                             </form>
@@ -183,13 +183,13 @@
 
             <div id="enquiry-history"></div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#orderlist').DataTable({
@@ -210,7 +210,7 @@
                                 d.sim_number = $('#sim_number').val();
                             }
                         },
-                        
+
                         "dataType": "jsonp",
                         "columns": [
                         {"data": "order_id", "name": "rq.order_id"},
@@ -233,7 +233,7 @@
                             }
                         }, "name": "rq.delivery_status", "searchable": false},
                         {"data": function(data){
-                            var route = "{{URL::to('/order-details')}}";               
+                            var route = "{{URL::to('/order-details')}}";
                             var html = '<form method="post" id="view_order_'+data.id+'" action="'+route+'">@csrf<input type="hidden" name="order_id" value="'+data.order_id+'"></form><a data-toggle="tooltip" title="View Details" href="javascript:void(0);" class="view_order_details text-muted m-r-10" data-id="'+data.id+'"><i class="mdi mdi-eye mdi-24px"></i></a><a data-toggle="tooltip" title="Enquiry History" href="javascript:void(0);" class="enquiry_history text-muted m-r-10" data-id="'+data.id+'"><i class="mdi mdi-comment-text mdi-24px"></i></a><a href="javascript:void(0);" class="manage_promocode text-muted m-r-10" data-toggle="tooltip" data-placement="top" title="Edit Promocode" data-id="'+data.id+'"><i class="mdi mdi-account mdi-24px"></i></a>';
                             return  html;
                         }, "name": "action","orderable": false, "searchable": false},
@@ -249,7 +249,7 @@
 
                     $('#searchBtn').on('click', function(e) {
                         e.preventDefault();
-                        $('#orderlist').DataTable().draw();                        
+                        $('#orderlist').DataTable().draw();
                     });
 
                     $('#delivery_status').on('change', function(e) {
@@ -258,38 +258,38 @@
 
                     $('#resetBtn').on('click', function(e) {
                         $('#order-search-form')[0].reset();
-                        $('#orderlist').DataTable().draw();                          
+                        $('#orderlist').DataTable().draw();
                     });
 
                     // $('#order-search-form').on('submit', function(e) {
                     //    $(this).submit();
                     // });
 
-                    $(document).on('click', '.view_order_details', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).attr('data-id');                
+                    $(document).on('click', '.view_order_details', function(e) {
+                        e.preventDefault();
+                        var id = $(this).attr('data-id');
                         $('#view_order_'+id).submit();
                     });
 
                     $(document).on('click','.manage_promocode',function (e) {
-                        var id = $(this).attr('data-id');   
-                        $('#orderidentifier').val(id);    
-                        $('#dealerCode').modal('show');                        
+                        var id = $(this).attr('data-id');
+                        $('#orderidentifier').val(id);
+                        $('#dealerCode').modal('show');
                     });
-                    
-                    $(document).on('click','#update_promo_code',function (e) {  
+
+                    $(document).on('click','#update_promo_code',function (e) {
                         var order_id = $('#orderidentifier').val();
-                        var promocode = $('select[name="promocode"]').val(); 
+                        var promocode = $('select[name="promocode"]').val();
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/update-promocode',
                             data: {order_id:order_id,promocode:promocode},
-                            success:function(data){                 
-                                $('#dealerCode').modal('hide'); 
-                                $('#orderlist').DataTable().draw(); 
+                            success:function(data){
+                                $('#dealerCode').modal('hide');
+                                $('#orderlist').DataTable().draw();
                             }
                         });
                     });
@@ -301,10 +301,10 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/enquiry',
                             data: {id:id},
-                            success:function(data){ 
+                            success:function(data){
                                 if (data.error) {
                                     $('#enquiry-history').html('<div class="alert alert-danger">'+data.message+'</div>');
                                 } else {
@@ -315,7 +315,7 @@
                         });
                     });
 
-                    $(document).on('click','#save_enq_history',function (e) {       
+                    $(document).on('click','#save_enq_history',function (e) {
                         var id = $('#enq_request_id').val();
                         var note = $('#enquiry_note').val();
                         $('#enquiry_status').html('');
@@ -327,10 +327,10 @@
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/save-enquiry',
                                 data: {id:id,note:note},
-                                success:function(data){ 
+                                success:function(data){
                                     $('#preloader').hide();
                                     if (data.error) {
                                         $('#enquiry_status').html('<div class="text-danger">'+data.message+'</div>');

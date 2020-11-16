@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -45,21 +45,21 @@
                                         </div>
                                     </div>
                                     </form>
-                                </div>                             
+                                </div>
                                 <table id="commUser-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>                                       
+                                            <th>Name</th>
                                             <th>Plan Name</th>
                                             <th>Commission</th>
                                             <th>Commission Gained</th>
-                                            <th>Commission Paid</th>  
-                                            <th>Clawback Amount</th>  
-                                            <th>Created at</th>                             
+                                            <th>Commission Paid</th>
+                                            <th>Clawback Amount</th>
+                                            <th>Created at</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -67,11 +67,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -83,8 +83,8 @@
                         <h5 class="modal-title mt-0">Commission Details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
-                    <div class="modal-body" id="commuserviewbody"> 
-                         
+                    <div class="modal-body" id="commuserviewbody">
+
                     </div>
                 </div>
             </div>
@@ -95,7 +95,7 @@ $(document).ready(function(){
 
     $('#resetBtn').on('click', function(e) {
        $('#comm-user-list-form')[0].reset();
-       $('#commUser-table').DataTable().draw();       
+       $('#commUser-table').DataTable().draw();
     });
 
     var commuserTable = $('#commUser-table').DataTable({
@@ -160,7 +160,7 @@ $(document).ready(function(){
             type: 'POST',
             data:{datas:datas},
             url: '<?php echo url('/'); ?>/comm-breakdown',
-            success: function(response){ 
+            success: function(response){
                 if(response.status == 200){
                     $("#commuserviewbody").html('').html(response.page);
                     $("#viewcommuserModal").modal('show');
@@ -181,7 +181,7 @@ $(document).ready(function(){
     //             type: 'POST',
     //             data: {dealer:dealerid},
     //             url: '<?php echo url('/'); ?>/get-revenue',
-    //             success: function(response){ 
+    //             success: function(response){
     //                 $('#revenue_amount').val("");
     //                 $('#expiry_at').val("");
     //                 if(response.status == 200){
@@ -190,7 +190,7 @@ $(document).ready(function(){
     //                 }
     //             }
     //         });
-        
+
     // });
     $('.datepicker').datepicker({
         autoclose: true,

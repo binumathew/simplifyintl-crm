@@ -3,9 +3,9 @@
     <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -61,7 +61,7 @@
                             <div class="clearfix"></div>
                             <p class=" mb-0 m-t-10 text-muted">Profit <span class="pull-right"><i class="fa fa-caret-down text-danger m-r-5"></i>5.52%</span></p>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
                 @endif
                 <div class="row">
@@ -88,12 +88,12 @@
                                             <div class="form-group">
                                                 <label>Payment Method</label>
                                                 <select name="payment_method" class="form-control custom-select">
-                                                    <option value="0">All</option>  
+                                                    <option value="0">All</option>
                                                     <option value="1">Paypal</option>
-                                                    <option value="2">Braintree</option> 
-                                                    <option value="3">Bank Transfer</option> 
+                                                    <option value="2">Braintree</option>
+                                                    <option value="3">Bank Transfer</option>
                                                     <option value="4">Direct Cash</option>
-                                                    <option value="5">App Payment</option> 
+                                                    <option value="5">App Payment</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -114,7 +114,7 @@
                                                 <label>Currency</label>
                                                 <select name="currency" class="form-control custom-select">
                                                     <option value="£" selected>GBP</option>
-                                                    <option value="$">USD</option>  
+                                                    <option value="$">USD</option>
                                                     <option value="€">EUR</option>
                                                 </select>
                                             </div>
@@ -127,9 +127,9 @@
                                         <div class=" col-md-6">
                                             <div class="alert alert-success new-orderbutton" role="alert" style="display: inline-block; float: left; text-align: center;">
                                                 <a href="#" style="color: #FFF;"><strong>New Order</strong></a>
-                                            </div>                                   
+                                            </div>
                                         </div> -->
-                                                
+
                                         <div class=" col-md-12">
                                             @if(Helper::has_permission('reports'))
                                             <button type="submit" class="btn btn-info" id="export" name="exportdata" value="1">Export</button>
@@ -139,12 +139,12 @@
                                         </div>
                                     </div>
                                     </form>
-                                </div>                                
+                                </div>
                                 <table id="payment-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Billing Name</th>
-                                            <th>Transaction ID</th>                               
+                                            <th>Transaction ID</th>
                                             <th>Amount</th>
                                             <th>Description</th>
                                             <th>Card Detail</th>
@@ -155,11 +155,11 @@
 
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                         <!-- <td><i class="fa fa-cc-visa text-muted font-20"></i> Visa ****123</td>
                                         <td><i class="fa fa-cc-mastercard text-muted font-20"></i> </td>
                                         <td><i class="fa fa-cc-paypal text-muted font-20"></i> </td>
-                                        <td><i class="fa fa-cc-amex text-muted font-20"></i> </td> 
+                                        <td><i class="fa fa-cc-amex text-muted font-20"></i> </td>
                                         <td><i class="fa fa-cc-discover text-muted font-20"></i> </td>
                                         <td>Jul 20, 2020</td> rcly3165-->
                                     </tbody>
@@ -169,11 +169,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -212,12 +212,12 @@
                         {"data": "name", "name": "usr.name"},
                         {"data" : function(data){
                             return '<span class="font-600 text-muted">'+data.transaction_id+'</span>' ;
-                        },"name":"transaction_id"}, 
+                        },"name":"transaction_id"},
 
                         // {"data" : function(data){
-                        //     return data.currency_symbol+data.buy_price; 
+                        //     return data.currency_symbol+data.buy_price;
                         // },"name":"buy_price"},
-                        {"data" : "total_amount", "name":"total_amount"},                       
+                        {"data" : "total_amount", "name":"total_amount"},
                         {"data" : "description","name":"description"},
                         {"data" : "card_type","name":"card_type"},
                         {"data" : "payment_method","name":"payment_method"},
@@ -272,22 +272,22 @@
                     e.preventDefault();
                 });
 
-                $(document).on('click', '.show_user_data', function(e) {              
-                    e.preventDefault();                    
+                $(document).on('click', '.show_user_data', function(e) {
+                    e.preventDefault();
                     $(this).parents('form').submit();
                 });
-                
-                $(document).on('click', '.action_refund', function(e) {              
-                    e.preventDefault();                    
+
+                $(document).on('click', '.action_refund', function(e) {
+                    e.preventDefault();
                     var tx_id = $(this).data('id');
                     var amount = $(this).data('amount');
                     var currency = $(this).data('currency');
                     $('#orderCustomLabel').text('Refund Transaction');
-                    $('#orderCustombody').html('<label class="form-label">Amount</label> <div class="input-group mb-3"> <input type="hidden" name="txn_id" id="txn_id" value="'+ tx_id +'"> <div class="input-group-prepend"><span class="input-group-text">'+ currency +'</span></div> <input type="text" name="refund_amount" id="refund_amount" class="form-control" required placeholder="Amount" value="'+ amount +'" max="'+ amount +'"></div><div class="form-group"><label class="form-label">Description</label> <input type="text" name="description" id="description" class="form-control" required placeholder="Description"> <div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_refund_process" class="btn btn-danger pull-right">Refund</button>'); 
+                    $('#orderCustombody').html('<label class="form-label">Amount</label> <div class="input-group mb-3"> <input type="hidden" name="txn_id" id="txn_id" value="'+ tx_id +'"> <div class="input-group-prepend"><span class="input-group-text">'+ currency +'</span></div> <input type="text" name="refund_amount" id="refund_amount" class="form-control" required placeholder="Amount" value="'+ amount +'" max="'+ amount +'"></div><div class="form-group"><label class="form-label">Description</label> <input type="text" name="description" id="description" class="form-control" required placeholder="Description"> <div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_refund_process" class="btn btn-danger pull-right">Refund</button>');
                     $('#orderCustomModal').modal('show');
                 });
-                
-                $(document).on('click', '#action_refund_process', function(e) {              
+
+                $(document).on('click', '#action_refund_process', function(e) {
                     e.preventDefault();
                     $(this).attr('disabled','true');
                     var txn_id = $('#txn_id').val();
@@ -297,10 +297,10 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'POST',                                                
+                        type: 'POST',
                         url: base_url+'/refund-process',
                         data: {txn_id:txn_id, amount:amount, description:description},
-                        success:function(data){ 
+                        success:function(data){
                             if (data.error) {
                                 $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                             } else {
@@ -308,7 +308,7 @@
                                 table.draw();
                             }
                             $('#action_refund_process').attr('disabled', false);
-                            
+
                         }
                     });
                 });

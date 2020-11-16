@@ -6,11 +6,11 @@
 				<div class="col-md-12">
 					<!-- <div class="Cleftpart">
 						<h1>Countries</h1>
-						<span>Home  |  My Avoo  | Contacts </span> 
+						<span>Home  |  My Avoo  | Contacts </span>
 					</div> -->
 					<div class="Unavbg">
 						<div class="row">
-							<div class="alert-status"> 
+							<div class="alert-status">
 								@if(session()->has('message'))
 								<div class="alert alert-success" id="success">
 									{{ session()->get('message') }}
@@ -37,7 +37,7 @@
 							</ul>
 							</div> -->
 						</div>
-					</div>   
+					</div>
 					@csrf
 					<div class="Paymentsbg ctablebg clearfix">
 						<div class="row">
@@ -45,12 +45,12 @@
 								<table id="contacttable" class="display responsive no-wrap" cellspacing="0" width="100%">
 									<thead>
 										<tr>
-											<th>Country Name</th>											
+											<th>Country Name</th>
 											<th>Country Code</th>
-											<th>Dial Code</th>	
+											<th>Dial Code</th>
 											<th>Currency</th>
-											<th>Symbol</th>	
-											<th>Tax</th>												
+											<th>Symbol</th>
+											<th>Tax</th>
 											<th>Action</th>
 										</tr>
 									</thead>
@@ -59,25 +59,25 @@
 										$i=1; ?>
 										@foreach ($countries as $country)
 										<tr id="{{$i}}">
-										<td><img src="{{ asset('public/images/flags') }}/{{ strtolower( $country->short_code ) }}.png" width="32" height="32">{{$country->country_name}}</td>							
+										<td><img src="{{ asset('images/flags') }}/{{ strtolower( $country->short_code ) }}.png" width="32" height="32">{{$country->country_name}}</td>
 										<td>{{$country->country_code}}</td>
 										<td>{{$country->dial_code}}</td>
-										<td>{{$country->currency}} </td>										
-										<td>{{$country->currency_symbol}}</td>	
-										<td>{{$country->tax}}</td>	
+										<td>{{$country->currency}} </td>
+										<td>{{$country->currency_symbol}}</td>
+										<td>{{$country->tax}}</td>
 										<td>
-										
-										
+
+
 										@php
 										$parameter= Crypt::encrypt($country->id);
 										@endphp
-										
+
 										<a data-toggle="tooltip" title="Edit"  href="edit-country/{{$parameter}}" class="fa fa-pencil-square-o editbtn"></a>
 										<a data-toggle="tooltip" title="Delete" href="#" class="fa fa-trash-o cancelbtn delete_contact" list-id={{$i}} user-id="{{$parameter}}" ></a>
 										<input type="hidden" id="test" value="">
 										</td>
 										</tr>
-										<?php 
+										<?php
 										$i++; ?>
 										@endforeach
 									</tbody>
@@ -107,7 +107,7 @@
 
 		// $(document).on("click", ".open-AddBookDialog", function () {
 		// 	var myBookId = $(this).data('id');
-		// 	$(".modal-body #bookId").val( myBookId );         
+		// 	$(".modal-body #bookId").val( myBookId );
 		// 	// $('#addBookDialog').modal('show');
 		// });
 		// if(confirm("Do you really want to delete this contact ?")){

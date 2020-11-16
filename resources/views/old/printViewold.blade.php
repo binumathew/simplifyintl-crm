@@ -21,8 +21,8 @@
         height: 105px;
         width: 245px;
         position: relative;
-        left: 25px;  /*left: 10px;*/        
-        top: 250px;  /*top: 175px;*/ 
+        left: 25px;  /*left: 10px;*/
+        top: 250px;  /*top: 175px;*/
         line-height: 1.2;
         border: 1px solid #c7bdbd;
         padding: 5px;
@@ -38,7 +38,7 @@
         margin-right: 0px;
         display: flex;
     }
-    .sim_paste{ 
+    .sim_paste{
         width: 47%;
     }
     .sim_paste_hldr{
@@ -52,7 +52,7 @@
         width: 53%;
         /*border: 1px solid black;*/
         /*padding: 8px 0px 0px 20px;*/
-        
+
         margin-top: 30px;
         margin-left: 130px;
     }
@@ -94,17 +94,17 @@
     $simList = $request->list()->get();
     @endphp
     <div class="session-one">
-        <!-- <img src="public/images/logo.svg" height="30px" /> -->
+        <!-- <img src="images/logo.svg" height="30px" /> -->
         <div class="sim_detail_hldr">
-            <table>                
+            <table>
                 <tr>
                     <th>Mobile Number</th>
-                    <th>Sim Number</th>                    
+                    <th>Sim Number</th>
                 </tr>
                 @foreach ($simList as $list)
                 <tr>
                     <td>{{ str_replace("44", "0", $list->stock->phone_number) }}</td>
-                    <td>{{ $list->stock->box_no.'-'.$list->stock->sim_number }}</td>                    
+                    <td>{{ $list->stock->box_no.'-'.$list->stock->sim_number }}</td>
                 </tr>
                 @endforeach
                 <tr>
@@ -117,17 +117,17 @@
                 </tr>
             </table>
         </div>
-        <div class="address">            
+        <div class="address">
             <ul>To
                 <li><b>{{ (isset($address->first_name))? ucfirst($address->first_name).' '.ucfirst($address->last_name): $request->user->name }}</b></li>
                 <li>{{ $address->street }}</li>
                 <li>{{ $address->city }}</li>
-                <li>{{ $address->country.', '. $address->postal_code }}</li>                
+                <li>{{ $address->country.', '. $address->postal_code }}</li>
             </ul>
         </div>
     </div>
     <div class="fold_mark"></div>
-    <div class="session-two">    
+    <div class="session-two">
         <div class="custom_row">
             <div class="sim_paste">
                 <div class="sim_paste_hldr">
@@ -136,15 +136,15 @@
                 </div>
             </div>
             <div class="sim_info"></div>
-            <!-- 
-                
+            <!--
+
                 <p>About AVOO SIM enclosed here; We have enclosed herein your new AVOO SIM in THREE sizes to match your mobile fit. Including Standard, Micro and Nano as you wish.</p><br/><br/> -->
                 <!-- <h4 class="align_center">Pop out the SIM you require</h4> -->
                 <!-- <div class="align_center">
-                    <img src="public/images/sim_img.png" height="50px" />
+                    <img src="images/sim_img.png" height="50px" />
                 </div><br/>
                 <p>Please make sure that you always turn your phone OFF when removing or inserting s SIM Card.</p>
-               
+
             </div> -->
         </div>
         <div class="content_holder">
@@ -154,7 +154,7 @@
             <label>To activate your SIM</label>
             <!-- <ol>
                 <li>
-                    1.  Visit www.avoomobile.com and LOG IN using your New Mobile No. Once you are Logged In for the steps for Activating your New SIM.                                   
+                    1.  Visit www.avoomobile.com and LOG IN using your New Mobile No. Once you are Logged In for the steps for Activating your New SIM.
                 </li>
             </ol> -->
             <!-- <p>Alternatively</p> -->
@@ -166,13 +166,13 @@
             </p><br/>
             <p>
                 <p class="signature">
-                    <img src="{{ asset('/public/images/signature.png')}}">
+                    <img src="{{ asset('/images/signature.png')}}">
                 </p>
-                <b>David Quirk</b><br/>                
+                <b>David Quirk</b><br/>
                 Manager – Customer Services<br/>
                 AVOO Mobile
             </p>
-            
+
         </div>
 
     </div>

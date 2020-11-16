@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
 
             <div class="row">
                 <div class="col-sm-12">
@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-          
+
 
             <div class="row">
                 <div class="col-12">
@@ -39,18 +39,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                   
+
                                 </tbody>
-                            </table>                            
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function () {
@@ -63,17 +63,17 @@
                         serverSide: true,
                         "ajax": {
                             "url": "abandoned-list",
-                            
+
                         },
-                        
+
                         "dataType": "jsonp",
-                        "columns": [                        
+                        "columns": [
                             {"data" : "name","name" : "u.name"},
                             {"data": "promocode", "name": "promocode"},
                             {"data" : "details", "name": "details" },
                             {"data" : "created_at","name" : "created_at"},
                             {"data": function(data){
-                                var route = "{{URL::to('/order-details')}}";               
+                                var route = "{{URL::to('/order-details')}}";
                                 var html = '<form method="post" id="view_order_'+data.id+'" action="'+route+'">@csrf<input type="hidden" name="order_id" value="'+data.order_id+'"></form><a data-toggle="tooltip" title="View Details" href="javascript:void(0);" class="view_order_details text-muted m-r-10" data-id="'+data.id+'"><i class="mdi mdi-eye mdi-24px"></i></a><a data-toggle="tooltip" title="Enquiry History" href="javascript:void(0);" class="enquiry_history text-muted m-r-10" data-id="'+data.id+'"><i class="mdi mdi-comment-text mdi-24px"></i></a><a href="javascript:void(0);" class="manage_promocode text-muted m-r-10" data-toggle="tooltip" data-placement="top" title="Edit Promocode" data-id="'+data.id+'"><i class="mdi mdi-account mdi-24px"></i></a>';
                                 return  html;
                             }, "name": "action","orderable": false, "searchable": false},
@@ -89,16 +89,16 @@
 
                     $('#searchBtn').on('click', function(e) {
                         e.preventDefault();
-                        $('#orderlist').DataTable().draw();                        
+                        $('#orderlist').DataTable().draw();
                     });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
+                    $(document).on('click', '.show_user_data', function(e) {
                         e.preventDefault();
                         var cart_id = $(this).data('cart');
                         $('#show_user_'+cart_id).submit();
                     });
                 });
-            </script>   
+            </script>
         </div>
         <!-- end container-fluid -->
     </div>

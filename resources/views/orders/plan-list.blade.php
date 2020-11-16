@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-      
+
             <div class="row">
                 <div class="col-md-9">
                     <div class="card m-b-20">
@@ -43,8 +43,8 @@
                                 @endforeach
                             </ul>
 
-                            <form id="plan-form"> 
-                                <div class="tab-content">                                
+                            <form id="plan-form">
+                                <div class="tab-content">
                                     @foreach($providers as $key => $provider)
                                     <div class="tab-pane {{($key == '0')?'active':''}} p-3" id="{{strtolower($provider->provider)}}" role="tabpanel">
                                         <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -66,16 +66,16 @@
                                                             <input type="number" class="form-control form-control-sm product_qty"  placeholder="" aria-controls="datatable" name="product[{{$plan->id}}]" min="0" value="{{$value}}">
                                                         </td>
                                                     </tr>
-                                                    @endforeach                                 
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
-                                    @endforeach   
-                                    <p id="plan_error"></p>                                 
-                                    <div class="pull-right">                                    
+                                    @endforeach
+                                    <p id="plan_error"></p>
+                                    <div class="pull-right">
                                         <button type="button" class="btn btn-success" id="select_plan"><strong>Continue</strong></button> <!-- waves-effect waves-light -->
-                                    </div>                                
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -100,10 +100,10 @@
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function () {
@@ -123,27 +123,27 @@
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/select-plan',
                                 data: formData,
                                 cache: false,
                                 contentType: false,
                                 processData: false,
-                                success:function(data){ 
+                                success:function(data){
                                     if (data.error) {
                                         $('#plan_error').html('<div class="alert alert-danger alert-colored mb-0" role="alert">'+data.message+'</div>');
                                     } else {
-                                        location.href = base_url+'/bolt-ons';   
+                                        location.href = base_url+'/bolt-ons';
                                     }
                                 }
                             });
-                            
+
                         }else{
-                            $('#plan_error').html('<div class="alert alert-danger alert-colored mb-0" role="alert">Please select atleast one product!</div>'); 
+                            $('#plan_error').html('<div class="alert alert-danger alert-colored mb-0" role="alert">Please select atleast one product!</div>');
                         }
                     });
                 });
-            </script>   
+            </script>
         </div>
         <!-- end container-fluid -->
     </div>

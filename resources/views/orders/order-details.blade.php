@@ -2,10 +2,10 @@
 @section('content')
 <div class="wrapper">
     <div class="container-fluid">
-        <!-- <link href="{{ asset('public/plugins/smartwizard/smart_wizard.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/plugins/smartwizard/smart_wizard_theme_arrows.min.css') }}" rel="stylesheet" type="text/css"/> -->
-        <link href="{{ asset('public/plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+        <!-- <link href="{{ asset('plugins/smartwizard/smart_wizard.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/smartwizard/smart_wizard_theme_arrows.min.css') }}" rel="stylesheet" type="text/css"/> -->
+        <link href="{{ asset('plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
         <!-- Page-Title -->
         <div class="row">
             <div class="col-sm-12">
@@ -21,7 +21,7 @@
             </div>
         </div>
         <!-- end page title end breadcrumb -->
-                 
+
         <div class="row">
             <div class="col-sm-12">
 
@@ -48,11 +48,11 @@
             @if(!empty($sim_request))
             <div class="col-sm-12">
                 <div class="card m-b-20">
-                    <div class="card-body">                       
-                        @php $i=0; $active_flag = false; @endphp           
+                    <div class="card-body">
+                        @php $i=0; $active_flag = false; @endphp
                         <table class="table table-striped dt-responsive nowrap table-vertical datatable" width="100%" cellspacing="0">
                             <thead>
-                                <tr>                                    
+                                <tr>
                                     <th width="25%">Name:  {{$sim_request[0]->user->name}}</th>
                                     <th width="25%">Email: {{$sim_request[0]->user->email}}</th>
                                     <th width="25%">Phone: {{str_replace('+44','0',$sim_request[0]->user->phone)}}</th>
@@ -69,7 +69,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div>                
+                </div>
             </div>
 
             <div class="col-sm-12">
@@ -80,18 +80,18 @@
                                 <tr>
                                   <th>Plan</th>
                                   <th>SIM in Pack</th>
-                                  <th>Number</th>                     
+                                  <th>Number</th>
                                   <th>Status</th>
                                   <th>Action</th>
                                 </tr>
                             </thead>
                            <tbody>
                                 @foreach ($sim_list as $sim)
-                                @php                                  
-                                  $provider = $sim->auto_plan->plan->provider;  
+                                @php
+                                  $provider = $sim->auto_plan->plan->provider;
                                   $simDetail = $sim->getSimDetails();
                                 @endphp
-                                <tr>                    
+                                <tr>
                                   <td>{{ $sim->auto_plan->plan->plan_name.' ('.$provider.')'}}</td>
                                   <td>{{ $sim->sim_count }}</td>
                                   <td>{{ $simDetail['phone_number'] }}</td>
@@ -115,13 +115,13 @@
                                       @endif
                                     @endif
                                     <button class="btn btn-primary btn-xs sim_detail_view" data-id="{{ $simDetail['idetifier'] }}">Details</button>
-                                  </td>                   
-                                </tr>                   
+                                  </td>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                </div>                
+                </div>
             </div>
             <input type="hidden" id="act_stock_id" name="act_stock_id" value="">
             <input type="hidden" id="act_request_id" name="act_request_id" value="{{ json_encode($request_id)}}">
@@ -130,9 +130,9 @@
     </div>
 </div>
 
-<!-- <script src="{{ asset('public/plugins/smartwizard/jquery.smartWizard.js') }}"></script> -->
-<script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
-<script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<!-- <script src="{{ asset('plugins/smartwizard/jquery.smartWizard.js') }}"></script> -->
+<script src="{{ asset('plugins/smartwizard/smart_wizard.js') }}"></script>
+<script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 
 <script type="text/javascript">
     $(document).ready(function(){
@@ -142,7 +142,7 @@
         //     format: 'yyyy-mm-dd',
         //     todayHighlight: true
         // });
-        
+
         $(document).on('click','.activate_sim',function () {
             var sim_id = $(this).attr('data-id');
             var stock_id = $('#sim_stock_'+sim_id).val();
@@ -151,14 +151,14 @@
               headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               },
-              type: 'POST',                                                
+              type: 'POST',
               url: base_url+'/sim-list',
               data : {stock_id:stock_id, req_id:req_id},
-              success:function(data){ 
-                if (data.error) { 
-                  alert(data.message);            
-                }else{                  
-                  $('#act_stock_id').val(stock_id); 
+              success:function(data){
+                if (data.error) {
+                  alert(data.message);
+                }else{
+                  $('#act_stock_id').val(stock_id);
                   $('#smartwizard').html(data.html);
                   $('#smartwizard').smartWizard({
                     selected: 0,
@@ -171,11 +171,11 @@
                       showPreviousButton: false,
                     },
                     anchorSettings: {
-                      anchorClickable: false, 
+                      anchorClickable: false,
                     },
                   });
 
-                  // $("#smartwizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) { 
+                  // $("#smartwizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
                   //   if (stepNumber <= 2) {
                   //     var value = $('#wizard-error_'+stepNumber).val();
                   //     if (value != 0) {
@@ -183,10 +183,10 @@
                   //       // alert("Please complete activation before move to next step.");
                   //       // // swal("Error", "Please complete activation before move to next step.", "error");
                   //       // return false;
-                  //     }                      
-                  //   } 
+                  //     }
+                  //   }
                   //   return true;
-                  // }); 
+                  // });
 
 
                   $("#smartwizard").on("stepContent", function(e, anchorObject, stepIndex) {
@@ -220,13 +220,13 @@
                                 $('#smartwizard').smartWizard("loader", "show");
                             }
                         }).done(function( res ) {
-                            if(res.error){                          
+                            if(res.error){
                               $('.drag-target').html('<div class="alert alert-danger alert-colored" role="alert"><strong>Notification</strong> '+res.message+'</div>');
                             }else{
                               resolve(res.html);
                             }
                             $('#smartwizard').smartWizard("loader", "hide");
-                        }).fail(function(err) {  
+                        }).fail(function(err) {
                             reject( "An error loading the resource" );
                             $('#smartwizard').smartWizard("loader", "hide");
                         });
@@ -244,7 +244,7 @@
               }
             });
         });
-        
+
         $(document).on('click','.sim_provisioning',function () {
             var stock_id = $(this).attr('data-stock_id');
             var req_id = $('#act_request_id').val();
@@ -252,13 +252,13 @@
               headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               },
-              type: 'POST',                                                
+              type: 'POST',
               url: base_url+'/order-provision',
               data : {stock_id:stock_id, req_id:req_id},
-              success:function(data){ 
-                if (data.error) { 
-                  alert(data.message);            
-                }else{                                    
+              success:function(data){
+                if (data.error) {
+                  alert(data.message);
+                }else{
                   $('#smartwizard').html(data.html);
                 }
               }
@@ -266,22 +266,22 @@
         });
 
         $(document).on('click','#provision_request',function () {
-            var $this = $(this);        
-            $this.attr('disabled',true);  
+            var $this = $(this);
+            $this.attr('disabled',true);
             var stock_id = $this.attr('data-stock_id');
             var req_id = $('#act_request_id').val();
             $.ajax({
               headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               },
-              type: 'POST',                                                
+              type: 'POST',
               url: base_url+'/provision-request',
               data : {stock_id:stock_id, req_id:req_id},
-              success:function(data){ 
-                if (data.error) { 
-                  $this.attr('disabled',false); 
-                  alert(data.message);            
-                }else{                  
+              success:function(data){
+                if (data.error) {
+                  $this.attr('disabled',false);
+                  alert(data.message);
+                }else{
                   $('#smartwizard').html(data.html);
                 }
               }
@@ -303,36 +303,36 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'POST',                                                
+                type: 'POST',
                 url: base_url+'/item-detail',
                 data: {stock_id:stock_id},
-                success:function(data){ 
+                success:function(data){
                     $('#orderCustomLabel').text('Sim List - Details');
                     if(data.error){
-                        $('#orderCustombody').html(data.message); 
+                        $('#orderCustombody').html(data.message);
                     } else {
                        $('#orderCustombody').html(data.html);
-                    }              
+                    }
                     $('#orderCustomModal').modal('show');
                 }
             });
         });
 
         $(document).on('change','.connection_type',function () {
-            var sim_id = $(this).attr('data-id'); 
-            var status = $(this).val();           
+            var sim_id = $(this).attr('data-id');
+            var status = $(this).val();
             $.ajax({
                 headers: {
                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'POST',                                                
+                type: 'POST',
                 url: base_url+'/port-request',
                 data : {sim_id:sim_id, status:status},
-                success:function(data){ 
-                  if (data.error) { 
-                    alert(data.message);            
+                success:function(data){
+                  if (data.error) {
+                    alert(data.message);
                   }else{
-                    
+
                   }
                 }
             });
@@ -346,15 +346,15 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'POST',                                                
+                type: 'POST',
                 url: base_url+'/verify-sim-number',
                 data: {sim_number:sim_number},
-                success:function(data){ 
-                  if (data.error) { 
+                success:function(data){
+                  if (data.error) {
                       $this.addClass('text-danger');
-                      $this.attr('title',data.message);     
+                      $this.attr('title',data.message);
                   }else{
-                      $this.attr('title',''); 
+                      $this.attr('title','');
                       $this.addClass('text-success');
                   }
                 }
@@ -362,26 +362,26 @@
         });
 
         $(document).on('click','.check_provision_status',function () {
-            var sim_id = $(this).attr('data-id'); 
+            var sim_id = $(this).attr('data-id');
             $.ajax({
               headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               },
-              type: 'POST',                                                
+              type: 'POST',
               url: base_url+'/provision-check',
               data : {sim_id:sim_id},
-              success:function(data){ 
+              success:function(data){
                 $('#orderCustomLabel').text('Provision Status');
                 if(data.error){
-                  $('#orderCustombody').html(data.message); 
+                  $('#orderCustombody').html(data.message);
                 } else {
                   $('#orderCustombody').html(data.html);
-                }              
+                }
                 $('#orderCustomModal').modal('show');
                 setInterval(function(){ location.reload(); }, 5000);
               }
             });
-        });        
+        });
 
         $(document).on('click', '.verify_pac_code', function () {
             var $this = $(this);
@@ -392,40 +392,40 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'POST',                                                
+                type: 'POST',
                 url: base_url+'/verify-pac-code',
                 data: {pac_code:pac_code,list_id:sim_id,cli:cli},
-                success:function(data){ 
-                  if (data.error) { 
+                success:function(data){
+                  if (data.error) {
                       $this.addClass('text-danger');
-                      $this.attr('title',data.message);     
+                      $this.attr('title',data.message);
                   }else{
                       // $("#transfer-date").datepicker({
                       //     startDate: '2020-05-01',
                       //     endDate: '2020-05-31'
                       //   });
-                      $this.attr('title',''); 
+                      $this.attr('title','');
                       $this.addClass('text-success');
-                  } 
+                  }
                 }
             });
-        }); 
+        });
 
-        $(document).on('click', '#provision_process', function () {  
-            var $this = $(this);                 
-            if($("#provision-form").valid()){       
-                $this.prop('disabled', true);         
+        $(document).on('click', '#provision_process', function () {
+            var $this = $(this);
+            if($("#provision-form").valid()){
+                $this.prop('disabled', true);
                 var provision = $("#provision-form").serialize();
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: base_url+'/provision-process',
                     data: {provision:provision},
-                    success:function(data){ 
-                        if (data.error) {   
-                            $this.prop('disabled', false);                               
+                    success:function(data){
+                        if (data.error) {
+                            $this.prop('disabled', false);
                             alert(data.message);
                         } else {
                             location.reload();
@@ -433,7 +433,7 @@
                     }
                 });
             }
-        });   
+        });
     });
 </script>
 @endsection

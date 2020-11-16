@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -39,24 +39,24 @@
                                                 <select name="opted_status" id="opted_status" class="form-control custom-select">
                                                     <option value="">Choose</option>
                                                     <option value="0">Request Received</option>
-                                                    <option value="1">Processed</option> 
-                                                    <option value="2">Failed </option>  
+                                                    <option value="1">Processed</option>
+                                                    <option value="2">Failed </option>
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class=" col-md-12">
                                             <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
-                                            
+
                                         </div>
                                     </div>
                                     </form>
-                                </div>                                
+                                </div>
                                 <table id="services-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Phone Number</th>                               
+                                            <th>Phone Number</th>
                                             <th>Email</th>
                                             <th>Provider</th>
                                             <th>Service</th>
@@ -68,7 +68,7 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -76,11 +76,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -89,7 +89,7 @@ $(document).ready(function(){
 
     $('#resetBtn').on('click', function(e) {
        $('#services-search-form')[0].reset();
-       $('#services-table').DataTable().draw();       
+       $('#services-table').DataTable().draw();
     });
 
     var servicesTable = $('#services-table').DataTable({
@@ -118,7 +118,7 @@ $(document).ready(function(){
             {"data": "phone", "name": "phone"},
             {"data" : "email", "name":"email"},
             {"data" : "provider", "name":"provider"},
-            {"data" : "service_name", "name":"service_name"},                       
+            {"data" : "service_name", "name":"service_name"},
             {"data" : "opted_value", "name":"opted_value"},
             {"data" : "opted_status","name":"opted_status"},
             {"data" : "description","name":"description"},
@@ -160,7 +160,7 @@ $(document).ready(function(){
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'POST',                                                
+                type: 'POST',
                 url: base_url+'/services-change',
                 data: {dataid:dataid,user_id:datauser,requesttype:reqtype},
                 beforeSend: function(){
@@ -169,16 +169,16 @@ $(document).ready(function(){
                 complete: function(){
                     $this.html(datatag);
                 },
-                success:function(data){ 
-                  if (data.status == 200) { 
+                success:function(data){
+                  if (data.status == 200) {
                       alertify.success(data.message);
                   }else{
                      alertify.error(data.message);
                   }
-                  $('#services-table').DataTable().draw();  
+                  $('#services-table').DataTable().draw();
                 }
             });
-        },function(){ alertify.error('Cancel')}); 
+        },function(){ alertify.error('Cancel')});
     });
 });
 </script>

@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
 
             <link rel="stylesheet" href="assets/plugins/jquery-steps/jquery.steps.css">
             <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -24,14 +24,14 @@
                     </div>
                 </div>
             </div>
-                
+
             <div class="row">
                 <div class="col-md-2">
                     <div class="card m-b-20">
-                        
+
                         <div class="card-body right-nav">
                             <ul>
-                                <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                <li><a href="{{ url('/settings') }}">General</a></li>
                                 <li><a href="{{ url('/template') }}">Email Template</a></li>
                                 <li><a href="{{ url('/roles') }}" class="selected">Roles</a></li>
                                 <li><a href="{{ url('/countries') }}">Countries</a></li>
@@ -56,25 +56,25 @@
                                 <li><a href="#">Pusher.com</a></li>
                                 <li><a href="#">Google</a></li>
                                 <li><a href="#">Misc</a></li> -->
-                            </ul>                           
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-10">                
+                <div class="col-md-10">
                     <div class="card m-b-20">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12 m-b-20">
                                     <div class=" text-right">
                                         <a href="{{ url('/manage-role') }}" class="btn btn-primary ">Add Role</a>
-                                    </div>                                   
+                                    </div>
                                 </div>
                             </div>
 
                             <table id="roleList" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                 <thead>
-                                    <tr>                                            
+                                    <tr>
                                         <th>Sl No</th>
                                         <th>Role Name</th>
                                         <th>Short Code</th>
@@ -110,12 +110,12 @@
             </div>
 
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#roleList').DataTable({responsive: true, pageLength: 25, bSort : false, language: { search: "" }});
@@ -130,10 +130,10 @@
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
                                 type:"POST",
-                                url:base_url+'/delete-role',                    
+                                url:base_url+'/delete-role',
                                 data:{role_id:role_id},
                                 success:function(){
-                                    $('#role_'+role_id).fadeOut(1000);                                    
+                                    $('#role_'+role_id).fadeOut(1000);
                                 }
                             });
                         }
@@ -146,4 +146,3 @@
     <!-- page wrapper end -->
 @endsection
 
-        

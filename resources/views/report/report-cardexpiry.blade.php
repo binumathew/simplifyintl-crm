@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -34,10 +34,10 @@
                                                     <option value="">Choose</option>
                                                     <option value="1">This Week</option>
                                                     <option value="2">This Month</option>
-                                                    <option value="3">Next Month</option>  
+                                                    <option value="3">Next Month</option>
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Gateway</label>
@@ -48,30 +48,30 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class=" col-md-12">
                                             <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
                                             @if(Helper::has_permission('reports'))
                                             <button type="submit" class="btn btn-info pull-right" id="export" name="exportdata" value="1">Export</button>
                                             @endif
-                                            
+
                                         </div>
                                     </div>
                                     </form>
-                                </div>                                
+                                </div>
                                 <table id="cardexpiry-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Phone Number</th>                               
+                                            <th>Phone Number</th>
                                             <th>Email</th>
                                             <th>Card Type</th>
                                             <th>Card Expiry</th>
                                             <th>Gateway</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -79,11 +79,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -118,7 +118,7 @@ $(document).ready(function(){
         "columns": [
             {"data": "name", "name": "name"},
             {"data": "phone", "name": "phone"},
-            {"data" : "email", "name":"email"},                       
+            {"data" : "email", "name":"email"},
             {"data" : "card_type","name":"card_type"},
             {"data" : "card_expiry","name":"card_expiry"},
             {"data" : "gateway","name":"gateway"},

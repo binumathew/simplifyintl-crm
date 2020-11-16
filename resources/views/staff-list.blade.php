@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -60,7 +60,7 @@
                         <div class="clearfix"></div>
                         <p class=" mb-0 m-t-10 text-muted">-<span class="pull-right"></span></p>
                     </div>
-                </div>                    
+                </div>
             </div>
             @endif
             <div class="row">
@@ -72,8 +72,8 @@
                                     @if(Helper::has_permission('staff','create'))
                                     <div class=" text-right">
                                         <a href="{{ url('/create-staff') }}" class="btn btn-primary ">Add Staff</a>
-                                    </div> 
-                                    @endif                                  
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                             <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -81,22 +81,22 @@
                                     <thead>
                                         <tr>
                                             <th class="d-none">#</th>
-                                            <th>Name</th>                                           
+                                            <th>Name</th>
                                             <th>Email</th>
-                                            <th>Phone No</th> 
-                                            <th>Promo Code</th>                                     
+                                            <th>Phone No</th>
+                                            <th>Promo Code</th>
                                             <th>Role</th>
                                             <th>Created Date</th>
-                                            <th>Status</th>                          
+                                            <th>Status</th>
                                             <th>Action</th>
-                                        </tr>                                    
+                                        </tr>
                                     </thead>
-                                    <tbody> 
+                                    <tbody>
                                         @php $i=0; @endphp
                                             @foreach ($staff as $user)
                                             <tr id="{{ ++$i }}">
                                                 <td class="d-none">{{ $i }}</td>
-                                                <td>{{ $user->first_name .' '. $user->last_name }}</td>                     
+                                                <td>{{ $user->first_name .' '. $user->last_name }}</td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $user->phone }}</td>
                                                 <td>{{ $user->promocode }}</td>
@@ -107,8 +107,8 @@
                                                     <span class="badge badge-success">Active</span>
                                                     @else
                                                     <span class="badge badge-danger">In-Active</span>
-                                                    @endif 
-                                                </td>                                    
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     @if(Helper::has_permission('staff','edit'))
                                                     <a title="" href="{{ url('/edit-staff', Crypt::encrypt($user->id)) }}" data-original-title="Edit" data-toggle="tooltip" class="text-muted"><i class="mdi mdi-pencil mdi-24px"></i></a>
@@ -122,7 +122,7 @@
                                                     &nbsp;&nbsp;&nbsp;<a data-toggle="tooltip" href="javascript:void(0);" data-original-title="Send Credentials" class="resend_credentials text-muted" data-id="{{ Crypt::encrypt($user->id) }}"><i class="mdi mdi-email mdi-24px"></i></a>
                                                 </td>
                                             </tr>
-                                            @endforeach                                      
+                                            @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -131,29 +131,29 @@
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#staffList').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});
 
                     $('.dataTables_filter input').attr('placeholder', 'Search');
 
-                    $(document).on('click','.resend_credentials',function (e) {  
-                        var $this = $(this);    
+                    $(document).on('click','.resend_credentials',function (e) {
+                        var $this = $(this);
                         var id =  $this.attr('data-id');
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/send-password',
                             data: {id:id},
-                            success:function(data){                                
+                            success:function(data){
                                 if (data.error) {
                                     alert(data.message);
                                 } else {

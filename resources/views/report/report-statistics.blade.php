@@ -16,18 +16,18 @@
                                                     <option value="">Choose</option>
                                                     <option value="1">This Week</option>
                                                     <option value="2">This Month</option>
-                                                    <option value="3">Previous Month</option>   
+                                                    <option value="3">Previous Month</option>
                                                 </select>
                                             </div>
-                                        </div>  
+                                        </div>
                                         <div class=" col-md-12">
                                             <button type="button" id="statisticSearch" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
-                                            
+
                                         </div>
                                     </div>
                                     </form>
-                                </div>                                
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                                     @foreach($userdata->all as $ukey =>$list)
 
                                     @if(isset($list->status))
-                                    @php $status = ($list->status == 1) ? "Active" : "InActive"; 
+                                    @php $status = ($list->status == 1) ? "Active" : "InActive";
                                     @endphp
                                     <li class="list-inline-item" style="width: 15% !important">
                                         <h5 class="mb-0 us_cnt" id="{{ $status }}">{{ $list->usercount }}</h5>
@@ -52,7 +52,7 @@
                                     </li>
                                     @endif
                                     @if(isset($list->user_platform))
-                                    @php $platform = ($list->user_platform != "") ? ucfirst(strtolower($list->user_platform)) : "Others"; 
+                                    @php $platform = ($list->user_platform != "") ? ucfirst(strtolower($list->user_platform)) : "Others";
                                     @endphp
                                     <li class="list-inline-item" style="width: 15% !important">
                                         <h5 class="mb-0 us_cnt" id="{{ $platform }}">{{ $list->usercount }}</h5>
@@ -76,7 +76,7 @@
                                 <h4 class="mt-0 header-title">Payment</h4>
 
                                 <ul class="list-inline widget-chart m-t-20 m-b-15 text-center">
-                                @php $userpay = json_decode($user_pay); @endphp 
+                                @php $userpay = json_decode($user_pay); @endphp
                                 @foreach($userpay as $ukey => $plist)
                                 @php
                                 $total  = 0;
@@ -98,7 +98,7 @@
                             </div>
                         </div>
                     </div> <!-- end col -->
-                </div> 
+                </div>
 
                 <div class="row">
                     <div class="col-lg-6">
@@ -109,7 +109,7 @@
 
                                 <ul class="list-inline widget-chart m-t-20 m-b-15 text-center">
                                 @php $plantype = json_decode($plan_type); @endphp
-                                @foreach($plantype as $pkey => $plist) 
+                                @foreach($plantype as $pkey => $plist)
                                     <li class="list-inline-item">
                                         <h5 class="mb-0 pl_cnt" id="{{ $plist->label }}">{{ $plist->value }}</h5>
                                         <p class="text-muted font-14">{{ $plist->label }}</p>
@@ -133,8 +133,8 @@
                         </div>
                     </div> <!-- end col -->
 
-                    
-                </div> 
+
+                </div>
 
                 <div class="row">
                     <div class="col-12">
@@ -149,7 +149,7 @@
                         </div>
                     </div> <!-- end col -->
 
-                </div> 
+                </div>
 
                 <div class="row">
                     <div class="col-lg-12" >
@@ -158,11 +158,11 @@
                                 <h4 class="mt-0 header-title">Auto Plan Status</h4>
 
                                 <div id="autoplanstatChart" class="morris-charts" style="height: 300px"></div>
-                                
+
                             </div>
                         </div>
-                    </div> 
-                </div> 
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-lg-6">
@@ -171,13 +171,13 @@
 
                                 <h4 class="mt-0 header-title">Porting Based</h4>
                                 @php $portingvals = json_decode($porting_vals); @endphp
-                                @foreach($portingvals as $skey => $slist) 
+                                @foreach($portingvals as $skey => $slist)
                                     <li class="list-inline-item">
                                         <h5 class="mb-0 pb_cnt" id="{{ str_replace(" ","",$slist->label) }}">{{ $slist->data }}</h5>
                                         <p class="text-muted font-14">{{ $slist->label }}</p>
                                     </li>
                                 @endforeach
-                                
+
                                 <div id="portingChart" class="ct-chart ct-golden-section" style="height: 320px"></div>
                             </div>
                         </div>
@@ -191,7 +191,7 @@
 
                                 <ul class="list-inline widget-chart m-t-20 m-b-15 text-center">
                                 @php $simplanrenw = json_decode($simplan_renew); @endphp
-                                @foreach($simplanrenw as $skey => $slist) 
+                                @foreach($simplanrenw as $skey => $slist)
                                     <li class="list-inline-item">
                                         <h5 class="mb-0 sm_cnt" id="{{ preg_replace('/[^a-zA-Z0-9-_\.]/','', $slist->label) }}">{{ $slist->data }}</h5>
                                         <p class="text-muted font-14">{{ $slist->label }}</p>
@@ -207,7 +207,7 @@
                             </div>
                         </div>
                     </div> <!-- end col -->
-                </div> 
+                </div>
         </div>
 <script>
     var uData          = JSON.parse('<?php echo $user_data; ?>');
@@ -221,5 +221,5 @@
     var planstatus     = JSON.parse('<?php echo $plan_status; ?>');
     var planstatusSeries     = JSON.parse('<?php echo $plan_status_series; ?>');
 </script>
-<script src="{{ asset('public/js/reportchart.js')}}"></script>
+<script src="{{ asset('js/reportchart.js')}}"></script>
 @endsection

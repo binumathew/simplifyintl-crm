@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <!-- <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
-            <!-- <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
+            <!-- <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
+            <!-- <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
- 
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="card m-b-20">
@@ -46,21 +46,21 @@
                         </div>
                     </div>
                     <div class="card m-b-20">
-                        <div class="card-body">                           
+                        <div class="card-body">
                             <h6>Order summary</h6>
                              @php  $product = $extra = $premium = ''; $premium_cost = 0;
-                                foreach($order as $item) {   
-                                    foreach($item->sim_data as $sim) {        
+                                foreach($order as $item) {
+                                    foreach($item->sim_data as $sim) {
                                         $plan_name = $sim[0]['plan_name'];
                                         $plan_price = $sim[0]['plan_price'];
-                                        
-                                        $product .='<tr><td>Sim Purchased with '. $plan_name; 
+
+                                        $product .='<tr><td>Sim Purchased with '. $plan_name;
                                         foreach($sim as $list) {
                                             $product .= '<i>0'.ltrim($list['phone_number'],'44').'</i>';
-                                        }                                            
-                                        $product .= '</td><td>'.count($sim).'</td><td>'.$currency.''.number_format($plan_price, 2, '.', "").'</td></tr>'; 
-                                    
-                                        foreach($sim as $list) {                                               
+                                        }
+                                        $product .= '</td><td>'.count($sim).'</td><td>'.$currency.''.number_format($plan_price, 2, '.', "").'</td></tr>';
+
+                                        foreach($sim as $list) {
                                             if($list['extra_credit'] > 0 ) {
                                                 $extra .='<tr><td>Topup <i> 0'. ltrim($list['phone_number'],'44') .'</i></td><td></td><td>' .$currency.''.number_format($list['extra_credit'], 2, '.', "").'</td></tr>';
                                             }
@@ -74,7 +74,7 @@
                             @endphp
                             <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                 <thead>
-                                    <tr>                                        
+                                    <tr>
                                         <th>Item</th>
                                         <th width="180">Quantity</th>
                                         <th width="100">Price</th>
@@ -112,7 +112,7 @@
                                 <div class="col-md-2"></div>
                                 <div class="col-md-4">
                                     @php $address = json_decode($order[0]->billing_address); @endphp
-                                    <h6><b>Billing Address</b></h6>                               
+                                    <h6><b>Billing Address</b></h6>
                                     {{$address->first_name}} {{$address->last_name}}<br/>
                                     {{$address->street}}<br/>
                                     {{$address->city}}<br/>
@@ -129,7 +129,7 @@
                                     {{$address->country}}<br/>
                                     {{$address->postal_code}}<br/>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -138,49 +138,49 @@
         </div>
     </div>
 
-                                
-       
-                    
-    
 
-            <!-- <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script> -->
-            <script src="{{ asset('public/js/jquery.creditCardValidator.js') }}"></script>  
-            <script src="{{ asset('public/js/jquery.mask.js') }}"></script> 
+
+
+
+
+            <!-- <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script> -->
+            <script src="{{ asset('js/jquery.creditCardValidator.js') }}"></script>
+            <script src="{{ asset('js/jquery.mask.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function () {
-                    $(document).on('click', '.btn_add_new_card', function(e){ 
+                    $(document).on('click', '.btn_add_new_card', function(e){
                         $('.card_form').toggleClass('d-none');
                         $("input[name='card_list']").prop('checked',false);
-                        if(!$('.card_form').hasClass('d-none')){                                                    
+                        if(!$('.card_form').hasClass('d-none')){
                             $("input[name='credit_card']").val('new');
                         }
                     });
 
                     $(document).on('click', '.gateway', function(e){
                         $('.gateway').removeClass('active');
-                        $(this).addClass('active'); 
+                        $(this).addClass('active');
                         var gateway = $(this).data('gateway');
                         var user_id = $('#user_id').val();
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/select-gateway',
-                            data: {gateway:gateway,user_id:user_id},                            
+                            data: {gateway:gateway,user_id:user_id},
                             success:function(data){
-                                $('.tab-content').html(data.html);                                  
+                                $('.tab-content').html(data.html);
                             }
-                        }); 
+                        });
                     });
-                    
+
 
                     $('.card_number').mask('0000-0000-0000-0000');
 
-                    $(document).on( 'change', '#card_number', function(){                  
+                    $(document).on( 'change', '#card_number', function(){
 				        var result = $("#card_number").validateCreditCard();
 				        if(result.card_type !== null){
 				            $('#card_type').val(result.card_type.name);
@@ -200,7 +200,7 @@
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/payment',
                                 data: formData,
                                 cache: false,
@@ -209,19 +209,19 @@
                                 success:function(data){
                                     if(data.error){
                                     	$this.prop('disabled',false);
-                                       $('#payment_status').html(data.message); 
+                                       $('#payment_status').html(data.message);
                                     }else{
                                         // location.href = base_url+'/success';
                                     }
                                 }
-                            });  
-                        }                     
+                            });
+                        }
                     });
 
                     $("#pay-form").validate({
                         // errorClass: "invalid form-error",
                         // errorElement: 'div',
-                        errorPlacement: function(error, element) {                       
+                        errorPlacement: function(error, element) {
                             element.addClass('border border-danger');
                             error.insertAfter(element);
                         },
@@ -232,23 +232,23 @@
                         rules: {
                             card_number:{
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']").val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']").val() == 'new')?true:false;
                                     }
                                 },
                                 regex:/^[0-9-]{19}$/,
                             },
                             card_holder:{
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
-                                },                                
+                                },
                             },
                             expiry_year: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 maxlength: 2,
@@ -257,8 +257,8 @@
                             },
                             expiry_month: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 maxlength: 2,
@@ -267,8 +267,8 @@
                             },
                             card_cvv: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 maxlength: 4,
@@ -277,23 +277,23 @@
                             },
                             card_postcode: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 regex:/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/
                             },
                             card_street: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                             },
                             card_list: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?false:true; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?false:true;
                                     }
                                 },
                             }
@@ -301,15 +301,15 @@
                         messages: {
                             card_holder:{
                                 regex:"Enter a valid card holder name!",
-                            }, 
+                            },
                             card_postcode: {
                                 required:"Enter your postal code!",
-                                regex:"Invalid Postalcode",               
+                                regex:"Invalid Postalcode",
                             },
-                            expiry_year: "Enter card expiry year!", 
-                            expiry_month: "Enter card expiry month!",                  
-                            terms_cond: 'Agree the Terms and Conditions to proceed!.', 
-                            card_list: 'Please choose a credit card or add a new one'                
+                            expiry_year: "Enter card expiry year!",
+                            expiry_month: "Enter card expiry month!",
+                            terms_cond: 'Agree the Terms and Conditions to proceed!.',
+                            card_list: 'Please choose a credit card or add a new one'
                         }
                     });
 
@@ -324,7 +324,7 @@
 
                     $(document).on('change', '.card_details', function(){
                         $('.selected_card').val('new');
-                        $('.radio_card_list').prop('checked',false);        
+                        $('.radio_card_list').prop('checked',false);
                     });
 
                     $(document).on('click', '.radio_card_list', function(){
@@ -340,8 +340,8 @@
                             $('.pay_card').addClass('hidden');
                         }
                     });
-                });                                        
-            </script>   
+                });
+            </script>
         </div>
         <!-- end container-fluid -->
     </div>

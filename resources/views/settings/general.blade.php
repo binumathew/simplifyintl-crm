@@ -8,9 +8,9 @@
 
             <div class="container-fluid">
 
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
                 <div class="row">
 
@@ -46,13 +46,13 @@
 
                         <div class="card m-b-20">
 
-                            
+
 
                             <div class="card-body right-nav">
 
                                 <ul>
 
-                                    <li><a href="{{ url('/settings') }}" class="selected">General</a></li>                                    
+                                    <li><a href="{{ url('/settings') }}" class="selected">General</a></li>
 
                                     <li><a href="{{ url('/template') }}">Email Template</a></li>
 
@@ -79,12 +79,12 @@
                                     <li><a href="{{ url('/stock-list') }}">Stock</a></li>
                                     @if(Helper::has_permission('api-log'))
                                     <li><a href="{{ url('/api-logger') }}">API Log</a></li>
-                                    @endif 
+                                    @endif
 
                                     <li><a href="{{ url('/activity-log') }}">Activity Log</a></li>
-                                    @if(Helper::has_permission('stock'))                                  
-                                    <li><a href="{{ url('/stock-list') }}">Stock</a></li> 
-                                    @endif 
+                                    @if(Helper::has_permission('stock'))
+                                    <li><a href="{{ url('/stock-list') }}">Stock</a></li>
+                                    @endif
 
 
 
@@ -108,7 +108,7 @@
 
                                     <li><a href="#">Misc</a></li> -->
 
-                                </ul>                            
+                                </ul>
 
                             </div>
 
@@ -134,7 +134,7 @@
 
                                         </a>
 
-                                    </div>    
+                                    </div>
 
                                     <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
 
@@ -176,9 +176,9 @@
 
                                             </a>
 
-                                        </li>                                
+                                        </li>
 
-                                    </ul>                                
+                                    </ul>
 
                                 </div>
 
@@ -187,9 +187,9 @@
                                 <div class="tab-content">
 
                                     <div class="tab-pane active p-3" id="general" role="tabpanel">
-                                        @php 
+                                        @php
                                          $company = (!empty($company) ? json_decode($company->value) : []);
-                                        @endphp 
+                                        @endphp
                                         <form class="company_settings_form mt-0-fix" id="company_settings_form" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
@@ -224,7 +224,7 @@
 
                                             </div>
 
-                                        
+
 
                                             <div class="col-md-4">
 
@@ -256,7 +256,7 @@
 
                                             </div>
 
-                                        
+
 
                                             <div class="col-md-4">
 
@@ -322,7 +322,7 @@
                                                     <span></span>
                                                 </div>
 
-                                            </div>                                        
+                                            </div>
 
                                             <div class="col-md-6">
 
@@ -416,7 +416,7 @@
                                                         @foreach (Helper::getCountry() as $countrylist)
                                                         @php
                                                         if(!empty($company) && $company->company_country == $countrylist->country_name){
-                                                        
+
                                                             $selected = 'selected';
                                                         }else{   $selected = '';
                                                         }
@@ -445,7 +445,7 @@
                                                     <span></span>
                                                 </div>
 
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-6">
 
@@ -477,7 +477,7 @@
                                                     <span></span>
                                                 </div>
 
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-6">
 
@@ -493,7 +493,7 @@
                                                     <span></span>
                                                 </div>
 
-                                            </div>                                                                                    
+                                            </div>
 
                                         </div>
 
@@ -602,7 +602,7 @@
                                             if($olist->name == "conference_settings_name" || $olist->name == "sim_stock_box_category"){
                                                 $json_settings[$olist->name] = $olist;
                                                 continue;
-                                             
+
                                             }
                                             if($olist->name == "conference_settings"){ continue; }
                                             @endphp
@@ -662,8 +662,8 @@
                                     @php $conf_settings = $json_settings['conference_settings_name'];
                                     $vals = json_decode($conf_settings->value); @endphp
                                     @foreach($vals as $vkey => $vlist)
-                                    @php $checked = ($vlist->value == 1) ? 'checked' : ""; 
-                                    $changable = ($vlist->changeable == true) ? 'checked' : ""; 
+                                    @php $checked = ($vlist->value == 1) ? 'checked' : "";
+                                    $changable = ($vlist->changeable == true) ? 'checked' : "";
                                     @endphp
                                     <div class="row">
                                         <div class="col-md-2">
@@ -680,7 +680,7 @@
                                     @endforeach
                                     </div>
 
-                                    
+
 
                             </div>
 
@@ -696,13 +696,13 @@
 
 
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
             </div>
 
@@ -717,8 +717,8 @@
                         <h5 class="modal-title mt-0" id="addSettingsLabel"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
-                    <div class="modal-body" id="addSettingsbody"> 
-                         
+                    <div class="modal-body" id="addSettingsbody">
+
                     </div>
                 </div>
             </div>
@@ -770,13 +770,13 @@
 
                         {data: 'request', name: 'al.request'},
 
-                        {data: 'response', name: 'al.response'},            
+                        {data: 'response', name: 'al.response'},
 
                     ],
 
                     columnDefs: [
 
-                       { width: '100px', targets: 2 } 
+                       { width: '100px', targets: 2 }
 
                     ]
 
@@ -784,7 +784,7 @@
 
 
 
-                $('.dataTables_filter input').attr("placeholder", "Search");                
+                $('.dataTables_filter input').attr("placeholder", "Search");
 
             });
 

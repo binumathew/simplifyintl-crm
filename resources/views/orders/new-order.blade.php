@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
 
             <div class="row">
                 <div class="col-sm-12">
@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-          
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card m-b-20">
@@ -39,11 +39,11 @@
                                 </div>
                                 <span id="terms_error" class="text-danger"></span>
                             </div>
-                                    
+
                             <div id="place_new_order" style="cursor: pointer;">
                                 <div class="alert alert-success new-orderbutton" role="alert">
                                     <span style="color:#ffffff;">Place a <strong>New Order</strong></span>
-                                </div>                               
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($data as $cart) 
+                                    @foreach($data as $cart)
                                     @php continue; //print_R($cart); die(); @endphp
                                     <tr>
                                         <td><a class="font-600 text-muted">#98541201</a></td>
@@ -96,19 +96,19 @@
 
                                         <form id="show_user_{{$cart[0]->user->id}}" method="post" action="{{url('/user-details')}}">@csrf<input type="hidden" name="identifier" value="{{$cart[0]->user->phone}}"></form>
                                         </td>
-                                    </tr>                                        
-                                    @endforeach                                    
+                                    </tr>
+                                    @endforeach
                                 </tbody>
-                            </table>                            
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function () {
@@ -119,19 +119,19 @@
                     $('#place_new_order').on('click', function(e){
                         e.preventDefault();
                         if(!$('#order_terms').is(':checked')){
-                            $('#terms_error').text('Please accept the above exceptions!'); 
+                            $('#terms_error').text('Please accept the above exceptions!');
                         }else{
                             location.href = base_url+'/select-plan';
                         }
                     });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
+                    $(document).on('click', '.show_user_data', function(e) {
                         e.preventDefault();
                         var cart_id = $(this).data('cart');
                         $('#show_user_'+cart_id).submit();
                     });
                 });
-            </script>   
+            </script>
         </div>
         <!-- end container-fluid -->
     </div>

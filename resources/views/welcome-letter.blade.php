@@ -1,16 +1,16 @@
 <style type="text/css">
-    .name-table {        
+    .name-table {
         margin: 60px 30px 10px 50px;
         width: 440px !important;
     }
 
     .top-right-table {
-        margin: 100px 0px 0px 0px;  
+        margin: 100px 0px 0px 0px;
         /*min-height: 275px;*/
         width: 95%;
     }
 
-    .active_step { 
+    .active_step {
         font-size: 7px !important;
         /* font-style: italic; */
         /* font-weight: bold;*/
@@ -33,7 +33,7 @@
 </style>
 @foreach ($sim_request as $request)
 @php
-$address= json_decode($request->shipping_address);    
+$address= json_decode($request->shipping_address);
 $simList = $request->list()->get();
 @endphp
 
@@ -57,7 +57,7 @@ $simList = $request->list()->get();
                         </td>
                         <td>{{ $list->stock->box_no.'-'.$list->stock->sim_number }}</td>
                     </tr>
-                    @endforeach                    
+                    @endforeach
                     <tr>
                         <td nowrap="nowrap" class="right-border">Order id</td>
                         <td nowrap="nowrap">{{ $request->order_id}}</td>
@@ -70,7 +70,7 @@ $simList = $request->list()->get();
             </div>
 
             <div class="name-table">
-                To<br />                
+                To<br />
                 <b>{{ (isset($address->first_name))? ucfirst($address->first_name).' '.ucfirst($address->last_name): $request->user->name }}</b><br />
                 {{ $address->street }}<br />
                 {{ $address->city }}<br />
@@ -82,7 +82,7 @@ $simList = $request->list()->get();
                 <p>Welcome to {{ config('settings.app_name') }}!</p>
                 <p>Thank you for choosing <b>{{ config('settings.app_name') }}</b> as your service provider.</p>
                 <p><b>To activate your SIM</b></p>
-                @if($list->stock->provider =='EE')         
+                @if($list->stock->provider =='EE')
                 <p ><ul class="active_step"> <li>Insert SIM into your handset.</li><li>Check if your phone is showing a valid network. It should show 3G or 4G based on your handset and the network name will be \'WELCOME\'</li><li>Please make a call to 1244. Then will receive a Welcome SMS with your phone number</li><li>After welcome message, you may also receive a network message asking to restart handset.</li><li>Please restart your handset. Now the network name will be changed to <b>‘{{ config('settings.app_name') }}’</b></li>
                 </ul>
                 </p>
@@ -91,17 +91,17 @@ $simList = $request->list()->get();
                     <li><strong>Call your friendly {{ config('settings.app_name') }} Customer Service team on 0333 9989 900</strong></li>
                 </ol>
 
-                
+
                 <div class="line">&nbsp;</div>
                 <div class="main-content-1">
-                    
+
                     <p>Please note that it may take a while for a phone to attach to the network for the first time and that this process can only be done while in the UK (you cannot activate the SIM card abroad). Once activated, the SIM card can be used for roaming. Once your {{ config('settings.app_name') }} SIM is active and fully functional, then we recommend you to visit Google Play or App Store and download {{ config('settings.app_name') }} App for using the FREE International minutes that is part of your package. Should you need to make calls outside the Free Countries, you can do so by topping up online at {{ json_decode(config('settings.company_details'))->company_website }} Once again welcome to {{ config('settings.app_name') }} community.</p>
-                    <p class="signature"><img src="{{ asset('/public/images/signature.png')}}" /><br />
+                    <p class="signature"><img src="{{ asset('/images/signature.png')}}" /><br />
                     <b>David Quirk</b><br />
                     Manager – Customer Services<br />
                     {{ config('settings.app_name') }}</p>
                 </div>
-            </div>                    
+            </div>
         </div>
     </div>
 <!-- </div> -->

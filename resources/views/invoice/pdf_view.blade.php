@@ -57,8 +57,8 @@ td img{
 </style>
 </head>
 <body>
-@php 
-$sym         = $arraydata['currency_symbol']; 
+@php
+$sym         = $arraydata['currency_symbol'];
 $accountno   = $arraydata['account_no'];
 @endphp
 <htmlpageheader name="page-header">
@@ -68,8 +68,8 @@ $accountno   = $arraydata['account_no'];
     <td><h5> Your account Number <br><span class="cls_001"> {{ $accountno }} </span></br></h5> </td></td>
     <td><h5> Your Invoice Number <br><span class="cls_001"> {{ $arraydata['invoicedata']['invoice_number'] }} </span></br></h5> </td></td>
     <td align="right">
-        <div class="" style="width:100%"> 
-            <img alt="" src="{{ asset('public/images/logo.png') }}" width="60" style="margin-right:2%;"/>
+        <div class="" style="width:100%">
+            <img alt="" src="{{ asset('images/logo.png') }}" width="60" style="margin-right:2%;"/>
             <h5 class="" style="float:right">{{config('settings.app_name')}}</h5>
         </div>
     </td>
@@ -165,7 +165,7 @@ $accountno   = $arraydata['account_no'];
         <td><b>{{ $sym.$arraydata['bundletotal']}}</b></td>
         <td><b>{{ $sym.$arraydata['addchargetotal']}}</b></td>
         <td><b>{{ $sym.$arraydata['invoicedata']['total_amount']}}</b><br><span>{{ $sym.$arraydata['invoicedata']['amount']}} (exc.vat/tax)</span><br><span>{{ $sym.$arraydata['invoicedata']['tax']}} (vat/tax total)</span></td>
-    </tr> 
+    </tr>
     </tbody>
   </table>
 @php $breakdowns = (isset($arraydata['child'])) ? array_merge($arraydata['parent'],$arraydata['child']) : $arraydata['parent']; @endphp
@@ -297,7 +297,7 @@ $accountno   = $arraydata['account_no'];
         <tbody>
             @php $totalcallcost = 0; $totalcall = 0; @endphp
             @foreach($blist->usercalls as $uckey => $uclist)
-            @php 
+            @php
             $callcost = ($uclist->cost != 0) ? (Helper::number_format($uclist->cost + ($uclist->cost*.25))) : 0;
             $totalcallcost = $totalcallcost + $callcost;
             $totalcall     = $totalcall + $uclist->duration;
@@ -333,7 +333,7 @@ $accountno   = $arraydata['account_no'];
         <tbody>
             @php $totaldatacost = 0; $totaldata = 0; @endphp
             @foreach($blist->userdata as $udkey => $udlist)
-            @php 
+            @php
             $amount   = (float)$udlist->amount;
             $datacost = ($amount != 0) ? (Helper::number_format($amount + ($amount*.25))) : 0;
             $data     = ((float)$udlist->duration != 0) ? Helper::bytesToGB((float)$udlist->duration):0;
@@ -369,7 +369,7 @@ $accountno   = $arraydata['account_no'];
         <tbody>
             @php $totalsmscost = 0; $smscount = 0;@endphp
             @foreach($blist->usersms as $uskey => $uslist)
-            @php 
+            @php
             $amount   = (float)$uslist->amount;
             $smscost = ($amount != 0) ? (Helper::number_format($amount + ($amount*.10))) : 0;
             $totalsmscost = $totalsmscost + $smscost;

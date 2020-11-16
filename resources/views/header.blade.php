@@ -10,23 +10,23 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
         <!-- App Icons -->
-        <link rel="shortcut icon" href="{{ asset('public/images/favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
         <!-- App css -->
-        <link href="{{ asset('public/plugins/jquery-steps/jquery.steps.css') }}" rel="stylesheet">
-        <link href="{{ asset('public/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/css/alertify.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('public/css/icons.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/css/style.css?v=0.1') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/jquery-steps/jquery.steps.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('css/alertify.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('css/style.css?v=0.1') }}" rel="stylesheet" type="text/css"/>
 
         <script type="text/javascript">
             var base_url = '{{ url('/') }}';
         </script>
-        <script src="{{ asset('public/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('public/js/jquery.validate.min.js') }}"></script>
-        <script src="{{ asset('public/js/additional-methods.min.js') }}"></script>
-        <link rel="stylesheet" href="{{ asset('public/plugins/morris/morris.css') }}">
-        <link rel="stylesheet" href="{{ asset('public/plugins/chartist/css/chartist.min.css') }}">
-        <link href="{{ asset('public/css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+        <script src="{{ asset('js/additional-methods.min.js') }}"></script>
+        <link rel="stylesheet" href="{{ asset('plugins/morris/morris.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/chartist/css/chartist.min.css') }}">
+        <link href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
         <script src="https://js.stripe.com/v3/"></script>
     </head>
 
@@ -42,10 +42,10 @@
 
                     <div class="logo">
                         <a href="{{ url('/') }}" class="logo">
-                            <img src="{{ asset('public/images/logo.png') }}" alt="" height="65">
+                            <img src="{{ asset('images/logo.png') }}" alt="" height="65">
                         </a>
                     </div>
-                    
+
                     <div class="menu-extras topbar-custom">
 
                         <!-- Search input -->
@@ -95,7 +95,7 @@
                                     <!-- <a href="javascript:void(0);" class="dropdown-item notify-item active">
                                         <div class="notify-icon bg-success"><i class="mdi mdi-cart-outline"></i></div>
                                         <p class="notify-details"><b>Your order is placed</b><small class="text-muted">Dummy text of the printing and typesetting industry.</small></p>
-                                    </a>                                
+                                    </a>
                                     <a href="javascript:void(0);" class="dropdown-item notify-item">
                                         <div class="notify-icon bg-warning"><i class="mdi mdi-message"></i></div>
                                         <p class="notify-details"><b>New Message received</b><small class="text-muted">You have 87 unread messages</small></p>
@@ -116,7 +116,7 @@
                             <li class="list-inline-item dropdown notification-list">
                                 <a class="nav-link dropdown-toggle arrow-none waves-effect nav-user" data-toggle="dropdown" href="#" role="button"
                                    aria-haspopup="false" aria-expanded="false">
-                                    <!-- <img src="{{ asset('public/images/users/avatar-1.jpg') }}" alt="user" class="rounded-circle"> -->
+                                    <!-- <img src="{{ asset('images/users/avatar-1.jpg') }}" alt="user" class="rounded-circle"> -->
                                     <span>{{ Auth::user()->email }}</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
@@ -158,10 +158,10 @@
                                 <ul class="submenu">
                                     @if(Helper::has_permission('users') || Helper::has_permission('users','view_own'))
                                     <li><a href="{{ url('/users') }}">Subscriber List</a></li>
-                                    @endif 
+                                    @endif
                                     @if(Helper::has_permission('user_details'))
-                                    <li><a href="{{ url('/user-details') }}">Subscriber Details</a></li> 
-                                    @endif                                    
+                                    <li><a href="{{ url('/user-details') }}">Subscriber Details</a></li>
+                                    @endif
                                     <!-- <li><a href="{{ url('/temp-user') }}">In complete Signup</a></li> -->
                                 </ul>
                             </li>
@@ -172,16 +172,16 @@
                                     <li><a href="{{ url('/user-list') }}">Users List</a></li>
                                     <li><a href="{{ url('/conference') }}">Conference List</a></li>
                                 </ul>
-                            </li>  -->                           
-                            @endif                                                        
+                            </li>  -->
+                            @endif
                             <li class="has-submenu">
-                                <a><i class="mdi mdi-sim"></i>Orders</a></a>                                
+                                <a><i class="mdi mdi-sim"></i>Orders</a></a>
                                 <ul class="submenu">
-                                    <li><a href="{{ url('/new-order') }}">Create Order</a></li> 
+                                    <li><a href="{{ url('/new-order') }}">Create Order</a></li>
                                     @if(Helper::has_permission('delivery') || Helper::has_permission('delivery', 'view_own'))
                                         <li><a href="{{ url('/delivery') }}">Orders List</a></li>
                                     @endif
-                                    @if(Helper::has_permission('orders')) 
+                                    @if(Helper::has_permission('orders'))
                                     <!-- <li><a href="{{ url('/abandoned-order') }}">In Complete</a></li> -->
                                     @endif
                                     <!-- <li><a href="#">Services</a></li>
@@ -204,7 +204,7 @@
                                     </li> -->
                                 </ul>
                             </li>
-                            
+
                             <li class="has-submenu"><a><i class="mdi mdi-history"></i>Activation</a>
                                 <ul class="submenu">
                                     @if(Helper::has_permission('orders') || Helper::has_permission('orders', 'view_own'))
@@ -212,31 +212,31 @@
                                     @endif
                                     @if(Helper::has_permission('porting'))
                                     <li><a href="{{ url('/port-list') }}">Porting</a></li>
-                                    @endif                                
+                                    @endif
                                 </ul>
-                            </li> 
- 
-                            @if(Helper::has_permission('commission') || Helper::has_permission('commission', 'view_own'))                        
+                            </li>
+
+                            @if(Helper::has_permission('commission') || Helper::has_permission('commission', 'view_own'))
                             <li class="has-submenu"><a><i class="mdi mdi-chart-pie"></i>Dealers</a>
                                 <ul class="submenu">
                                 @if(Helper::has_permission('dealer') || Helper::has_permission('dealer', 'view_own'))
-                                <li><a href="{{ url('/dealers') }}">Dealers</a></li> 
-                                @endif   
+                                <li><a href="{{ url('/dealers') }}">Dealers</a></li>
+                                @endif
                                 @if(Helper::has_permission('commission'))
-                                   <li><a href="{{ url('/comm-plan') }}">Define Plan Commission</a></li> 
-                                   <li><a href="{{ url('/comm-plan-dealer') }}">Define Dealer Commission</a></li> 
+                                   <li><a href="{{ url('/comm-plan') }}">Define Plan Commission</a></li>
+                                   <li><a href="{{ url('/comm-plan-dealer') }}">Define Dealer Commission</a></li>
                                    <li><a href="{{ url('/clawback-plan') }}">Define Clawback Plan</a></li>
                                    <li><a href="{{ url('/clawback-dealer') }}">Define Clawback Dealer</a></li>
                                    <li><a href="{{ url('/comm-payment') }}">Commission Payments</a></li>
                                 @elseif(Helper::has_permission('commission', 'view_own'))
-                                 <li><a href="{{ url('/comm-plan-dealer') }}">My Commission Rates</a></li> 
-                                 <li><a href="{{ url('/comm-payment') }}">Earnings</a></li> 
+                                 <li><a href="{{ url('/comm-plan-dealer') }}">My Commission Rates</a></li>
+                                 <li><a href="{{ url('/comm-payment') }}">Earnings</a></li>
                                 @endif
-                                   
+
                                 </ul>
                             </li>
                             @endif
-                            @if(Helper::has_permission('plans') || Helper::has_permission('plan_management', 'view_own')) 
+                            @if(Helper::has_permission('plans') || Helper::has_permission('plan_management', 'view_own'))
                             <li class="has-submenu"><a><i class="mdi mdi-book-multiple"></i>Plans</a>
                                 <ul class="submenu">
                                     @if(Helper::has_permission('plan_management'))
@@ -247,14 +247,14 @@
                                     <li><a href="{{ url('/sim-plans') }}">My Plans</a></li>
                                     @endif
                                 </ul>
-                            </li> 
+                            </li>
                             @endif
-                            @if(Helper::has_permission('reports')) 
+                            @if(Helper::has_permission('reports'))
                             <li class="has-submenu"><a><i class="mdi mdi-chart-pie"></i>Reports</a>
                                 <ul class="submenu">
-                                   <li><a href="{{ url('/report-dashboard') }}">Dashboard</a></li> 
-                                   <li><a href="{{ url('/report-autoplan') }}">Subscription</a></li> 
-                                   <li><a href="{{ url('/report-cardexpiry') }}">Card Expiry</a></li> 
+                                   <li><a href="{{ url('/report-dashboard') }}">Dashboard</a></li>
+                                   <li><a href="{{ url('/report-autoplan') }}">Subscription</a></li>
+                                   <li><a href="{{ url('/report-cardexpiry') }}">Card Expiry</a></li>
                                    <li><a href="{{ url('/report-user') }}">User Report</a></li>
                                    <li><a href="{{ url('/report-usage') }}">Usage Report</a></li>
                                    <li><a href="{{ url('/report-order') }}">Order Report</a></li>
@@ -262,8 +262,8 @@
                                     <li><a href="{{ url('/call-history') }}">CDRs</a></li>
                                     @endif
                                     @if(Helper::has_permission('payment_history'))
-                                    <li><a href="{{ url('/payment-history') }}">Transactions</a></li> 
-                                    @endif    
+                                    <li><a href="{{ url('/payment-history') }}">Transactions</a></li>
+                                    @endif
                                 </ul>
                             </li>
                             @endif
@@ -272,10 +272,10 @@
                             @endif
                             <li class="has-submenu"><a><i class="mdi mdi-menu"></i>Settings</a>
                                 <ul class="submenu">
-                                    @if(Helper::has_permission('settings'))                                   
+                                    @if(Helper::has_permission('settings'))
                                     <li><a href="{{ url('/settings') }}">System Settings</a></li>
-                                    @endif 
-                                    @if(Helper::has_permission('stock','view_own')) 
+                                    @endif
+                                    @if(Helper::has_permission('stock','view_own'))
                                     <li><a href="{{ url('/stock-list') }}">Stock List</a></li>
                                     @endif
                                     @if(Helper::has_permission('staff') || Helper::has_permission('staff', 'view_own'))
@@ -283,7 +283,7 @@
                                     @endif
                                 </ul>
                             </li>
-                              
+
                         </ul>
                         <!-- End navigation menu -->
                     </div> <!-- end #navigation -->
@@ -297,10 +297,10 @@
 
 <!--
 		<div class="leftnav" id="top">
-			<h1 class="logo"><a href="{{ url('/dashboard') }}">{{ config('settings.app_name') }}</a></h1>			
+			<h1 class="logo"><a href="{{ url('/dashboard') }}">{{ config('settings.app_name') }}</a></h1>
 			<ul>
 				<li>
-					<a href="{{ url('/dashboard') }}" class="fa fa-home {{ request()->is('dashboard') ? 'nav-active' : '' }}">{{ config('settings.app_name') }}</a>			
+					<a href="{{ url('/dashboard') }}" class="fa fa-home {{ request()->is('dashboard') ? 'nav-active' : '' }}">{{ config('settings.app_name') }}</a>
 				</li>
 				@if(Helper::has_permission('users'))
 				<li>
@@ -329,36 +329,36 @@
 				<li class="drop {{ (Route::currentRouteName() == 'commission')? 'open' : '' }}">
 					<a href="#" class="fa fa-gift">Commission</a>
 					<div class="bigdrop">
-						<ul>							
+						<ul>
 							<li class="{{ request()->is('comm-userlist') ? 'nav-active' : '' }}">
 								<a href="{{ url('comm-userlist') }}" class="fa fa-money">User</a>
 							</li>
 							<li class="{{ request()->is('comm-payment-list') ? 'nav-active' : '' }}">
 								<a href="{{ url('comm-payment-list') }}" class="fa fa-money">Dealer Commission</a>
-							</li>													
+							</li>
 						</ul>
 					</div>
 				</li>
 				@endif
-							
+
 				@if(Helper::has_permission('discount_coupons'))
 
 				<li class="{{ request()->is('discount-coupon') ? 'nav-active' : '' }}">
 					<a href="{{ url('/discount-coupon') }}" class="fa fa-percent">Discount Coupons</a>
 				</li>
 				@endif
-				@if(Helper::has_permission('fraudsters'))							
+				@if(Helper::has_permission('fraudsters'))
 
 				<li class="{{ request()->is('fraudster-list') ? 'nav-active' : '' }}">
 					<a href="{{ url('/fraudster-list') }}" class="fa fa-user-secret">Fraudsters</a>
 				</li>
 				@endif
-				
+
 				@if(Helper::has_permission('plan_purchase'))
 				<li class="{{ request()->is('plan-purchase') ? 'nav-active' : '' }}">
 					<a href="{{ url('/plan-purchase') }}" class="fa fa-phone">Plan Purchase</a>
 				</li>
-				@endif								
+				@endif
 				@if(Helper::has_permission('delivery'))
 				<li class="{{ request()->is('delivery-management') ? 'nav-active' : '' }}">
 					<a href="{{ url('/delivery-management') }}" class="fa fa-truck">Delivery Management</a>
@@ -378,7 +378,7 @@
 					<li class="{{ request()->is('porting') ? 'nav-active' : '' }}">
 						<a href="{{ url('porting') }}" class="fa fa-recycle">Porting</a>
 					</li>
-				@endif										
+				@endif
 				@if(Helper::has_permission('settings'))
 				<li class="drop {{ (Route::currentRouteName() == 'settings')? 'open' : '' }}">
 					<a href="#" class="fa fa-cogs">Settings</a>
@@ -431,7 +431,7 @@
 								<a href="{{ url('comm-staff-list') }}" class="fa fa-money">Staff Commission</a>
 							</li>
 
-							@if(Helper::has_permission('did_pool'))											
+							@if(Helper::has_permission('did_pool'))
 							<li class="{{ request()->is('did-pool') ? 'nav-active' : '' }}">
 								<a href="{{ url('/did-pool') }}" class="fa fa-phone">DID Pool</a>
 							</li>
@@ -445,7 +445,7 @@
 						</ul>
 					</div>
 				</li>
-				@endif	
+				@endif
 				@if(Helper::has_permission('reports'))
 				<li class="drop {{ (Route::currentRouteName() == 'reports')? 'open' : '' }}">
 					<a href="#" class="fa fa-pie-chart">Reports</a>
@@ -456,7 +456,7 @@
 							</li>
 							<li class="{{ request()->is('report-port') ? 'nav-active' : '' }}">
 								<a href="{{ url('report-port') }}" class="fa fa-paper-plane">Porting</a>
-							</li>							
+							</li>
 							<li class="{{ request()->is('report-eelog') ? 'nav-active' : '' }}">
 								<a href="{{ url('report-eelog') }}" class="fa fa-phone">EE Log</a>
 							</li>
@@ -485,53 +485,53 @@
 					<a href="{{ url('/payment-history') }}" class="fa fa-money">Payment History</a>
 				</li>
 				@endif
-				@if(Helper::has_permission('call_history'))	
+				@if(Helper::has_permission('call_history'))
 
 				<li class="{{ request()->is('call-history') ? 'nav-active' : '' }}">
 					<a href="{{ url('/call-history') }}" class="fa fa-phone">Call History</a>
 				</li>
-				@endif	
-				
+				@endif
+
 				@if(Helper::has_permission('plan_management'))
 				<li class="drop {{ (Route::currentRouteName() == 'plan')? 'open' : '' }}">
-					<a href="#" class="fa fa-product-hunt">Plans</a> 
+					<a href="#" class="fa fa-product-hunt">Plans</a>
 					<div class="bigdrop">
 						<ul>
 						<li class="{{ request()->is('plan-management') ? 'nav-active' : '' }}">
 							<a href="{{ url('/plan-management') }}" class="fa fa-star">Plan Management</a>
-						</li>						
+						</li>
 
 						<li class="{{ request()->is('package-management') ? 'nav-active' : '' }}">
 							<a href="{{ url('/package-management') }}" class="fa fa-star">Packages Management</a>
 						</li>
-						
+
 						</ul>
 					</div>
 				</li>
-				@endif		
-				@if(Helper::has_permission('fraudsters'))			
+				@endif
+				@if(Helper::has_permission('fraudsters'))
 				<li class="{{ request()->is('throttles') ? 'nav-active' : '' }}">
 					<a href="{{ url('/throttles') }}" class="fa fa-laptop">Login Attempts</a>
 				</li>
-				@endif		
+				@endif
 				<li>
-					<a class="fa-sign-out" href="{{ route('logout') }}"> Log Out </a>		
+					<a class="fa-sign-out" href="{{ route('logout') }}"> Log Out </a>
 				</li>
 			</ul>
 		</div>
-		
+
 		<div class="header clearfix">
 			<div class="navclick fa fa-bars"></div>
 			<ul>
-				@if(Helper::has_permission('settings') || Auth::user()->role == 3)											
+				@if(Helper::has_permission('settings') || Auth::user()->role == 3)
 				<li class="bell"><a href="{{ url('notification-log') }}" class="fa fa-bell"></a>
-				@endif	
+				@endif
 					<! -- <span class="badge badge-notify">3</span></li> - ->
 				<li class="user">
-					<a href="{{ url('my-account') }}" class="fa fa-user-circle-o"> 
+					<a href="{{ url('my-account') }}" class="fa fa-user-circle-o">
 						<b>{{ Auth::user()->first_name }}</b>
 					</a>
 				</li>
-	
+
 			</ul>
 		</div> -->

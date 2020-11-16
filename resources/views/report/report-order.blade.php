@@ -3,9 +3,9 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-            <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+            <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -38,12 +38,12 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="form-group">                            
+                                            <div class="form-group">
                                                 <select name="delivery_status" id="delivery_status" class="form-control">
-                                                    <option value="">Status</option>  
+                                                    <option value="">Status</option>
                                                     <option value="1">To Activate</option>
-                                                    <option value="2">Welcome Call</option> 
-                                                    <option value="3">Not Packed</option> 
+                                                    <option value="2">Welcome Call</option>
+                                                    <option value="3">Not Packed</option>
                                                     <option value="4">All</option>
                                                 </select>
                                             </div>
@@ -63,9 +63,9 @@
                                                 <input type="text" class="form-control" name="sim_number" id="sim_number" placeholder="Serial Number">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-md-12">
-                                                
+
                                                 <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                                 <button type="button" id="resetBtn" class="btn btn-secondary" >Reset</button>
                                                 @if(Helper::has_permission('reports'))
@@ -80,7 +80,7 @@
                                         <div class=" col-md-6">
                                             <div class="alert alert-success new-orderbutton" role="alert" style="display: inline-block; float: left; text-align: center;">
                                                 <a href="#" style="color: #FFF;"><strong>New Order</strong></a>
-                                            </div>                                   
+                                            </div>
                                         </div> -->
                                     </div>
                                 </form>
@@ -95,9 +95,9 @@
                                         <th>Contact Number</th>
                                         <th>Shipping Date</th>
                                         <th>Sim</th>
-                                        <th>Sim Number</th>                                               
-                                        <th>Agent Name</th>                                               
-                                        <th>Status</th>                                          
+                                        <th>Sim Number</th>
+                                        <th>Agent Name</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,11 +108,11 @@
                     </div>
                 </div>
             </div>
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
         </div>
         <!-- end container-fluid -->
     </div>
@@ -138,7 +138,7 @@
                 d.sim_number = $('#sim_number').val();
             }
         },
-        
+
         "dataType": "jsonp",
         "columns": [
         {"data": "order_id", "name": "rq.order_id"},
@@ -159,12 +159,12 @@
     });
     $('#searchBtn').on('click', function(e) {
         e.preventDefault();
-        $('#orderlist').DataTable().draw();                        
+        $('#orderlist').DataTable().draw();
     });
 
     $('#resetBtn').on('click', function(e) {
         $('#order-search-form')[0].reset();
-        $('#orderlist').DataTable().draw();                          
+        $('#orderlist').DataTable().draw();
     });
 
     $('.datepicker').datepicker({

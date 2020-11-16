@@ -3,24 +3,24 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link rel="stylesheet" href="{{ asset('public/plugins/morris/morris.css') }}">
-            <script src="{{ asset('public/plugins/chart/Chart.js') }}"></script>
-            <script src="{{ asset('public/plugins/chart/utils.js') }}"></script>
-            
-            <script src="{{ asset('public/plugins/morris/morris.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/raphael/raphael-min.js') }}"></script>
-            <script src="{{ asset('public/pages/morris.init.js') }}"></script>
+            <link rel="stylesheet" href="{{ asset('plugins/morris/morris.css') }}">
+            <script src="{{ asset('plugins/chart/Chart.js') }}"></script>
+            <script src="{{ asset('plugins/chart/utils.js') }}"></script>
 
-            <script src="{{ asset('public/plugins/chartist/js/chartist.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/chartist/js/chartist-plugin-tooltip.min.js') }}"></script>
-            <script src="{{ asset('public/pages/chartist.init.js') }}"></script>
+            <script src="{{ asset('plugins/morris/morris.min.js') }}"></script>
+            <script src="{{ asset('plugins/raphael/raphael-min.js') }}"></script>
+            <script src="{{ asset('pages/morris.init.js') }}"></script>
+
+            <script src="{{ asset('plugins/chartist/js/chartist.min.js') }}"></script>
+            <script src="{{ asset('plugins/chartist/js/chartist-plugin-tooltip.min.js') }}"></script>
+            <script src="{{ asset('pages/chartist.init.js') }}"></script>
 
 
-            <!-- <link rel="stylesheet" href="a{{ asset('public/plugins/chartist/chartist.min.css') }}"> -->
-            <!-- <link rel="stylesheet" href="a{{ asset('public/plugins/chartist/css/chartist.css') }}"> -->
-            <!-- <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/> -->
+            <!-- <link rel="stylesheet" href="a{{ asset('plugins/chartist/chartist.min.css') }}"> -->
+            <!-- <link rel="stylesheet" href="a{{ asset('plugins/chartist/css/chartist.css') }}"> -->
+            <!-- <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/> -->
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -96,7 +96,7 @@
                         <p class=" mb-0 m-t-10 text-muted">Completed<span class="pull-right">
                             </span></p>
                     </div>
-                </div>               
+                </div>
             </div>
             @endif
             <div class="row">
@@ -149,7 +149,7 @@
                             </div>
                         </div>
                     </div> <!-- end col -->
-                </div> 
+                </div>
 
                 <div class="row">
                     <div class="col-lg-6">
@@ -343,12 +343,12 @@
 
             <!-- <iframe src="http://149.36.7.16/iCallMateAEC1/faces/audioConfLive.xhtml?audioconfid=5251&serviceno=443339980048" title="Conf"></iframe> -->
 
-            <!-- <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script> -->
-            
+            <!-- <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script> -->
+
 
             <script type="text/javascript">
                 var randomScalingFactor = function() {
@@ -430,33 +430,33 @@
 
 
                 $(document).ready(function(){
-                    
+
                     $('.dataTables_filter input').attr('placeholder', 'Search');
 
                     $(document).on('click','.delete_conference',function(){
                         var id = $(this).data('id');
                         $('#orderCustomLabel').text('Delete Conference');
-                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this conference?<div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_delete_conference" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>'); 
+                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this conference?<div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_delete_conference" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>');
                         $('#orderCustomModal').modal('show');
                     });
-                    $(document).on('click','#action_delete_conference',function(){ 
+                    $(document).on('click','#action_delete_conference',function(){
                         var conference_id = $(this).data('id');
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/delete-conference',
                             data: {conference_id:conference_id},
-                            success:function(data){                                 
+                            success:function(data){
                                 if (data.error) {
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
                                     $('#custom_status').html('<div class="text-success">Conference deleted successfully</div>');
-                                    $('#conferenceList').DataTable().draw();    
+                                    $('#conferenceList').DataTable().draw();
                                 }
                             }
-                        });                                    
+                        });
                     });
 
                     $(document).on('click','.show_conference_details',function(){
@@ -465,26 +465,26 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/conference-details',
                             data: {conference_id:conference_id},
-                            success:function(data){                                 
+                            success:function(data){
                                 if (data.error) {
                                     $('#orderCustombody').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
-                                    $('#orderCustombody').html(data.html);   
+                                    $('#orderCustombody').html(data.html);
                                 }
                                 $('#orderCustomModal').modal('show');
                             }
                         });
-                    });                    
+                    });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).data('id');                
+                    $(document).on('click', '.show_user_data', function(e) {
+                        e.preventDefault();
+                        var id = $(this).data('id');
                         $('#show_user_'+id).submit();
                     });
-                    
+
                     // $(document).on('change', '#conf_status', function(e) {
                     //     if($(this).val() != 'custom'){
                     //         $('.datepicker').attr('disabled',true);
@@ -495,7 +495,7 @@
                     // });
 
                     $('.custom-select').on('change', function(e) {
-                        $('#conferenceList').DataTable().draw();                        
+                        $('#conferenceList').DataTable().draw();
                     });
 
                     $('#searchBtn').on('click', function(e) {

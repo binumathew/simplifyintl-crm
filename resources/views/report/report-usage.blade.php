@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -38,26 +38,26 @@
                                                 <label>Month</label>
                                                <select name="usage_month" id="usage_month" class="form-control custom-select">
                                                     <option value="">Choose</option>
-                                                   	@php 
+                                                   	@php
 						                            $now   = Carbon::now()->format('Y-m-d');
 						                            $month = strtotime($now);
 						                            $currmonth = date('m', $month);
 						                            @endphp
 						                            @for($i=1; $i<=12; $i++)
-						                            @php 
+						                            @php
 						                            $month_name = date('M', $month);
 						                            $monthid = date('m', $month);
 						                            $month  = strtotime('+1 month', $month);
 						                            @endphp
                                                     <option {{ ($currmonth == $monthid) ? 'selected':'' }} value="{{$monthid}}">{{$month_name}}</option>
-                            						@endfor  
+                            						@endfor
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Year</label>
-                                                @php $firstYear = (int)Carbon::now()->format('Y'); 
+                                                @php $firstYear = (int)Carbon::now()->format('Y');
 					                            $lastYear = $firstYear - 5;
 					                            @endphp
 					                            <select name="usage_year" id="usage_year" class="form-control custom-select">
@@ -75,26 +75,26 @@
                                                 <select name="usage_status" id="usage_status" class="form-control custom-select">
                                                     <option value="">Choose</option>
                                                     <option value="1" selected>Active</option>
-                                                    <option value="0">In Active</option>  
+                                                    <option value="0">In Active</option>
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class=" col-md-12">
                                             @if(Helper::has_permission('reports'))
                                             <button type="submit" class="btn btn-info pull-right" id="export" name="exportdata" value="1">Export</button>
                                             @endif
                                             <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
-                                            
+
                                         </div>
                                     </div>
                                     </form>
-                                </div>                                
+                                </div>
                                 <table id="usage-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Phone Number</th>                               
+                                            <th>Phone Number</th>
                                             <th>Email</th>
                                             <th>Plan</th>
                                             <th>Plan Type</th>
@@ -106,7 +106,7 @@
                                             <th>Created At</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -114,11 +114,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -127,7 +127,7 @@ $(document).ready(function(){
 
     $('#resetBtn').on('click', function(e) {
        $('#usage-search-form')[0].reset();
-       $('#usage-table').DataTable().draw();       
+       $('#usage-table').DataTable().draw();
     });
 
     var usageTable = $('#usage-table').DataTable({
@@ -156,7 +156,7 @@ $(document).ready(function(){
         "columns": [
             {"data": "name", "name": "name"},
             {"data": "phone", "name": "phone"},
-            {"data" : "email", "name":"email"},                       
+            {"data" : "email", "name":"email"},
             {"data" : "plan","name":"plan"},
             {"data" : "plan_type","name":"plan_type"},
             {"data" : "call_usage","name":"call_usage"},

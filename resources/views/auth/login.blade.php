@@ -6,29 +6,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
         <title>{{config('settings.app_name')}} Login</title>
         <!-- App Icons -->
-        <link rel="shortcut icon" href="{{ asset('public/images/favicon.ico') }}" type="image/icon">
+        <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/icon">
         <!-- Basic Css files -->
-        <link href="{{ asset('public/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ asset('public/css/icons.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ asset('public/css/style.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
     </head>
     <body class="fixed-left">
         <!-- Loader -->
         <div id="preloader"><div id="status"><div class="spinner"></div></div></div>
         <!-- Begin page -->
-        <div class="accountbg" style="background: url('{{ asset('public/images/bg-2.jpg') }}');background-size: cover;"></div>
+        <div class="accountbg" style="background: url('{{ asset('images/bg-2.jpg') }}');background-size: cover;"></div>
         <div class="wrapper-page account-page-full">
             <div class="card"> <!-- style="margin-top:50%;" -->
                 <div class="card-body"> <!-- style="margin-width:200%;" -->
 
                     <h3 class="text-center m-0">
-                        <a href="{{ url('/') }}" class="logo logo-admin"><img src="{{ asset('public/images/logo.png') }}" height="50" alt="logo"></a>
+                        <a href="{{ url('/') }}" class="logo logo-admin"><img src="{{ asset('images/logo.png') }}" height="50" alt="logo"></a>
                     </h3>
                     <div class="p-3">
                         <h4 class="font-18 m-b-5 text-center">Welcome Back !</h4>
                         <p class="text-muted text-center">Sign in to continue to {{config('settings.app_name')}}.</p>
                         <form method="POST" action="{{ url('/login') }}" class="form-horizontal m-t-30" >
-                            @csrf 
+                            @csrf
                             <div class="form-group">
                                 <label for="username">Email / Username</label>
                                 <input type="text" class="form-control" id="email" name="email" placeholder="Enter Username" value="{{ old('email') }}" required autofocus>
@@ -36,7 +36,7 @@
                                 <span class="help-block">
                                     <strong>{{ $errors->first('email') }}</strong>
                                 </span>
-                                @endif 
+                                @endif
                             </div>
                              <div class="form-group">
                                 <label for="password">Password</label>
@@ -77,14 +77,14 @@
             </div>
         </div>
         <!-- jQuery  -->
-        <script src="{{ asset('public/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('public/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('public/js/modernizr.min.js') }}"></script>
-        <script src="{{ asset('public/js/jquery.slimscroll.js') }}"></script>
-        <script src="{{ asset('public/js/waves.js') }}"></script>
-        <script src="{{ asset('public/js/jquery.nicescroll.js') }}"></script>
-        <script src="{{ asset('public/js/jquery.scrollTo.min.js') }}"></script>
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('js/modernizr.min.js') }}"></script>
+        <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
+        <script src="{{ asset('js/waves.js') }}"></script>
+        <script src="{{ asset('js/jquery.nicescroll.js') }}"></script>
+        <script src="{{ asset('js/jquery.scrollTo.min.js') }}"></script>
         <!-- App js -->
-        <script src="{{ asset('public/js/app.js') }}"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
     </body>
 </html>

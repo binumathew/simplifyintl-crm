@@ -3,8 +3,8 @@
 <!-- page wrapper start -->
 <div class="wrapper">
     <div class="container-fluid">
-        <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
@@ -22,10 +22,10 @@
         <div class="row">
             <div class="col-md-2">
                 <div class="card m-b-20">
-                    
+
                     <div class="card-body right-nav">
                         <ul>
-                            <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                            <li><a href="{{ url('/settings') }}">General</a></li>
                             <li><a href="{{ url('/template') }}">Email Template</a></li>
                             <li><a href="{{ url('/roles') }}">Roles</a></li>
                             <li><a href="{{ url('/countries') }}">Countries</a></li>
@@ -50,21 +50,21 @@
                             <li><a href="#">Pusher.com</a></li>
                             <li><a href="#">Google</a></li>
                             <li><a href="#">Misc</a></li> -->
-                        </ul>                            
+                        </ul>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-10"> 
+            <div class="col-md-10">
                 <div class="card m-b-20">
-                    <div class="card-body">  
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-md-12 m-b-20">
                                 <div class=" text-right">
                                     <button class="btn btn-success pull-right" id="add_task">ADD TASK</button>
-                                </div>                                   
+                                </div>
                             </div>
-                        </div>                           
+                        </div>
                         <table id="cron-jobs" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
@@ -76,7 +76,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>                                        
+                            <tbody>
                                 @foreach ($tasks as $task)
                                 <tr id="task_{{$task->id}}">
                                     <td>{{ $task->description}}</td>
@@ -93,13 +93,13 @@
                                     <td>
                                         @if(Helper::has_permission('settings','edit') && $task->status)
                                             <a data-toggle="tooltip" title="Execute" href="#" data-task_id="{{$task->id}}" href="javascript:void(0);" class="text-muted execute_task"><i class="mdi mdi-play mdi-24px"></i></a>
-                                        @endif                                        
+                                        @endif
                                         @if (Helper::has_permission('users','edit'))
                                             <a data-toggle="tooltip" title="Edit" href="javascript:void(0);" data-task_id="{{$task->id}}" class="text-muted edit_task"><i class="mdi mdi-pencil mdi-24px"></i></a>
                                         @endif
                                         @if(Helper::has_permission('settings','delete'))
                                             <a data-toggle="tooltip" title="Delete" href="javascript:void(0);" data-task_id="{{$task->id}}" class="text-danger delete_task" ><i class="mdi mdi-close mdi-24px"></i></a>
-                                        @endif                                      
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -110,10 +110,10 @@
             </div>
         </div>
         <div id="popup_wrapp"></div>
-        <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
     </div>
 </div>
 <!-- page wrapper end -->
@@ -122,7 +122,7 @@
     $(document).ready(function(){
         $('#cron-jobs').DataTable({responsive: true, pageLength: 25, bSort : true, language: { search: "" }});
 
-        $('.dataTables_filter input').attr("placeholder", "Search"); 
+        $('.dataTables_filter input').attr("placeholder", "Search");
 
         $(document).on("click", '.edit_task, #add_task', function () {
             var task_id = $(this).data('task_id');
@@ -147,7 +147,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     type:"POST",
-                    url:base_url+'/delete-task',                    
+                    url:base_url+'/delete-task',
                     data:{task_id:task_id},
                     success:function(){
                         $('#task_'+task_id).fadeOut(1000);
@@ -168,12 +168,12 @@
                     url:base_url+'/execute-task',
                     headers: { 'X-CSRF-TOKEN': $('input[name=_token]').val()  },
                     data:{task_id:task_id},
-                    success:function(){                     
+                    success:function(){
                         location.reload();
                     }
                 });
             }
-        });              
+        });
     });
 </script>
 @endsection

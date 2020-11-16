@@ -8,9 +8,9 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-               
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="card m-b-20">
@@ -38,7 +38,7 @@
                             </select>
                             <table id="orderlist" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                 <thead>
-                                    <tr>                                            
+                                    <tr>
                                         <th>#</th>
                                         <th>Order ID</th>
                                         <th>Order Date</th>
@@ -80,7 +80,7 @@
                     <h5 class="modal-title mt-0">Update Shipping Address</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-                <div class="modal-body"> 
+                <div class="modal-body">
                     <input type="hidden" name="address_simlist_id" id="address_simlist_id">
                     <div class="card m-b-20">
                         <div class="card-body">
@@ -96,7 +96,7 @@
                                     <div id="postalcode-error" class="text-danger"></div>
                                 </div>
                                 <div class="form-group col-md-5">
-                             
+
                                       <input type="text" class="form-control" id="house_no" name="house_no" placeholder="House No">
                                 </div>
                                 <div class="form-group col-md-2">
@@ -104,25 +104,25 @@
                                 </div>
                                 <div class="form-group col-md-12">
                                     <select  class="form-control d-none" id="delivery_address"></select>
-                                    <div class="text-danger" id="delivery_address_error"></div>  
-                                </div>                                
-                                <div class="form-group col-md-12 shipping_address d-none">                                                              
+                                    <div class="text-danger" id="delivery_address_error"></div>
+                                </div>
+                                <div class="form-group col-md-12 shipping_address d-none">
                                     <input type="text" class="form-control" id="shipping_street" name="shipping_street" placeholder="Street Address">
                                 </div>
-                                <div class="form-group col-md-6 shipping_address d-none">                                                              
+                                <div class="form-group col-md-6 shipping_address d-none">
                                     <input type="text" class="form-control" id="shipping_city" name="shipping_city" placeholder="City">
                                 </div>
-                                <div class="form-group col-md-6 shipping_address d-none">                                                              
+                                <div class="form-group col-md-6 shipping_address d-none">
                                     <input type="text" class="form-control" id="shipping_country" name="shipping_country" placeholder="Country">
-                                </div>                                
+                                </div>
                                 <div class="form-group col-md-12 shipping_address d-none">
                                     <div id="update_shipping_status" class="text-danger"></div>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" id="update_delivery_address" class="btn btn-success pull-right">Update</button>  
+                                    <button type="button" id="update_delivery_address" class="btn btn-success pull-right">Update</button>
                                 </div>
-                            </form>                          
+                            </form>
                         </div>
-                    </div>           
+                    </div>
                 </div>
             </div>
         </div>
@@ -130,11 +130,11 @@
     <!-- Find addess popup end -->
 
 
-    <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('public/js/jquery.print.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.print.js') }}"></script>
 
 
     <script type="text/javascript">
@@ -147,7 +147,7 @@
                 processing: true,
                 serverSide: true,
                 "ajax": {
-                    "url": "delivery-list",                    
+                    "url": "delivery-list",
                     "data": function ( d ) {
                         d.filter_type = $('#delivery_filter').val();
                     }
@@ -218,17 +218,17 @@
                 var id = $(this).attr('data-id');
                 if ($(this).val() == 1) {
                     $('#orderCustomLabel').text('Update Order Status');
-                    $('#orderCustombody').html('<div class="form-group"><label class="form-label">Shipping Via</label> <select id="shiping_process" class="form-control" name="shiping_process"> <option value="Royal Mail First Class Delivery" selected>Royal Mail First Class</option> <option value="Royal Mail Special Delivery">Royal Mail Special Delivery</option> <option value="Royal Mail Next Day Delivery">Royal Mail Next Day Delivery</option> <option value="other">Other</option> </select></div> <div class="form-group d-none other_delivery"> <input type="text" name="shiping_agent" id="shiping_agent" class="form-control" required placeholder="Shipping Agent Name" value="Royal Mail First Class Delivery"></div> <div id="custom_status"></div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_shipping" data-id="'+ id +'" class="btn btn-success pull-right">Save</button>'); 
+                    $('#orderCustombody').html('<div class="form-group"><label class="form-label">Shipping Via</label> <select id="shiping_process" class="form-control" name="shiping_process"> <option value="Royal Mail First Class Delivery" selected>Royal Mail First Class</option> <option value="Royal Mail Special Delivery">Royal Mail Special Delivery</option> <option value="Royal Mail Next Day Delivery">Royal Mail Next Day Delivery</option> <option value="other">Other</option> </select></div> <div class="form-group d-none other_delivery"> <input type="text" name="shiping_agent" id="shiping_agent" class="form-control" required placeholder="Shipping Agent Name" value="Royal Mail First Class Delivery"></div> <div id="custom_status"></div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_shipping" data-id="'+ id +'" class="btn btn-success pull-right">Save</button>');
                     $('#orderCustomModal').modal('show');
                 }else{
                     $('#orderCustomLabel').text('Order Cancellation');
-                    $('#orderCustombody').html('<div class="form-group"> <label class="form-label">Cancellation Reasons</label> <input type="text" name="cancel_reason" id="cancel_reason" class="form-control" required placeholder="Cancellation Reasons"> <div id="custom_status"> </div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_cancel_order" data-id="'+ id +'" class="btn btn-success pull-right">Save</button>'); 
+                    $('#orderCustombody').html('<div class="form-group"> <label class="form-label">Cancellation Reasons</label> <input type="text" name="cancel_reason" id="cancel_reason" class="form-control" required placeholder="Cancellation Reasons"> <div id="custom_status"> </div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_cancel_order" data-id="'+ id +'" class="btn btn-success pull-right">Save</button>');
                     $('#orderCustomModal').modal('show');
                 }
                 $('#orderlist').DataTable().draw();
             });
 
-            $(document).on('click','#action_cancel_order',function (e) {       
+            $(document).on('click','#action_cancel_order',function (e) {
                 var id =  $(this).attr('data-id');
                 var reason = $('#cancel_reason').val();
                 $('#custom_status').html('');
@@ -240,10 +240,10 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'POST',                                                
+                        type: 'POST',
                         url: base_url+'/cancel-order',
                         data: {id:id,reason:reason},
-                        success:function(data){ 
+                        success:function(data){
                             $('#preloader').hide();
                             if (data.error) {
                                 $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
@@ -262,10 +262,10 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: 'order-status',
                     data: {id:id},
-                    success:function(data){ 
+                    success:function(data){
                         if(data.error){
                             $('#enquiry-history').html('<div class="alert alert-danger">'+data.message+'</div>');
                         } else {
@@ -283,10 +283,10 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: base_url+'/enquiry',
                     data: {id:id},
-                    success:function(data){ 
+                    success:function(data){
                         if (data.error) {
                             $('#enquiry-history').html('<div class="alert alert-danger">'+data.message+'</div>');
                         } else {
@@ -297,7 +297,7 @@
                 });
             });
 
-            $(document).on('click','#save_enquiry',function (e) {       
+            $(document).on('click','#save_enquiry',function (e) {
                 var id = $('#enq_request_id').val();
                 var note = $('#enquiry_note').val();
                 $('#enquiry_status').html('');
@@ -309,10 +309,10 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'POST',                                                
+                        type: 'POST',
                         url: base_url+'/save-enquiry',
                         data: {id:id,note:note},
-                        success:function(data){ 
+                        success:function(data){
                             $('#preloader').hide();
                             if (data.error) {
                                 $('#enquiry_status').html('<div class="text-danger">'+data.message+'</div>');
@@ -324,7 +324,7 @@
                     });
                 }
             });
-            
+
             $(document).on('click','.print_welcome_letter',function (e) {
                 var checked = [];
                 var data_id = $(this).attr('data-id');
@@ -340,7 +340,7 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: 'welcome-letter',
                     data: {selected:checked},
                     success:function(data){
@@ -367,7 +367,7 @@
                 if (checked == '') {
                     $('#orderCustombody').html('<div class="text-danger">Please select any order</div>');
                 } else {
-                    $('#orderCustombody').html('<div class="form-group"><label class="form-label">Shipping Via</label> <select id="shiping_process" class="form-control custom-select" name="shiping_process"> <option value="Royal Mail First Class Delivery" selected>Royal Mail First Class</option> <option value="Royal Mail Special Delivery">Royal Mail Special Delivery</option> <option value="Royal Mail Next Day Delivery">Royal Mail Next Day Delivery</option> <option value="other">Other</option> </select></div> <div class="form-group other_delivery d-none"> <input type="text" name="shiping_agent" id="shiping_agent" class="form-control" required placeholder="Shipping Agent Name" value="Royal Mail First Class Delivery"></div> <div id="custom_status"></div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_shipping" class="btn btn-success pull-right">Save</button>'); 
+                    $('#orderCustombody').html('<div class="form-group"><label class="form-label">Shipping Via</label> <select id="shiping_process" class="form-control custom-select" name="shiping_process"> <option value="Royal Mail First Class Delivery" selected>Royal Mail First Class</option> <option value="Royal Mail Special Delivery">Royal Mail Special Delivery</option> <option value="Royal Mail Next Day Delivery">Royal Mail Next Day Delivery</option> <option value="other">Other</option> </select></div> <div class="form-group other_delivery d-none"> <input type="text" name="shiping_agent" id="shiping_agent" class="form-control" required placeholder="Shipping Agent Name" value="Royal Mail First Class Delivery"></div> <div id="custom_status"></div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_shipping" class="btn btn-success pull-right">Save</button>');
                 }
                 $('#orderCustomModal').modal('show');
             });
@@ -383,7 +383,7 @@
                 }
             });
 
-            $(document).on('click','#action_shipping',function (e) { 
+            $(document).on('click','#action_shipping',function (e) {
                 var checked = [];
                 var data_id = $(this).attr('data-id');
                 if (typeof data_id !== typeof undefined && data_id !== false) {
@@ -398,7 +398,7 @@
                     $('#orderCustombody').html('<div class="text-danger">Please select any order</div>');
                     $('#orderCustomModal').modal('show');
                 } else {
-                    var agent_name = $('#shiping_agent').val(); 
+                    var agent_name = $('#shiping_agent').val();
                     if (agent_name == '') {
                         $('#custom_status').html('<div class="text-danger">Please enter the agent details</div>');
                     } else {
@@ -406,21 +406,21 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: 'order-shipment',
                             data: {selected:checked,agent:agent_name},
-                            success:function(data){ 
+                            success:function(data){
                                 if (data.error) {
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
                                     $('#custom_status').html('<div class="text-success">'+data.message+'</div>');
-                                    $('#orderCustomModal').modal('hide');                                    
+                                    $('#orderCustomModal').modal('hide');
                                     $('#orderlist').DataTable().draw();
                                 }
                             }
                         });
                     }
-                }                
+                }
             });
 
             $(document).on('click','.sim_details',function (e) {
@@ -429,10 +429,10 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: 'sim-details',
                     data: {id:id},
-                    success:function(data){ 
+                    success:function(data){
                         if (data.error) {
                             $('#orderCustombody').html('<div class="text-danger">'+data.message+'</div>');
                         } else {
@@ -457,10 +457,10 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
-                    url: base_url+'/re-order', 
+                    type: 'POST',
+                    url: base_url+'/re-order',
                     data: {order_id:order_id},
-                    success:function(data){ 
+                    success:function(data){
                         if (data.error) {
                             $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                         } else {
@@ -469,7 +469,7 @@
                         }
                     }
                 });
-            }); 
+            });
 
             $(document).on('click','.order_duplicate',function (e) {
                 var id = $(this).attr('data-id');
@@ -485,10 +485,10 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
-                    url: 'order-update', 
+                    type: 'POST',
+                    url: 'order-update',
                     data: {sim_id:sim_id,phone:phone},
-                    success:function(data){ 
+                    success:function(data){
                         if (data.error) {
                             $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                         } else {
@@ -497,7 +497,7 @@
                         }
                     }
                 });
-            }); 
+            });
 
             $(document).on('click','#print_sim_detail',function () {
                 $.print("#sim_detail_content");
@@ -524,16 +524,16 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'POST',                                                
+                        type: 'POST',
                         url: 'find-address',
                         data: {postal_code:postal_code,house_no:house_no},
-                        success:function(data){ 
+                        success:function(data){
                             if (data.error) {
                                 if (data.type == 1) {
                                     $('#delivery_address').html(data.list);
-                                    $('#delivery_address').removeClass('d-none');                                    
+                                    $('#delivery_address').removeClass('d-none');
                                     $('#delivery_address_error').text(data.message);
-                                } else if (data.type == 2) {         
+                                } else if (data.type == 2) {
                                     $('#address_error').text(data.message);
                                     $('.shipping_address').removeClass('d-none');
                                 }
@@ -571,11 +571,11 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'POST',                                                
+                        type: 'POST',
                         url: 'update-address',
                         data: {id:id,address:address},
-                        success:function(data){ 
-                            if (data.error) {                                
+                        success:function(data){
+                            if (data.error) {
                                 $('#update_shipping_status').text(data.message);
                                 $('#update_shipping_status').show();
                                 setTimeout(function(){
@@ -590,7 +590,7 @@
                 }
             });
 
-            $.validator.addMethod("lettersonly", function(value, element) 
+            $.validator.addMethod("lettersonly", function(value, element)
             {
                 return this.optional(element) || /^[a-z ]+$/i.test(value);
             }, "This field allows only aphabets");

@@ -55,10 +55,10 @@
 													<i>Country Code</i>
 													<select name="user_country_code">
 														<option value="">Select Country Code</option>
-														@foreach (Helper::getCountries() as  $country) 
+														@foreach (Helper::getCountries() as  $country)
 												      		<option  value="{{$country->id}}">{{ $country->c_code }}  {{ $country->country_name }}</option>
 													    @endforeach
-													</select>										     
+													</select>
 												</div>
 											</div>
 											<div class="col-md-6 col-sm-6">
@@ -92,10 +92,10 @@
                 </div>
                 <div class="col-md-4">
                     <div class="Advt">
-                    	<img src="{{ asset('public/images/advt1.jpg') }}" class="img-responsive center-block">
+                    	<img src="{{ asset('images/advt1.jpg') }}" class="img-responsive center-block">
                     </div>
                     <div class="Advt">
-                    	<img src="{{ asset('public/images/advt2.jpg') }}" class="img-responsive center-block">
+                    	<img src="{{ asset('images/advt2.jpg') }}" class="img-responsive center-block">
                     </div>
                 </div>
             </div>
@@ -126,33 +126,33 @@
 	           	messages: {
 	             	phone_number: "Enter valid phone number"
 	            }
-         	});      
+         	});
        	});
  	</script>
 
-   	<script>  
-       	$(document).ready(function() {  
+   	<script>
+       	$(document).ready(function() {
          	var count = 1;
-         	var txt = $('#txtName');  
-         	$("#Add").on("click", function() { 
+         	var txt = $('#txtName');
+         	$("#Add").on("click", function() {
 	           	if(count>2)
 				{
 				 	alert("Maximum number of contacts exceeded");
 				} else if(txt.val() == 0 && txt.val() == '') {
 					alert("Please enter your contact number");
 				} else {
-					$("#textboxDiv").append("<div class='popTbox'><i>Phone No" +count+"</i><input type='number' name='phone_number2[]' required='required' minlength='5' maxlength='10'></div>");  
+					$("#textboxDiv").append("<div class='popTbox'><i>Phone No" +count+"</i><input type='number' name='phone_number2[]' required='required' minlength='5' maxlength='10'></div>");
 					$('#form').validate();
 					count += 1;
-	            }                           
-            });  
+	            }
+            });
 
-         	$("#Remove").on("click", function() { 
+         	$("#Remove").on("click", function() {
           		$("#textboxDiv").children().last().remove();
           		count -= 1;
           		$('#form').validate();
-    		});  
-       	});  
+    		});
+       	});
     </script>
 @endsection
 

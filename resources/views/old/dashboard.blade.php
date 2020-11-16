@@ -36,18 +36,18 @@
 @if(Auth::user()->role == 1 || Auth::user()->role == 6)
 <script>
    $(document).ready(function () {
-      setInterval(function(){  
+      setInterval(function(){
          $.ajax({
             headers: {
                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            type: 'GET',                                                
-            url: base_url+'/new-order',            
-            success:function(data){ 
+            type: 'GET',
+            url: base_url+'/new-order',
+            success:function(data){
                if(data > 0) {
-                  $('#order_bell').html("<audio  autoplay='true' hidden='true'><source  id='myAudioElement'  src='"+base_url+"/public/bell/beep.mp3' type='audio/mpeg'></audio>");
+                  $('#order_bell').html("<audio  autoplay='true' hidden='true'><source  id='myAudioElement'  src='"+base_url+"/bell/beep.mp3' type='audio/mpeg'></audio>");
                   // location.reload();
-               }                  
+               }
             }
          });
       }, 10000);

@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -53,7 +53,7 @@
                                                     @foreach($providers as $pkey => $plist)
                                                     <option value="{{ $plist->provider}}">{{ $plist->provider}}</option>
                                                     @endforeach
-                                                    <option value="Bridge">Bridge</option>  
+                                                    <option value="Bridge">Bridge</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -63,9 +63,9 @@
                                                 <select name="plans" class="form-control custom-select">
                                                     <option value="">Choose</option>
                                                     @foreach($plans as $lkey => $list)
-                                                    @php 
-                                                    $type = ($list->provider == 'Bridge') ? 'Conference Plan-' : ""; 
-                                                    $for = ($list->provider == 'Bridge') ? 'conf-'.$list->plan_name : 'plan-'.$list->id; 
+                                                    @php
+                                                    $type = ($list->provider == 'Bridge') ? 'Conference Plan-' : "";
+                                                    $for = ($list->provider == 'Bridge') ? 'conf-'.$list->plan_name : 'plan-'.$list->id;
                                                     @endphp
                                                     <option value="{{ $for }}">{{ $type.''.$list->plan_name}}</option>
                                                     @endforeach
@@ -78,27 +78,27 @@
                                                 <select name="status" class="form-control custom-select">
                                                     <option value="">Choose</option>
                                                     <option value="1">Active</option>
-                                                    <option value="0">In Active</option>  
+                                                    <option value="0">In Active</option>
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class=" col-md-12">
                                             <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
                                             @if(Helper::has_permission('reports'))
                                             <button type="submit" class="btn btn-info pull-right" id="export" name="exportdata" value="1">Export</button>
                                             @endif
-                                            
-                                            
+
+
                                         </div>
                                     </div>
                                     </form>
-                                </div>                                
+                                </div>
                                 <table id="autoplan-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Phone Number</th>                               
+                                            <th>Phone Number</th>
                                             <th>Child Number</th>
                                             <th>Plan</th>
                                             <th>Plan Type</th>
@@ -110,7 +110,7 @@
                                             <th>Created At</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -118,11 +118,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -168,7 +168,7 @@ $(document).ready(function(){
         "columns": [
             {"data": "name", "name": "name"},
             {"data": "phone_number", "name": "phone_number"},
-            {"data" : "child", "name":"child"},                       
+            {"data" : "child", "name":"child"},
             {"data" : "plan","name":"plan"},
             {"data" : "plan_type","name":"plan_type"},
             {"data" : "provider","name":"provider"},

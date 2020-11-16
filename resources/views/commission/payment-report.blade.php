@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -37,7 +37,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class=" col-md-12">
                                             <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
@@ -49,7 +49,7 @@
                                         </div>
                                     </div>
                                     </form>
-                                </div>                             
+                                </div>
                                 <table id="commPayment-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
@@ -64,7 +64,7 @@
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -72,11 +72,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -88,7 +88,7 @@
                         <h5 class="modal-title mt-0">Commission Details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
-                    <div class="modal-body" id="paycommviewbody"> 
+                    <div class="modal-body" id="paycommviewbody">
                     <form id="new-paycomm-form" method="POST">
                         @csrf
                         <div class="form-group">
@@ -100,7 +100,7 @@
                                 @endforeach
                             </select>
                             <span></span>
-                        </div>  
+                        </div>
                         <div class="form-group">
                             <label>Amount</label>
                             <input type="text" id="pay_amount" class="form-control" name="pay_amount" required maxlength="10">
@@ -109,7 +109,7 @@
                         <input type="hidden" name="type" value="dealer">
                         <button type="submit" class="btn btn-primary" id="payCommission">Save</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </form>   
+                    </form>
                     </div>
                 </div>
             </div>
@@ -120,7 +120,7 @@ $(document).ready(function(){
 
     $('#resetBtn').on('click', function(e) {
        $('#comm-payment-list-form')[0].reset();
-       $('#commPayment-table').DataTable().draw();       
+       $('#commPayment-table').DataTable().draw();
     });
 
     var commpaymentTable = $('#commPayment-table').DataTable({

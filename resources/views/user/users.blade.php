@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -60,7 +60,7 @@
                         <div class="clearfix"></div>
                         <p class=" mb-0 m-t-10 text-muted">This week<span class="pull-right"></span></p>
                     </div>
-                </div>                    
+                </div>
             </div>
             @endif
             <div class="row">
@@ -70,17 +70,17 @@
                             <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                 <table id="userlist" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
-                                        <tr>                                            
+                                        <tr>
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone No</th>
-                                            <th>Platform</th>                                            
+                                            <th>Platform</th>
                                             <th>Created On</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                       
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -89,12 +89,12 @@
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#userlist').DataTable({
@@ -105,10 +105,10 @@
                         processing: true,
                         serverSide: true,
                         ajax: {
-                            'url': 'list-users' 
+                            'url': 'list-users'
                             // data: function (d) {
                             //     d.phone = $('input[name=user_cli]').val();
-                            // }              
+                            // }
                         },
                         drawCallback:function(settings)
                         {
@@ -120,8 +120,8 @@
                         'dataType': 'json',
                         'columns': [
                             {'data': 'name', 'name': 'name'},
-                            {'data': 'email', 'name': 'email'},                 
-                            {'data' : 'phone', 'name': 'phone'},            
+                            {'data': 'email', 'name': 'email'},
+                            {'data' : 'phone', 'name': 'phone'},
                             {'data' : 'user_platform','name' : 'ud.user_platform'},
                             {'data' : 'created_at', 'name' : 'created_at'},
                             {'data': function(data){
@@ -150,14 +150,14 @@
                     $('.dataTables_filter input').attr('placeholder', 'Search');
 
                     $(document).on('click','.delete_user',function(){
-                        var id = $(this).attr('user-id'); 
+                        var id = $(this).attr('user-id');
                         $('#orderCustomLabel').text('Delete Account');
-                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this contact? <div id="custom_status"> </div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="confirm_delete_user" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>'); 
-                        $('#orderCustomModal').modal('show');            
+                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this contact? <div id="custom_status"> </div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="confirm_delete_user" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>');
+                        $('#orderCustomModal').modal('show');
                     });
 
-                    $(document).on('click','#confirm_delete_user',function(){      
-                        var id = $(this).data('id');                   
+                    $(document).on('click','#confirm_delete_user',function(){
+                        var id = $(this).data('id');
                         $('#delete_user_'+id).submit();
                     });
 
@@ -166,16 +166,16 @@
                         e.preventDefault();
                     });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).attr('user-id');                
+                    $(document).on('click', '.show_user_data', function(e) {
+                        e.preventDefault();
+                        var id = $(this).attr('user-id');
                         $('#show_user_'+id).submit();
                     });
-                    
+
                     // $('.customdate').datetimepicker({
                     //     format: 'DD-MM-YYYY'
                     // });
-                    
+
                     $('#resetBtn').on('click', function(e) {
                        $('#payment-search-form')[0].reset();
                     });

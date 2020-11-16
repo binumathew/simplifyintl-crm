@@ -3,8 +3,8 @@
 <!-- page wrapper start -->
 <div class="wrapper">
     <div class="container-fluid">
-        <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
 
         <div class="row">
             <div class="col-sm-12">
@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-          
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card m-b-20">
@@ -48,11 +48,11 @@
         </div>
 
 
-        <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 
         <script type="text/javascript">
             $(document).ready(function(){
@@ -73,7 +73,7 @@
                     'dataType': 'json',
                     'columns': [
                             {'data': 'name', 'name': 'name'},
-                            {'data': 'email', 'name': 'email'},                 
+                            {'data': 'email', 'name': 'email'},
                             {'data': 'phone', 'name': 'phone'},
                             {'data': 'platform','name':'platform'},
                             {'data' : 'status','name':'status'},
@@ -99,28 +99,28 @@
                             },
                             type:"POST",
                             data:{ userid:userid,status:status },
-                            url:base_url + '/conf-user-status',                            
+                            url:base_url + '/conf-user-status',
                             success:function(data){
                                 if(data.status == 200) {
                                     // table.draw();
                                     table.ajax.reload();
-                                    alertify.success(data.msg);                                    
+                                    alertify.success(data.msg);
                                 } else {
                                     alertify.error(data.msg);
                                 }
                             }
-                        }); 
-                    },function(){ alertify.error('Option cancelled')}); 
+                        });
+                    },function(){ alertify.error('Option cancelled')});
                 });
 
-                $(document).on('click', '.show_user_data', function(e) {              
-                    e.preventDefault();   
-                    var id = $(this).attr('user-id');                
+                $(document).on('click', '.show_user_data', function(e) {
+                    e.preventDefault();
+                    var id = $(this).attr('user-id');
                     $('#show_user_'+id).submit();
                 });
 
                 $(document).on('click','.delete_user',function(){
-                    var id = $(this).attr('user-id'); 
+                    var id = $(this).attr('user-id');
                     if(confirm('Do you really want to delete this contact ?')){
                         $('#delete_user_'+id).submit();
                     }

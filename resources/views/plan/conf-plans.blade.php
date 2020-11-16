@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -33,23 +33,23 @@
                                                 <select name="plan_status" id="plan_status" class="form-control custom-select">
                                                     <option value="" selected disabled>Choose</option>
                                                     <option value="1">Active</option>
-                                                    <option value="0">In Active</option>  
+                                                    <option value="0">In Active</option>
                                                 </select>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class=" col-md-12">
                                             <button type="button" id="searchBtn" class="btn btn-primary ">Search</button>
                                             <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
-                                            
+
                                         </div>
                                     </div>
                                     </form>
-                                </div> 
+                                </div>
                                 <div class="col-md-12">
                                     <a href="{{ url('/conf-plans-manage')}}">
                                         <button type="button" class="btn btn-info waves-effect waves-light pull-right">Add Plan</button>
                                     </a>
-                                </div>                                
+                                </div>
                                 <table id="confPlans-table" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
@@ -67,7 +67,7 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -75,11 +75,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -91,8 +91,8 @@
                         <h5 class="modal-title mt-0">Plan Details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
-                    <div class="modal-body" id="planviewbody"> 
-                         
+                    <div class="modal-body" id="planviewbody">
+
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@ $(document).ready(function(){
 
     $('#resetBtn').on('click', function(e) {
        $('#conf-plans-list-form')[0].reset();
-       $('#confPlans-table').DataTable().draw();       
+       $('#confPlans-table').DataTable().draw();
     });
 
     var confplanTable = $('#confPlans-table').DataTable({
@@ -127,7 +127,7 @@ $(document).ready(function(){
         },
         "dataType": "jsonp",
         "columns": [
-            {"data": "plan_name", "name": "plan_name"},                     
+            {"data": "plan_name", "name": "plan_name"},
             {"data" : "sell_price","name":"sell_price"},
             {"data" : "provider","name":"provider"},
             {"data" : "minutes","name":"minutes"},

@@ -11,8 +11,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -68,7 +68,7 @@
                             <div class="clearfix"></div>
                             <p class=" mb-0 m-t-10 text-muted">-<span class="pull-right"></span></p>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
                 @endif
             <div class="row">
@@ -80,7 +80,7 @@
                                 <div class="col-md-12 m-b-20">
                                     <div class=" text-right">
                                         <a href="{{ url('/create-dealer') }}" class="btn btn-primary ">Add Dealer</a>
-                                    </div>                                   
+                                    </div>
                                 </div>
                                 @endif
                             </div>
@@ -89,22 +89,22 @@
                                     <thead>
                                         <tr>
                                             <th class="d-none">#</th>
-                                            <th>Name</th>                                           
+                                            <th>Name</th>
                                             <th>Email</th>
-                                            <th>Phone No</th> 
-                                            <th>Promo Code</th>                                     
+                                            <th>Phone No</th>
+                                            <th>Promo Code</th>
                                             <th>Role</th>
                                             <th>Created Date</th>
-                                            <th>Status</th>                          
+                                            <th>Status</th>
                                             <th>Action</th>
-                                        </tr>                                    
+                                        </tr>
                                     </thead>
-                                    <tbody> 
+                                    <tbody>
                                         @php $i=0; @endphp
                                             @foreach ($dealers as $user)
                                             <tr id="{{ ++$i }}">
                                                 <td class="d-none">{{ $i }}</td>
-                                                <td>{{ $user->first_name .' '. $user->last_name }}</td>                     
+                                                <td>{{ $user->first_name .' '. $user->last_name }}</td>
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ $user->phone }}</td>
                                                 <td>{{ $user->promocode }}</td>
@@ -115,7 +115,7 @@
                                                     <span class="badge badge-success">Active</span>
                                                     @else
                                                     <span class="badge badge-danger">In-Active</span>
-                                                    @endif                                      
+                                                    @endif
                                                 <td>
                                                     <a data-toggle="tooltip" href="javascript:void(0);" data-original-title="Assign Stock" class="text-muted list_stock" data-id="{{ Crypt::encrypt($user->id) }}" data-name="{{ $user->first_name .' '. $user->last_name }}"><i class="mdi mdi-stackoverflow mdi-24px"></i></a>&nbsp;&nbsp;&nbsp;
                                                     @if(Helper::has_permission('staff','edit'))
@@ -130,7 +130,7 @@
                                                     &nbsp;&nbsp;&nbsp;<a data-toggle="tooltip" href="javascript:void(0);" data-original-title="Send Credentials" class="resend_credentials text-muted" data-id="{{ Crypt::encrypt($user->id) }}"><i class="mdi mdi-email mdi-24px"></i></a>
                                                 </td>
                                             </tr>
-                                            @endforeach                                      
+                                            @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -206,31 +206,31 @@
                         </div>
                         <div class="row col-md-6 chng_search_category_phone d-none">
                             <div class="col-md-6">
-                                <div class="form-group">                                                        
+                                <div class="form-group">
                                 <input id="phone_number_from" name="phone_number_from" type="text" class="form-control" autocomplete="off" value="" placeholder="Phone Number From">
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">                                                      
+                                <div class="form-group">
                                 <input id="phone_number_to" name="phone_number_to" type="text" class="form-control" autocomplete="off" value="" placeholder="Phone Number To">
                                 </div>
                             </div>
                         </div>
                         <div class="row col-md-6 chng_search_category_sim d-none">
                             <div class="col-md-6">
-                                <div class="form-group">                                                       
+                                <div class="form-group">
                                 <input id="imsi_range_from" name="imsi_range_from" type="text" class="form-control" autocomplete="off" value="" placeholder="Sim Number From">
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">                                                        
+                                <div class="form-group">
                                 <input id="imsi_range_to" name="imsi_range_to" type="text" class="form-control" autocomplete="off" value="" placeholder="Sim Number To">
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                                 <button type="button" class="btn btn-success waves-effect waves-light get_stock">Get Stock</button>
-                        </div> 
+                        </div>
                     </div>
                     <br>
                     </form>
@@ -256,26 +256,26 @@
                     <div class="row">
                         <div class="col-md-12">
                             <button type="button" class="btn btn-success waves-effect waves-light pull-right d-none assign_stock">Assign</button>
-                        </div> 
+                        </div>
                     </div>
                 </div>
                 </div>
             </div>
             </div>
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#staffList').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});
 
                     $('.dataTables_filter input').attr('placeholder', 'Search');
 
-                    $(document).on('click','.resend_credentials',function (e) {  
-                        var $this = $(this);    
+                    $(document).on('click','.resend_credentials',function (e) {
+                        var $this = $(this);
                         var id =  $this.attr('data-id');
                         $.ajax({
                             headers: {
@@ -284,7 +284,7 @@
                             type: 'POST',
                             url: base_url+'/send-password',
                             data: {id:id},
-                            success:function(data){                                
+                            success:function(data){
                                 if (data.error) {
                                     alert(data.message);
                                 } else {
@@ -303,13 +303,13 @@
                     });
                     $(document).on('click','.search_type',function (e) {
                         var search_type = $(this).val();
-                        $('.chng_search_category_phone,.chng_search_category_sim').addClass('d-none');  
+                        $('.chng_search_category_phone,.chng_search_category_sim').addClass('d-none');
                         if(search_type == 1){
                             $('.chng_search_category_sim').removeClass('d-none');
                         }else if(search_type == 2){
-                            $('.chng_search_category_phone').removeClass('d-none');  
+                            $('.chng_search_category_phone').removeClass('d-none');
                         }
-                        
+
                     });
                     $(document).on('change','#change_providers',function (e) {
                         var provider = $(this).val();
@@ -326,8 +326,8 @@
                             complete: function(){
                                 $("#preloader,#status").hide();
                             },
-                            success:function(data){   
-                                var html = '';                             
+                            success:function(data){
+                                var html = '';
                                 if (data.success) {
                                     var resp   = JSON.parse(data.box);
                                     var html   = '';
@@ -337,7 +337,7 @@
                                     $('#change_boxtype').find('option:not(:first)').remove();
                                     $("#change_boxtype").append(html);
                                 }else {
-                                    
+
                                 }
                             }
                         });
@@ -363,13 +363,13 @@
                             complete: function(){
                                 $("#preloader,#status").hide();
                             },
-                            success:function(data){   
-                                var html = '';                             
+                            success:function(data){
+                                var html = '';
                                 if (data.success) {
                                     var resp = JSON.parse(data.stock_list);
                                     if(resp.length == 0){
                                         html += '<p class="form-error">Sim not available!</p>';
-                                    } 
+                                    }
                                     $.each(resp,function(index,value){
                                     if(search_type == 2){
                                       html += '<label><li style="list-style-type:none;"><span><input type="checkbox" class="dealers_num" id="dealers_no'+ value.id+'" name="stock_id[]" value="'+ value.id+'" checked></span> '+ value.phone_number +'</li></label> &nbsp;&nbsp;';
@@ -383,7 +383,7 @@
                                     $(".stock_list,.assign_stock").removeClass('d-none');
                                     $("#nonselected").append(html);
                                 } else {
-                                    
+
                                 }
                             }
                         });
@@ -395,7 +395,7 @@
                         }else{
                             var dealername = $("#dealer_name").val();
                             alertify.confirm('Stock Assign Confirmation', 'Are you sure you want to assign stock to '+dealername+'?',
-                        function(){  
+                        function(){
                             var formData    = new FormData($('#stock_assign_form')[0]);
                             var dealer_id   = $("#dealer_id").val();
                             formData.append('dealer_id', dealer_id);
@@ -416,7 +416,7 @@
                                 complete: function(){
                                     $("#preloader,#status").hide();
                                 },
-                                success:function(data){                              
+                                success:function(data){
                                     if (data.success) {
                                         alertify.success(data.message);
                                         $('#stock_list_form')[0].reset();
@@ -441,9 +441,9 @@
                     //         $(".rs_stock").html(rs_stock - 1);
                     //         $(".av_stock").html(av_stock + 1);
                     //         $(this).children().removeClass('mdi-close-box').addClass('mdi-arrow-right-bold');
-                    //         $(this).parent().detach().appendTo('#nonselected'); 
+                    //         $(this).parent().detach().appendTo('#nonselected');
                     //     }
-                    // }); 
+                    // });
                 });
             </script>
         </div>

@@ -13,10 +13,10 @@
 							<th>Connection Type</th>
 						</tr>
 					</thead>
-					<tbody>						
+					<tbody>
 						@foreach ($sim_list as $sim)
 						<tr class="odd">
-							<td>{{ $sim->auto_plan->plan->plan_name }}</td>							
+							<td>{{ $sim->auto_plan->plan->plan_name }}</td>
 							<td>{{ $sim->auto_plan->plan->provider }}</td>
 							<td>{{ $sim->stock->sim_number }}</td>
 							<td>
@@ -25,15 +25,15 @@
 									Port/Migration</option>
 									<option value="0" {{ (!$sim->port)?'selected':''}}>New</option>
 								</select>
-							</td>							
+							</td>
 						</tr>
-						@endforeach						
+						@endforeach
 					</tbody>
 				</table>
 				<div>
 	                <a href="javascript:void(0)" class="btn btn-success waves-effect waves-light pull-right" id="provision_request" data-stock_id="{{$stock_id}}"><strong>Continue</strong></a>
 	            </div>
-			</div>			
+			</div>
 		</div>
 	</div>
 
@@ -56,7 +56,7 @@
 </div>
 @endif
 @if($step == 2)
-<link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+<link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
 <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
@@ -67,7 +67,7 @@
 <div class="row">
 	<div class="col-md-9">
 		<div class="card m-b-20">
-			<div class="card-body">				
+			<div class="card-body">
 				<div class="table-responsive b-0 fixed-solution" data-pattern="priority-columns">
 					<form id="provision-form">
 					<table id="tech-companies-1-clone" class="table  table-striped inner-form">
@@ -79,7 +79,7 @@
 								<th nowrap="nowrap">STAC/PAC<span style="color: #f00">*</span> Code</th>
 								<th nowrap="nowrap" width="190">Transfer Date <span style="color: #f00">*</span></th>
 								<th nowrap="nowrap" width="100">Bill Limit</th>
-								<th nowrap="nowrap"> Sim Serial Number <span style="color: #f00">*</span></th>								
+								<th nowrap="nowrap"> Sim Serial Number <span style="color: #f00">*</span></th>
 								<th nowrap="nowrap" width="190">Activation Date</th>
 								<th nowrap="nowrap">Sim Required?</th>
 								<th nowrap="nowrap" width="100">WWCap</th>
@@ -111,34 +111,34 @@
 											<span class="input-group-text">
 												<i class="mdi mdi-calendar"></i>
 											</span>
-										</div>									
+										</div>
 									</div>
 								</td>
 								<td>
-									<select class="form-control" name="bill_limit">										
+									<select class="form-control" name="bill_limit">
 										<option value="1" selected>1</option>
 										<option value="5">5</option>
 										<option value="10">10</option>
 									</select>
-								</td>								
+								</td>
 								<td>
 									<div class="input-group">
 										<input class="form-control" id="sim_number_{{$sim->id}}" name="sim_serial" type="text" value="{{ $sim->stock->sim_number }}" readonly>
 										<div class="input-group-append">
 											<span class="input-group-text"><i class="mdi mdi-rotate-3d mdi-18px verify_sim_number" data-sim_id="{{$sim->id}}"></i></span>
 										</div>
-									</div>							
-								</td>															
-								<td>					
+									</div>
+								</td>
+								<td>
 									<div class="input-group">
 										<input type="text" name="activation" class="form-control {{($sim->port)?'':'datepicker'}}" placeholder="yyyy-mm-dd" {{($sim->port)?'disabled':''}}>
 										<div class="input-group-append">
 											<span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
 										</div>
-									</div>								
+									</div>
 								</td>
 								<td>
-									<select class="form-control" name="sim_required">					
+									<select class="form-control" name="sim_required">
 										<option value="1" selected>Yes</option>
 										<option value="0">No</option>
 									</select>
@@ -147,7 +147,7 @@
 									<select class="form-control" name="wwc">
 										<!-- <option value=""></option> -->
 										<option value="1" selected>Yes</option>
-										<option value="0">No</option>									
+										<option value="0">No</option>
 									</select>
 								</td>
 								<td></td>
@@ -155,7 +155,7 @@
 							@endforeach
 						</tbody>
 					</table>
-			
+
 			            <div class="my-3">
 			            	<a href="javascript:void(0)" class="btn btn-secondary sim_provisioning m-10 waves-light" data-stock_id="{{$stock_id}}"><strong>Back</strong></a>
 			                <button class="btn btn-success waves-effect waves-light pull-right m-10" id="provision_process" data-stock_id="{{$stock_id}}"><strong>Continue</strong></button>
@@ -185,7 +185,7 @@
 		</div>
 	</div>
 </div>
-<script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
 		var today = new Date();
@@ -210,8 +210,8 @@
             },
             unhighlight: function (element, errorClass, validClass) {
                 $( element ).addClass('border border-success').removeClass('border border-danger');
-            },            
-            // errorPlacement: function(error, element) {                       
+            },
+            // errorPlacement: function(error, element) {
             //     element.addClass('border border-danger');
             // },
             rules: {
@@ -219,7 +219,7 @@
                     number: true,
                     required: {
                         depends: function () { return ($('#port_request').val() == 1)?1:0 }
-                    }, 
+                    },
                     regex:/^((07)[0-9]{9})$/,
                 },
                 user_name:'required',
@@ -250,20 +250,20 @@
 			<tr>
 				<th>Phone</th>
 				<th>Account Id</th>
-				<th>Status</th>									
+				<th>Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			@php $error_flag = 0; @endphp
 			@foreach($sim_list as $sim)
-			@php 
+			@php
 			$simDetail = $sim->getSimDetails();
 			@endphp
-			<tr>				
+			<tr>
 				<td>{{$sim->stock->phone_number}}</td>
 				<td>{{$accounts[$sim->stock_id]}}</td>
 				<td>@if($accounts[$sim->stock_id]) Done
-					@else 
+					@else
 					@php $error_flag = 1; @endphp
 					<a class="btn btn-warning btn-xs activation_reload" data-active-page="1" data-id="{{ $simDetail['idetifier'] }}">
 					 Try Again</a>
@@ -284,22 +284,22 @@
 				<th>Phone</th>
 				<th>Plan Name</th>
 				<th>Subscription ID</th>
-				<th>Status</th>										
+				<th>Status</th>
 			</tr>
 		</thead>
-		<tbody>		
+		<tbody>
 			@php $error_flag = 0; @endphp
 			@foreach($sim_list as $sim)
-			@php 
+			@php
 			$simDetail = $sim->getSimDetails();
 			@endphp
-			<tr>				
+			<tr>
 				<td>{{$sim->stock->phone_number}}</td>
 				<td>{{$sim->auto_plan->plan->plan_name}}</td>
 				<td>{{$status[$sim->stock_id]}}</td>
-				<td>@if($status[$sim->stock_id]) Done 
-					@else 
-					@php $error_flag = 1; @endphp	
+				<td>@if($status[$sim->stock_id]) Done
+					@else
+					@php $error_flag = 1; @endphp
 					<a class="btn btn-warning btn-xs activation_reload" data-active-page="2" data-id="{{ $simDetail['idetifier'] }}"> Try Again</a>
 					@endif
 				</td>

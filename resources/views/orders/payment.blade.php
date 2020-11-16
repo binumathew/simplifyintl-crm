@@ -6,8 +6,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <!-- <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
-            <!-- <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
+            <!-- <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
+            <!-- <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/> -->
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -152,7 +152,7 @@
                                                         data-amount="{{ $amount }}"
                                                         data-name="Order Payment"
                                                         data-description=""
-                                                        data-image="{{ asset('public/images/logo.png') }}"
+                                                        data-image="{{ asset('images/logo.png') }}"
                                                         data-locale="auto"
                                                         data-currency="{{$currency}}">
 
@@ -242,11 +242,11 @@
                 </div>
 
 
-            <!-- <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script> -->
-            <script src="{{ asset('public/js/jquery.creditCardValidator.js') }}"></script>
-            <script src="{{ asset('public/js/jquery.mask.js') }}"></script>
+            <!-- <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script> -->
+            <script src="{{ asset('js/jquery.creditCardValidator.js') }}"></script>
+            <script src="{{ asset('js/jquery.mask.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function () {

@@ -53,16 +53,16 @@
 													<i>Country code</i>
 													<select name="user_country_code">
 													@php
-													$no = explode("-", $user_contacts->phone_number, 2);		 @endphp 
+													$no = explode("-", $user_contacts->phone_number, 2);		 @endphp
 													@foreach($countries as $key => $value)
 										            <option value="{{$value->id}}"
 														@if($value->c_code == $no[0]) echo "selected"; @endif>
 										              {{$value->c_code}}  {{$value->country_name}}</option>
-													@endforeach 
+													@endforeach
 													</select>
 												</div>
 											</div>
-											@php $user_contacts->phone_number =$no[1]; @endphp		
+											@php $user_contacts->phone_number =$no[1]; @endphp
 											<div class="col-md-6 col-sm-6">
 												<div class="popTbox">
 													<i>Phone No</i>
@@ -94,7 +94,7 @@
 													<input name="" type="submit" class="greenbtn" value="SUBMIT">
 												</div>
 											</div>
-										</div>									
+										</div>
 									</div>
 								</div>
 							</div>
@@ -103,10 +103,10 @@
                 </div>
                 <div class="col-md-4">
                     <div class="Advt">
-                    	<img src="{{ asset('public/images/advt1.jpg') }}" class="img-responsive center-block">
+                    	<img src="{{ asset('images/advt1.jpg') }}" class="img-responsive center-block">
                     </div>
                     <div class="Advt">
-                    	<img src="{{ asset('public/images/advt2.jpg') }}" class="img-responsive center-block">
+                    	<img src="{{ asset('images/advt2.jpg') }}" class="img-responsive center-block">
                     </div>
                 </div>
             </div>
@@ -137,7 +137,7 @@
 	           	messages: {
 	             	phone_number: "Enter valid phone number"
 	            }
-         	});      
+         	});
        	});
  	</script>
 @endsection

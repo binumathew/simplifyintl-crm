@@ -5,7 +5,7 @@
 		<form action="{{ url('/payment') }}" method="post" id="billing-form">
 			@csrf
 			<div class="row">
-				<div class="col-md-6">				
+				<div class="col-md-6">
 						<h1>Cart <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#add_cart_popup">Add</button></h1>
 						<div class="ctablebg clearfix">
 							<div id="cart_wrapper">
@@ -24,7 +24,7 @@
 												<h3>{{ $currency }}{{ $item->product->sell_price }}</h3>
 											</div>
 										</div>
-									</div>	
+									</div>
 
 									<div class="buy_number">
 										<div class="row number_header">
@@ -36,21 +36,21 @@
 											<div class="col-xs-6">
 												Add International Credit
 											</div>
-											<div class="col-xs-1">										
+											<div class="col-xs-1">
 											</div>
 										</div>
 										@foreach($item->list as $list)
 										<div class="row number_holder selected_sim_{{$list->stock_id}}">
 											<div class="col-xs-3 p-t-8">
 												@if($item->product->provider != 'EE')
-												<strong>0759xxxxxxx</strong>	
+												<strong>0759xxxxxxx</strong>
 												@else
 												{{ '0'.ltrim($list->stock->phone_number,'44') }}
 												<span class="fa fa-edit change-number" data-cart_id="{{$item->id}}"></span>
 												@endif
 											</div>
 											<div class="col-xs-2 p-t-8">
-												@php 
+												@php
 													$expire_at = Carbon::parse($list->expire_at)->subMinutes(10);
 												@endphp
 												<i class="timer" data-time="{{ $expire_at }}" data-stock_id="{{ $list->stock_id }}">00m 00s</i>
@@ -81,7 +81,7 @@
 											</div>
 											<input type="hidden" class="sim_price" name="sim_price[]" value="{{$list->stock->price}}">
 										</div>
-										
+
 										@php $amount += $list->stock->price + $list->credit; @endphp
 										@endforeach
 
@@ -89,7 +89,7 @@
 											<!-- <button type="button" class="btn btn-sm pull-left change-number"  data-cart_id="{{$item->id}}">CHANGE</button> -->
 											<button type="button" class="btn btn-sm pull-right remove_item" data-cart_id="{{$item->id}}">REMOVE</button>
 										</div>
-									</div>													
+									</div>
 								</div>
 								@php $amount += $item->amount; @endphp
 								@endforeach
@@ -118,27 +118,27 @@
 									<div class="col-xs-2">
 										<span class="cart_amount grand_total">{{$currency}}{{$amount}}</span>
 									</div>
-								</div>							
+								</div>
 							</div>
 							</div>
 				</div>
 				@php $payment_mode = json_decode(Auth::user()->payment_mode); @endphp
 				<div class="col-md-6">
-					<div class="Cleftpart">					
+					<div class="Cleftpart">
 						<h1>Payment Information</h1>
 						@if(in_array('paypal',$payment_mode))
 						<div class="ctablebg clearfix">
 						<ul class="payinfotab clearfix">
 							<li class="active"><a href="#">CREDIT CARD</a></li>
 							<li>
-								<a href="#"><img src="{{ asset('public/images/paypal.png') }}" alt=""/></a>
+								<a href="#"><img src="{{ asset('images/paypal.png') }}" alt=""/></a>
 							</li>
 						</ul>
 						@if($credit_cards)
 						<div class="paymentwbg addresssec">
 							<div class="cpad">
 								<div class="row gutter5px">
-									<div class="col-xs-8"><h3>Choose Credit Card</h3></div> 
+									<div class="col-xs-8"><h3>Choose Credit Card</h3></div>
 								</div>
 							</div>
 
@@ -156,7 +156,7 @@
 										<label><input id="new-card-radio" type="radio" name="credit_card" value="new" {{ !isset($credit_cards) ? 'checked' : '' }}>Add New Card</label>
 									</div>
 								</div>
-								
+
 							</div>
 
 						</div>
@@ -165,7 +165,7 @@
 							<div class="cpad">
 								<div class="row gutter5px">
 									<div class="col-xs-8"><h3>Card Details</h3></div>
-									<div class="col-xs-4 text-right" id="change-address"><a href="#"><i>Edit Address</i></a></div> 
+									<div class="col-xs-4 text-right" id="change-address"><a href="#"><i>Edit Address</i></a></div>
 								</div>
 							</div>
 							<div class="cpad noborder" id="existing-address">
@@ -177,20 +177,20 @@
 											<li>{{$card_address->street}} {{$card_address->city}}</li>
 											<li>{{$card_address->postal_code}}</li>
 										</ul>
-									</div> 
+									</div>
 								</div>
 							</div>
-							<span id="edit-address" class="hidden">	
+							<span id="edit-address" class="hidden">
 								<p class="half">
 									<span><input type="text" name="first_name" placeholder="First Name" value="{{$card_address->first_name }}"></span>
 									<span><input type="text" name="last_name" placeholder="Last Name" value="{{$card_address->last_name}}"></span>
 								</p>
 								<p>
 									<input type="email" name="user_email" placeholder="Email Address" value="{{ $card_address->email }}">
-								</p>															
+								</p>
 								<div class="pcode clearfix">
 									<span>
-										<input type="text" id="bill_house_no" name="house_no" placeholder="House No" value="{{$card_address->house_no}}">					            	
+										<input type="text" id="bill_house_no" name="house_no" placeholder="House No" value="{{$card_address->house_no}}">
 									</span>
 									<span>
 										<input type="text" id="bill_postal_code" name="postal_code" placeholder="Postal Code" value="{{$card_address->postal_code}}">
@@ -267,14 +267,14 @@
 									</div>
 								</div>
 								<div class="row">
-									<div class="alert-status"> 										
+									<div class="alert-status">
 										@if(Session()->has('error'))
 										<div class="alert alert-danger">
 											{{ Session()->get('error') }}
 										</div>
 										@endif
 									</div>
-								</div>					
+								</div>
 							</div>
 							<div class="cpad">
 								<div class="row gutter5px">
@@ -287,7 +287,7 @@
 								</div>
 							</div>
 						</div>
-						@endif	
+						@endif
 						<!-- <div class="paymentwbg cardsec">
 							<div class="cpad">
 								<div class="row gutter5px">
@@ -317,7 +317,7 @@
 								</div>
 							</div>
 						@endif
-						
+
 						<div class="paymentwbg cardsec promoDiv">
 							<div class="row">
 								<div class="col-md-12">
@@ -325,7 +325,7 @@
 								</div>
 							</div>
 						</div>
-					
+
 						@if($allowed)
 						<div class="paymentwbg cardsec">
 							<div class="cpad">
@@ -351,16 +351,16 @@
 								<div class="col-md-8">
 									<ul>
 										<li>
-											<img src="{{ asset('public/images/ASE.png') }}" class="img-responsive center-block" alt=""/>
+											<img src="{{ asset('images/ASE.png') }}" class="img-responsive center-block" alt=""/>
 										</li>
 										<li>
-											<img src="{{ asset('public/images/paypal_v.png') }}" class="img-responsive center-block" alt=""/>
+											<img src="{{ asset('images/paypal_v.png') }}" class="img-responsive center-block" alt=""/>
 										</li>
 										<li>
-											<img src="{{ asset('public/images/cards.png') }}" class="img-responsive center-block" alt=""/>
+											<img src="{{ asset('images/cards.png') }}" class="img-responsive center-block" alt=""/>
 										</li>
 										<li>
-											<img src="{{ asset('public/images/secured.png') }}" class="img-responsive center-block" alt=""/>
+											<img src="{{ asset('images/secured.png') }}" class="img-responsive center-block" alt=""/>
 										</li>
 									</ul>
 								</div>
@@ -371,11 +371,11 @@
 							I agree the <a href="#" data-toggle="modal" data-target="#terms_popup">Terms and Conditions.</a>
 						</div>
 						<!-- if(allowed) -->
-						<button class="btn btn-primary" type="button" id="self-payment-btn" data-userid="{{$user_id}}">Generate Payment Link</button> 
+						<button class="btn btn-primary" type="button" id="self-payment-btn" data-userid="{{$user_id}}">Generate Payment Link</button>
 						<span class="validation-error msg-span" id="link-error"></span>
 						<span class="validation-success msg-span" id="link-success"></span>
 						<!-- endif -->
-						<button type="button" id="buy_now_btn" class="activatenow disabled" disabled>BUY NOW!</button> 
+						<button type="button" id="buy_now_btn" class="activatenow disabled" disabled>BUY NOW!</button>
 						</div>
 					</div>
 				</div>
@@ -389,18 +389,18 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4>Terms & Conditions</h4>	
+				<h4>Terms & Conditions</h4>
 			</div>
-			<div class="nchangepop clearfix">					
+			<div class="nchangepop clearfix">
 				<div class="tab-content clearfix">
 					<div class="agtxt">
 						<p>By clicking Activate, you agree to pay the amount Due Today. Your Avoo mobile service will not begin until your device ships. Orders placed after 3pm GMT will ship the following business day. Certain orders may require up to two additional business days for processing. your service will automatically renew at the provided rate found in your shopping cart of £15.98 every month. Additional taxes and surcharges may apply. Downgrade or cancel service by logging into your avoo mobile account. Avoo mobile app service currently only supports Android and Apple devices running Android 4.1+ and iOS 8.2+.</p>
-					</div>											
-				</div>					
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-</div> 
+</div>
 <div class="modal fade" id="add_cart_popup" role="dialog">
 	<div class="modal-dialog">
 
@@ -408,9 +408,9 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4>Select Your Plans & Packages</h4>	
+				<h4>Select Your Plans & Packages</h4>
 			</div>
-			<div class="nchangepop clearfix">					
+			<div class="nchangepop clearfix">
 				<div class="">
 					<div class="cart_wrapper">
 						<header>
@@ -429,7 +429,7 @@
 							<div class="tab_reel">
 								<div class="tab_panel1">
 									@foreach($bundles as $bundle)
-									@php 
+									@php
 									$item = serialize(['cat'=>'bundle','cat_id'=>$bundle->id,'count'=>$bundle->sim_count, 'amount' => $bundle->sell_price]); @endphp
 									<div class="card card_list">
 										<div class="desc">
@@ -444,10 +444,10 @@
 													<li>{{ $bundle->period }}Days subscription</li>
 													<li>Unlimited UK mins & texts</li>
 													<li>{{ $bundle->in_call_limit }} International mins(via mobile app)</li>
-												</ul>												
+												</ul>
 											</div>
-										</div>									
-									</div>	
+										</div>
+									</div>
 									@endforeach
 								</div>
 								<div class="tab_panel2">
@@ -461,20 +461,20 @@
 											</div>
 											<div class="dec_content">
 												<button class="btn btn-primary btn-sm add_crt_btn" data-item="{{ $item }}">Add to cart</button>
-												<ul>												
+												<ul>
 													<li>{{ $plan->period }} Days subscription</li>
 													<li>Unlimited UK mins & texts</li>
 													<li>{{ $plan->in_call_limit }} International mins(via mobile app)</li>
-												</ul>												
+												</ul>
 											</div>
-										</div>										
+										</div>
 									</div>
-									@endforeach		
+									@endforeach
 								</div>
 							</div>
 						</main>
 					</div>
-				</div>					
+				</div>
 			</div>
 		</div>
 	</div>
@@ -492,7 +492,7 @@
 					<ul id="stimer" class="selected_sim">
 						<p class="max_selected_sim form-error"></p>
 					</ul>
-					
+
 					<ul class="clearfix nav nav-pills">
 						<li class="active"><a href="#Normal" data-toggle="tab">Standard</a></li>
 						<li><a href="#Silver" data-toggle="tab">Silver</a></li>
@@ -515,8 +515,8 @@
 									</li>
 								</label>
 								@endforeach
-							</ul>	
-							<p class="form-error">No Hidden charges ever</p>							
+							</ul>
+							<p class="form-error">No Hidden charges ever</p>
 							<a class="popup_button reload_sim" href="#" data-type="normal">Reload</a>
 							<a href="#" class="popup_button" data-dismiss="modal">OK</a>
 						</div>
@@ -525,15 +525,15 @@
 							<ul id="silver_option">
 								@foreach($silver as $si_sim)
 								<label>
-									<li> 
+									<li>
 										<span>
 											<input type="checkbox" class="available_sim" id="available_sim_{{ $si_sim->id }}" name="available_sim[]" value="{{ $si_sim->id }}" data-phone="{{$si_sim->phone_number}}">
 										</span>
 										{{ $si_sim->phone_number }}
 									</li>
-								</label>								
+								</label>
 								@endforeach
-							</ul>	
+							</ul>
 							<p class="form-error">There is a one-off charge of {{ $currency }}{{ number_format($si_sim->price, 2, '.', '') }} Inc VAT</p>
 							@endif
 							<a class="popup_button reload_sim" href="#" data-type="silver">Reload</a>
@@ -560,13 +560,13 @@
 						</div>
 						<!-- if(allowed) -->
 						<div class="noptions tab-pane" id="Custom">
-							<div class="row">								
+							<div class="row">
 								<div class="col-md-6">
 									<label>Select Dealers</label>
 									<select name="dealer" id="dealer">
 										@foreach($dealers as $dealer)
 											<option value="{{$dealer->id}}">{{$dealer->first_name.' '.$dealer->last_name}}</option>
-										@endforeach 
+										@endforeach
 									</select>
 								</div>
 								<div class="col-md-6">
@@ -574,26 +574,26 @@
 									<input type="text" id="custom-search" name="custom_select">
 								</div>
 							</div>
-							
+
 							<ul id="custom_option">
-								
+
 							</ul>
-							<p class="form-error">Price may change.</p>							
+							<p class="form-error">Price may change.</p>
 							<a href="#" class="popup_button" data-dismiss="modal">OK</a>
 						</div>
 						<!-- endif -->
-					</div>					
+					</div>
 				</div>
-			<!-- </div> -->			
+			<!-- </div> -->
 		</div>
 	</div>
 </div>
-	
+
 </div>
 </div>
 
 
-<script src="{{ asset('public/js/jquery.creditCardValidator.js') }}"></script>  
-<script src="{{ asset('public/js/jquery.mask.js') }}"></script> 
-<script src="{{ asset('public/js/cart.js') }}"></script>
+<script src="{{ asset('js/jquery.creditCardValidator.js') }}"></script>
+<script src="{{ asset('js/jquery.mask.js') }}"></script>
+<script src="{{ asset('js/cart.js') }}"></script>
 @endsection

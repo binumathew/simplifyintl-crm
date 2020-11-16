@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -21,10 +21,10 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="card m-b-20">
-                        
+
                         <div class="card-body right-nav">
                             <ul>
-                                <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                <li><a href="{{ url('/settings') }}">General</a></li>
                                 <li><a href="{{ url('/template') }}">Email Template</a></li>
                                 <li><a href="{{ url('/roles') }}">Roles</a></li>
                                 <li><a href="{{ url('/countries') }}">Countries</a></li>
@@ -49,58 +49,58 @@
                                 <li><a href="#">Pusher.com</a></li>
                                 <li><a href="#">Google</a></li>
                                 <li><a href="#">Misc</a></li> -->
-                            </ul>                            
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-10"> 
+                <div class="col-md-10">
                     <div class="card m-b-20">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12 m-b-20">
                                     <div class=" text-right">
                                         <button class="btn btn-success pull-right" id="add_coupon">ADD COUPONS</button>
-                                    </div>                                   
+                                    </div>
                                 </div>
-                            </div>                          
+                            </div>
                             <table id="couponsList" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                 <thead>
-                                    <th>Coupon Code</th>                                            
-                                    <th>Type</th>   
+                                    <th>Coupon Code</th>
+                                    <th>Type</th>
                                     <th>Value</th>
-                                    <th>Expires On</th> 
-                                    <th>Status</th>                                                 
+                                    <th>Expires On</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </thead>
-                                <tbody>                                        
+                                <tbody>
                                     @foreach ($coupons as $coupon)
                                     <tr id="coupon_{{$coupon->id}}">
-                                        <td>{{ $coupon->coupon_code }}</td>                       
+                                        <td>{{ $coupon->coupon_code }}</td>
                                         <td>{{ ($coupon->is_fixed == 1) ? 'Fixed Amount' : 'Percentage' }}</td>
                                         <td>{{ $coupon->discount_value }}</td>
                                         <td>{{ $coupon->expiry_date }}</td>
                                         <td>{{ ($coupon->status == 1) ? 'Active' : 'Inactive' }}</td>
-                                        <td> 
+                                        <td>
                                             <a data-toggle="tooltip" title="" data-original-title="Edit"  href="javascrip:void(0);" class="text-muted edit_coupon"  data-id="{{$coupon->id}}"><i class="mdi mdi-pencil mdi-24px"></i></a>
                                             <a data-toggle="tooltip" title="" data-original-title="Delete" href="javascrip:void(0);" class="text-danger delete_coupon" data-id="{{$coupon->id}}"><i class="mdi mdi-delete mdi-24px"></i></a>
                                             <input type="hidden" id="test" value="">
                                         </td>
-                                    </tr>                                    
+                                    </tr>
                                     @endforeach
                                 </tbody>
-                            </table>                            
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#couponsList').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});
@@ -140,9 +140,9 @@
                                 data:{coupon:coupon},
                                 success:function(data){
                                     if(data.error)
-                                        $('#coupon_status').html('<span class="text-danger">'+data.message+'</span>'); 
+                                        $('#coupon_status').html('<span class="text-danger">'+data.message+'</span>');
                                     else
-                                        $('#coupon_status').html('<span class="text-success">'+data.message+'</span>');                               
+                                        $('#coupon_status').html('<span class="text-success">'+data.message+'</span>');
                                 }
                             })
                         }
@@ -156,10 +156,10 @@
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
                                 type:"POST",
-                                url:base_url+'/delete-coupon',                    
+                                url:base_url+'/delete-coupon',
                                 data:{coupon_id:coupon_id},
                                 success:function(){
-                                    $('#coupon_'+coupon_id).fadeOut(1000);                                    
+                                    $('#coupon_'+coupon_id).fadeOut(1000);
                                 }
                             });
                         }

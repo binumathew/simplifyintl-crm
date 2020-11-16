@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -21,10 +21,10 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="card m-b-20">
-                        
+
                         <div class="card-body right-nav">
                             <ul>
-                                <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                <li><a href="{{ url('/settings') }}">General</a></li>
                                 <li><a href="{{ url('/template') }}">Email Template</a></li>
                                 <li><a href="{{ url('/roles') }}">Roles</a></li>
                                 <li><a href="{{ url('/countries') }}" class="selected">Countries</a></li>
@@ -49,7 +49,7 @@
                                 <li><a href="#">Pusher.com</a></li>
                                 <li><a href="#">Google</a></li>
                                 <li><a href="#">Misc</a></li> -->
-                            </ul>                            
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -63,27 +63,27 @@
                                         <tr>
                                             <th class="d-none">#</th>
                                             <th>Flag</th>
-                                            <th>Country Name</th>                                           
+                                            <th>Country Name</th>
                                             <th>Country Code</th>
-                                            <th>Dial Code</th>  
+                                            <th>Dial Code</th>
                                             <th>Currency</th>
-                                            <th>Symbol</th> 
+                                            <th>Symbol</th>
                                             <th>Tax</th>
                                             <th>Status</th>
                                             <th>Action</th>
-                                        </tr>                                    
+                                        </tr>
                                     </thead>
-                                    <tbody> 
+                                    <tbody>
                                         @php $i=0; @endphp
                                         @foreach ($countries as $country)
                                         <tr id="{{ ++$i }}">
                                             <td class="d-none">{{ $i }}</td>
-                                            <td><img src="{{ asset('public/images/flags') }}/{{ strtolower( $country->short_code ) }}.png" width="32" height="32"></td>
-                                            <td>{{$country->country_name}}</td>                         
+                                            <td><img src="{{ asset('images/flags') }}/{{ strtolower( $country->short_code ) }}.png" width="32" height="32"></td>
+                                            <td>{{$country->country_name}}</td>
                                             <td>{{$country->country_code}}</td>
                                             <td>{{$country->dial_code}}</td>
-                                            <td>{{$country->currency}} </td>                                        
-                                            <td>{{$country->currency_symbol}}</td>  
+                                            <td>{{$country->currency}} </td>
+                                            <td>{{$country->currency_symbol}}</td>
                                             <td>{{$country->tax}}</td>
                                             <td>
                                                 @if($country->status)
@@ -92,16 +92,16 @@
                                                 <span class="badge badge-danger">In-Active</span>
                                                 @endif
                                             </td>
-                                            <td> 
+                                            <td>
                                                 @if(Helper::has_permission('countries','edit'))
                                                 <a title="" href="{{ url('/country', $country->id) }}" data-original-title="Edit" data-toggle="tooltip" class="text-muted"><i class="mdi mdi-pencil mdi-24px"></i></a>
                                                 @endif
                                                 @if(Helper::has_permission('countries','delete'))
                                                 <!-- <a data-toggle="tooltip" title="Delete" href="{{ url('/delete-country', Crypt::encrypt($country->id)) }}" class="fa fa-trash-o"></a> -->
-                                                @endif                                                
+                                                @endif
                                             </td>
                                         </tr>
-                                        @endforeach                                      
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -110,12 +110,12 @@
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#countryList').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});

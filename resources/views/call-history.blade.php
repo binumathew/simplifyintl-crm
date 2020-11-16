@@ -3,9 +3,9 @@
     <!-- page wrapper start -->
         <div class="wrapper">
             <div class="container-fluid">
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-                <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+                <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
@@ -61,7 +61,7 @@
                             <div class="clearfix"></div>
                             <p class=" mb-0 m-t-10 text-muted">Paid Calls <span class="pull-right"><i class="fa fa-caret-down text-danger m-r-5"></i>5.52%</span></p>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
                 @endif
                 <div class="row">
@@ -94,7 +94,7 @@
                                                 <div class="form-group">
                                                     <label>Call Channel</label>
                                                     <select name="channel" id="call_channel" class="form-control">
-                                                        <option value="0">All</option>                                                          
+                                                        <option value="0">All</option>
                                                         <option value="1">Application</option>
                                                         <option value="2">Mobile</option>
                                                     </select>
@@ -104,12 +104,12 @@
                                                 <div class="form-group">
                                                     <label>Call Type</label>
                                                     <select name="call_type" id="call_type" class="form-control">
-                                                        <option value="0">All</option>  
+                                                        <option value="0">All</option>
                                                         <option value="1">Free Call</option>
                                                         <option value="2">Paid Call</option>
                                                     </select>
                                                 </div>
-                                            </div>                                            
+                                            </div>
                                             <div class=" col-md-12">
                                                 @if(Helper::has_permission('reports'))
                                                 <button type="submit" class="btn btn-info" id="export" name="exportdata" value="1">Export</button>
@@ -119,24 +119,24 @@
                                             </div>
                                         </div>
                                     </form>
-                                </div>                                
+                                </div>
                                 <table id="calllist" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>                                           
+                                            <th>Name</th>
                                             <th>CLI</th>
-                                            <th>CLD</th>    
+                                            <th>CLD</th>
                                             <th>Duration</th>
-                                            <th>Cost</th>   
+                                            <th>Cost</th>
                                             <th>Connect Time</th>
                                             <th>Platform</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                        
+                                    <tbody>
                                         <!-- <td><i class="fa fa-cc-visa text-muted font-20"></i> Visa ****123</td>
                                         <td><i class="fa fa-cc-mastercard text-muted font-20"></i> </td>
                                         <td><i class="fa fa-cc-paypal text-muted font-20"></i> </td>
-                                        <td><i class="fa fa-cc-amex text-muted font-20"></i> </td> 
+                                        <td><i class="fa fa-cc-amex text-muted font-20"></i> </td>
                                         <td><i class="fa fa-cc-discover text-muted font-20"></i> </td>
                                         <td>Jul 20, 2020</td>-->
                                     </tbody>
@@ -146,11 +146,11 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-                <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+                <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+                <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
             </div>
         </div>
         <!-- page wrapper end -->
@@ -158,11 +158,11 @@
         <script type="text/javascript">
             $(document).ready(function(){
                 function secondsTimeSpanToHMS(s) {
-                    var h = Math.floor(s/3600); 
+                    var h = Math.floor(s/3600);
                     s -= h*3600;
-                    var m = Math.floor(s/60); 
+                    var m = Math.floor(s/60);
                     s -= m*60;
-                    return (h < 10 ? '0'+h : h)+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s); 
+                    return (h < 10 ? '0'+h : h)+":"+(m < 10 ? '0'+m : m)+":"+(s < 10 ? '0'+s : s);
                 }
 
                 $('#calllist').DataTable({
@@ -207,12 +207,12 @@
                 $('.dataTables_filter input').attr("placeholder", "Search");
 
                 $('#searchBtn').on('click', function(e) {
-                    $('#calllist').DataTable().draw();                   
+                    $('#calllist').DataTable().draw();
                 });
 
                 $('#resetBtn').on('click', function(e) {
                     $('#call-history-form')[0].reset();
-                    $('#calllist').DataTable().draw(); 
+                    $('#calllist').DataTable().draw();
                 });
 
                 $('.datepicker').datepicker({

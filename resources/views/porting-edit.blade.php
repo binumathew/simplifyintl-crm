@@ -3,11 +3,11 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
-            
+            <link href="{{ asset('plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -21,7 +21,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="card m-b-20">
@@ -56,7 +56,7 @@
                                 <div class="content clearfix">
                                     <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                         <thead>
-                                            <tr>                                                
+                                            <tr>
                                                 <th>Temporary No ({{ config('settings.app_name') }})</th>
                                                 <th>Number To Keep (Current Provide)</th>
                                                 <th>PAC Number</th>
@@ -72,8 +72,8 @@
                                                    <option>Select</option>
                                                    <option>EE</option>
                                                    <option>Vodafone</option>
-                                               </select></td>                                           
-                                            </tr>                                       
+                                               </select></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -160,7 +160,7 @@
                                        </a>
                                    </li>
                                 </ul>
-                             
+
                                 <div class="tab-content">
                                    <div id="step-1" class="tab-pane" role="tabpanel">
                                       Step content
@@ -210,15 +210,15 @@
                     </div>
                 </div>
             </div>
-            
-            <script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
-            <script src="{{ asset('public/plugins/jquery-steps/jquery.steps.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-            
+
+            <script src="{{ asset('plugins/smartwizard/smart_wizard.js') }}"></script>
+            <script src="{{ asset('plugins/jquery-steps/jquery.steps.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+
 
             <script type="text/javascript">
                 $(document).ready(function(){
@@ -233,7 +233,7 @@
                             showPreviousButton: false,
                         },
                         anchorSettings: {
-                            anchorClickable: false, 
+                            anchorClickable: false,
                         },
                     });
 
@@ -265,7 +265,7 @@
                     //       markAllPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
                     //       removeDoneStepOnNavigateBack: false, // While navigate back done step after active step will be cleared
                     //       enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
-                    //     },                        
+                    //     },
                     //     lang: { // Language variables for button
                     //       next: 'Next',
                     //       previous: 'Previous'
@@ -277,7 +277,7 @@
 
 
                     $(document).on('click','.delete_user',function(){
-                        var id = $(this).attr('user-id'); 
+                        var id = $(this).attr('user-id');
                         if(confirm('Do you really want to delete this contact ?')){
                             $('#delete_user_'+id).submit();
                         }
@@ -288,19 +288,19 @@
                         e.preventDefault();
                     });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).attr('user-id');                
+                    $(document).on('click', '.show_user_data', function(e) {
+                        e.preventDefault();
+                        var id = $(this).attr('user-id');
                         $('#show_user_'+id).submit();
                     });
-                    
+
                     $('.datepicker').datepicker({
                         autoclose: true,
                         orientation:'bottom left',
                         format: 'yyyy-mm-dd',
                         todayHighlight: true
                     });
-                    
+
                     $('#resetBtn').on('click', function(e) {
                        $('#port-search-form')[0].reset();
                     });

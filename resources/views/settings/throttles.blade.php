@@ -3,9 +3,9 @@
 <!-- page wrapper start -->
 <div class="wrapper">
     <div class="container-fluid">
-        <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
@@ -18,14 +18,14 @@
                     <h4 class="page-title">Throttle List</h4>
                 </div>
             </div>
-        </div>                
+        </div>
         <div class="row">
             <div class="col-md-2">
                 <div class="card m-b-20">
-                    
+
                     <div class="card-body right-nav">
                         <ul>
-                            <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                            <li><a href="{{ url('/settings') }}">General</a></li>
                             <li><a href="{{ url('/template') }}">Email Template</a></li>
                             <li><a href="{{ url('/roles') }}">Roles</a></li>
                             <li><a href="{{ url('/countries') }}">Countries</a></li>
@@ -33,7 +33,7 @@
                             <li><a href="{{ url('/coupons') }}">Coupons</a></li>
                             <li><a href="{{ url('/switch') }}">Switch</a></li>
                             <li><a href="{{ url('/did-pool') }}">DID Pool</a></li>
-                            <li><a href="{{ url('/throttles') }}" class="selected">Throttles</a></li>                            
+                            <li><a href="{{ url('/throttles') }}" class="selected">Throttles</a></li>
                             <li><a href="{{ url('/firewall') }}">Firewall</a></li>
                             <li><a href="{{ url('/scheduled-tasks') }}">Cron Jobs</a></li>
                             <li><a href="{{ url('/payment-gateway') }}">Payment Gateways</a></li>
@@ -50,7 +50,7 @@
                             <li><a href="#">Pusher.com</a></li>
                             <li><a href="#">Google</a></li>
                             <li><a href="#">Misc</a></li> -->
-                        </ul>                           
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -79,14 +79,14 @@
                                             <label>Attempted On</label>
                                             <input type="text" class="form-control datepicker" id="attempted" name="attempted" placeholder="Attempted On">
                                         </div>
-                                    </div>                                            
-                                    <div class=" col-md-12">                                               
+                                    </div>
+                                    <div class=" col-md-12">
                                         <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
                                         <button type="button" id="searchBtn" class="btn btn-primary pull-right">Search</button>
                                     </div>
                                 </div>
                             </form>
-                        </div>                                
+                        </div>
                         <table id="throttleList" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
@@ -97,7 +97,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>                                        
+                            <tbody>
                             </tbody>
                         </table>
                         <div class="pull-right">
@@ -108,16 +108,16 @@
             </div>
         </div>
 
-        <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-        <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
     </div>
 </div>
 <!-- page wrapper end -->
 
-<script type="text/javascript">                            
+<script type="text/javascript">
     $(document).ready(function(){
         $('#throttleList').DataTable({
             responsive: true,
@@ -128,14 +128,14 @@
             serverSide: true,
             ajax: {
                 'url': 'throttle-list',
-                
+
                 'data': function ( d ) {
                     d.identifier = $('#identifier').val();
                     d.ip_address = $('#ip_address').val();
                     d.attempted = $('#attempted').val();
                 }
             },
-            
+
             'dataType': 'jsonp',
             'columns': [
             {'data': function(data){
@@ -145,7 +145,7 @@
             {'data': 'ip_address', 'name': 'ip_address'},
             {'data': 'attempted_at', 'name': 'attempted_at'},
             {'data': function(data){
-                return '<a data-toggle="tooltip" title="Delete" href="#" class="text-danger delete_throttle" data-id="'+data.id+'" ><i class="mdi mdi-delete mdi-24px"></i></a>';                
+                return '<a data-toggle="tooltip" title="Delete" href="#" class="text-danger delete_throttle" data-id="'+data.id+'" ><i class="mdi mdi-delete mdi-24px"></i></a>';
             }, 'name': 'action','orderable': false, 'searchable': false},
             ],
             "order":[[3, 'desc']],
@@ -160,7 +160,7 @@
         $('.datepicker').change(function () {
             $('#throttleList').DataTable().draw();
         });
-        
+
         $('#searchBtn').on('click', function(e) {
             e.preventDefault();
             $('#throttleList').DataTable().draw();
@@ -190,27 +190,27 @@
             }
 
             $('#orderCustomLabel').text('Confirm Delete Throttle');
-            if (checked == '') {                                                        
-                $('#orderCustombody').html('<div class="text-danger">Please select atleast one entry to delete</div>');            
+            if (checked == '') {
+                $('#orderCustombody').html('<div class="text-danger">Please select atleast one entry to delete</div>');
             } else {
-                $('#orderCustombody').html('<div class="form-group">Are you sure you want to delete this item(s)? <div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_throttle_delete" class="btn btn-danger pull-right">Delete</button>'); 
+                $('#orderCustombody').html('<div class="form-group">Are you sure you want to delete this item(s)? <div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_throttle_delete" class="btn btn-danger pull-right">Delete</button>');
             }
             $('#orderCustomModal').modal('show');
         });
 
-        $(document).on('click','#action_throttle_delete',function (e) { 
+        $(document).on('click','#action_throttle_delete',function (e) {
             if (checked == '') {
-                $('#orderCustombody').html('<div class="text-danger">Please select atleast one entry to delete</div>'); 
+                $('#orderCustombody').html('<div class="text-danger">Please select atleast one entry to delete</div>');
                 $('#orderCustomModal').modal('show');
-            } else {                
+            } else {
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    type: 'POST',                                                
+                    type: 'POST',
                     url: 'delete-throttle',
                     data: {selected:checked},
-                    success:function(data){ 
+                    success:function(data){
                         if (data.error) {
                             $('#custom_status').html('<div class="text-danger">'+data.Message+'</div>');
                         } else {
@@ -219,7 +219,7 @@
                         }
                     }
                 });
-            }            
+            }
         });
     });
 

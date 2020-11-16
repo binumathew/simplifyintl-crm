@@ -3,7 +3,7 @@
 <!-- page wrapper start -->
 <div class="wrapper">
     <div class="container-fluid">
-    	<link href="{{ asset('public/plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
+    	<link href="{{ asset('plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
@@ -39,7 +39,7 @@
                        </a>
                    </li>
 						    </ul>
-						 
+
 						    <div class="tab-content">
 						       <div id="step-1" class="tab-pane" role="tabpanel">
 							    <div class="m-b-20">
@@ -51,7 +51,7 @@
 						       <div id="step-2" class="tab-pane" role="tabpanel">
 						          <div class="m-b-20">
 							    	<form id="direct-debit-form-2">
-							    		
+
 							    	</form>
 	    						</div>
 						       </div>
@@ -80,7 +80,7 @@
   </div>
 </div>
 <!-- page wrapper end -->
-<script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
+<script src="{{ asset('plugins/smartwizard/smart_wizard.js') }}"></script>
 <script>
 $(document).ready(function(){
     var btnFinish = $('<button></button>').text('Finish')
@@ -133,10 +133,10 @@ $(document).ready(function(){
               $this.html('Finish');
               //$this.removeClass("disabled").prop("disabled", false);
           },
-          success:function(data){   
+          success:function(data){
               $(".directdebitModalbody").html('').html(data.page);
-              $('#directdebitModal').modal({backdrop: 'static', keyboard: false})  
-              $("#directdebitModal").modal('show');                  
+              $('#directdebitModal').modal({backdrop: 'static', keyboard: false})
+              $("#directdebitModal").modal('show');
               //if(data.status == 200) {
                   //alertify.success(data.message);
               //}else{
@@ -218,7 +218,7 @@ $(document).ready(function(){
   	$("#direct-debit-form-1").validate({
         // errorClass: "invalid form-error",
         // errorElement: 'div',
-        // errorPlacement: function(error, element) {                       
+        // errorPlacement: function(error, element) {
         //     element.addClass('border border-danger');
         //     error.insertAfter(element);
         // },
@@ -258,7 +258,7 @@ $(document).ready(function(){
   	$("#direct-debit-form-2").validate({
         // errorClass: "invalid form-error",
         // errorElement: 'div',
-        // errorPlacement: function(error, element) {                       
+        // errorPlacement: function(error, element) {
         //     element.addClass('border border-danger');
         //     error.insertAfter(element);
         // },
@@ -277,8 +277,8 @@ $(document).ready(function(){
             },
             account_no: {
                 required: {
-                    depends: function () { 
-                      return ($("input[name='iban']"). val() == '' )?true:false; 
+                    depends: function () {
+                      return ($("input[name='iban']"). val() == '' )?true:false;
                     }
                 },
                 number:true,
@@ -286,8 +286,8 @@ $(document).ready(function(){
             },
             branch_code: {
                 required: {
-                    depends: function () { 
-                      return ($("input[name='iban']"). val() == '')?true:false; 
+                    depends: function () {
+                      return ($("input[name='iban']"). val() == '')?true:false;
                     }
                 },
                 maxlength: 12,
@@ -295,8 +295,8 @@ $(document).ready(function(){
             },
             iban: {
                 required: {
-                    depends: function () { 
-                      return ($("input[name='account_no']"). val() == '' )?true:false; 
+                    depends: function () {
+                      return ($("input[name='account_no']"). val() == '' )?true:false;
                     }
                 },
                 maxlength:35,

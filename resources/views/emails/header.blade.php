@@ -80,7 +80,7 @@
 	<table bgcolor="#F5F5F5" cellpadding="0" cellspacing="0" class="nl-container" role="presentation" style="table-layout: fixed; vertical-align: top; min-width: 320px; Margin: 0 auto; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #F5F5F5; width: 100%;" valign="top" width="100%">
 		<tbody>
 			<tr style="vertical-align: top;" valign="top">
-				<td style="word-break: break-word; vertical-align: top;" valign="top">				
+				<td style="word-break: break-word; vertical-align: top;" valign="top">
 					<div style="background-color:transparent;">
 						<div class="block-grid two-up no-stack" style="Margin: 0 auto; min-width: 320px; max-width: 650px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #FFFFFF;">
 							<div style="border-collapse: collapse;display: table;width: 100%;background-color:#FFFFFF;">
@@ -90,22 +90,22 @@
 										<div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:25px; padding-bottom:25px; padding-right: 0px; padding-left: 25px;">
 											<div align="left" class="img-container left fixedwidth" style="padding-right: 0px;padding-left: 0px;">
 												<a href="{{url('/')}}">
-													<img alt="Image" border="0" class="left fixedwidth" src="{{url('/')}}/public/images/logo.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 45%; max-width: 100px; display: block;" title="Image" width="40"/>
+													<img alt="Image" border="0" class="left fixedwidth" src="{{url('/')}}/images/logo.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 45%; max-width: 100px; display: block;" title="Image" width="40"/>
 												</a>
 											</div>
 										</div>
 									</div>
-								</div>	
+								</div>
 
 								<div class="col num6" style="min-width: 320px; max-width: 325px; display: table-cell; vertical-align: top; width: 325px;">
-									<div style="width:100% !important;">			
-										<div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:50px; padding-bottom:25px; padding-right: 25px; padding-left: 0px;">							
+									<div style="width:100% !important;">
+										<div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:50px; padding-bottom:25px; padding-right: 25px; padding-left: 0px;">
 											<div class="button-container" style="font-size: 22px;">
-												{{ $data->heading }}							
-											</div>								
-										</div>								
+												{{ $data->heading }}
+											</div>
+										</div>
 									</div>
-								</div>									
+								</div>
 							</div>
 						</div>
 					</div>

@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -25,14 +25,14 @@
                             <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                 <table id="userlist" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <thead>
-                                        <tr>                                    
-                                            <th>Phone No</th>                                       
+                                        <tr>
+                                            <th>Phone No</th>
                                             <th>Country</th>
-                                            <th>Created On</th>                                     
+                                            <th>Created On</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>                                       
+                                    <tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -41,14 +41,14 @@
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            
+
             <script type="text/javascript">
-                $(document).ready(function(){                   
+                $(document).ready(function(){
                     $('#userlist').DataTable({
                         responsive: true,
                         "bSort" : true,
@@ -57,12 +57,12 @@
                         processing: true,
                         serverSide: true,
                         "ajax": {
-                            "url": "temp-user-list",                
+                            "url": "temp-user-list",
                         },
-                        
+
                         "dataType": "jsonp",
-                        "columns": [                
-                            {"data" : "phone", "name": "phone"},            
+                        "columns": [
+                            {"data" : "phone", "name": "phone"},
                             {"data" : "country_name","name" : "c.country_name"},
                             {"data" : "created_at","name" : "created_at"},
                             {"data": "action", "name": "action","orderable": false, "searchable": false},
@@ -76,7 +76,7 @@
                     $('.dataTables_filter input').attr('placeholder', 'Search');
 
                     $(document).on('click','.delete_user',function(){
-                        var id = $(this).attr('user-id'); 
+                        var id = $(this).attr('user-id');
                         if(confirm('Do you really want to delete this contact ?')){
                             $('#delete_user_'+id).submit();
                         }
@@ -87,14 +87,14 @@
                         e.preventDefault();
                     });
 
-                    $(document).on('click', '.show_user_data', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).attr('user-id');                
+                    $(document).on('click', '.show_user_data', function(e) {
+                        e.preventDefault();
+                        var id = $(this).attr('user-id');
                         $('#show_user_'+id).submit();
                     });
-                    
-         
-                    
+
+
+
                     $('#resetBtn').on('click', function(e) {
                        $('#payment-search-form')[0].reset();
                     });

@@ -3,8 +3,8 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -21,10 +21,10 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="card m-b-20">
-                        
+
                         <div class="card-body right-nav">
                             <ul>
-                                <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                <li><a href="{{ url('/settings') }}">General</a></li>
                                 <li><a href="{{ url('/template') }}">Email Template</a></li>
                                 <li><a href="{{ url('/roles') }}">Roles</a></li>
                                 <li><a href="{{ url('/countries') }}" class="selected">Countries</a></li>
@@ -49,7 +49,7 @@
                                 <li><a href="#">Pusher.com</a></li>
                                 <li><a href="#">Google</a></li>
                                 <li><a href="#">Misc</a></li> -->
-                            </ul>                            
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -57,13 +57,13 @@
                 <div class="col-md-10">
                     <div class="card m-b-20">
                         <div class="card-body">
-                            
+
                             <form action="{{ url('save-country') }}" method="post" id="country-form">
                             @csrf
                                 <input type="hidden" name="country_id" value="{{ ($country)?$country->id:'' }}">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <div class="form-group">                                                                                 
+                                        <div class="form-group">
                                             <label for="country_name" class="col-form-label">Country Name</label>
                                             <input id="country_name" name="country_name" type="text" class="form-control" value="{{ ($country)?$country->country_name:'' }}">
                                         </div>
@@ -80,7 +80,7 @@
                                                         <span class="buttonText">Choose file</span>
                                                     </label>
                                                 </span>
-                                            </div>                                
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -99,7 +99,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group">                                                                                 
+                                        <div class="form-group">
                                             <label for="short_code" class="col-form-label">Short Code</label>
                                             <input id="short_code" name="short_code" type="text" class="form-control" value="{{ ($country)?$country->short_code:'' }}">
                                         </div>
@@ -107,11 +107,11 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="dial_code" class="col-form-label">Dial Code</label>
-                                            <input id="dial_code" name="dial_code" type="text" class="form-control" value="{{ ($country)?$country->dial_code:'' }}">                                    
+                                            <input id="dial_code" name="dial_code" type="text" class="form-control" value="{{ ($country)?$country->dial_code:'' }}">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group">                                                                                 
+                                        <div class="form-group">
                                             <label for="otp_type" class="col-form-label">OTP Type</label>
                                             <select id="otp_type" name="otp_type" class="custom-select">
                                                 <option value="1" {{ ($country->otp_type == 1)?'selected':'' }}>SMS Alert</option>
@@ -123,7 +123,7 @@
 
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <div class="form-group">                                                                                 
+                                        <div class="form-group">
                                             <label for="otp_type" class="col-form-label">Access Number Support</label>
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" class="custom-control-input" id="access_support" name="access_support" value="1" {{ ($country && $country->accessnumber_support == 1)? 'checked':'' }}>
@@ -139,7 +139,7 @@
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" class="custom-control-input" id="callback_support" name="callback_support" value="1" {{ ($country && $country->callback_support == 1)? 'checked':'' }}>
                                                 <label class="custom-control-label" for="callback_support"></label>
-                                            </div>                                 
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -147,7 +147,7 @@
                                             <label for="access_number" class="col-form-label">Wifi Support</label>
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" class="custom-control-input" id="wifi_support" name="wifi_support" value="1" {{ ($country && $country->wifi_support == 1)? 'checked':'' }}>
-                                                <label class="custom-control-label" for="wifi_support"></label>                                                
+                                                <label class="custom-control-label" for="wifi_support"></label>
                                             </div>
                                         </div>
                                     </div>
@@ -173,15 +173,15 @@
 
 
                                 <div class="row">
-                                    
+
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="switch_id" class="col-form-label">Switch</label>
                                             <select id="switch_id" name="switch_id" class="custom-select">
                                                 @foreach ($switch as $item)
                                                     <option value="{{$item->id}}" {{ ($country->switch_id == $item->id)?'selected':'' }}>{{$item->currency}}</option>
-                                                @endforeach                                                   
-                                            </select>                                    
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -191,20 +191,20 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group">                                                                                 
+                                        <div class="form-group">
                                             <label for="land_price" class="col-form-label">Land Line Price</label>
                                             <input id="land_price" name="land_price" type="text" class="form-control" value="{{ ($country)?$country->land_price:'' }}">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="mob_price" class="col-form-label">Mobile Price</label> 
+                                            <label for="mob_price" class="col-form-label">Mobile Price</label>
                                             <input id="currency" name="currency" type="text" class="form-control" value="{{ ($country)?$country->mob_price:'' }}">
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row">                                    
+                                <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="currency" class="col-form-label">Currency</label>
@@ -229,7 +229,7 @@
                                             <select id="c-status" name="status" class="custom-select"> value=""
                                                 <option value="1" {{ ($country->status == 1)?'selected':'' }}>Active</option>
                                                 <option value="0" {{ ($country->status == 0)?'selected':'' }}>In Active</option>
-                                            </select>                                    
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -244,11 +244,11 @@
                         </div>
                     </div>
                 </div>
-                
-                    
-                    
-                   
-              
+
+
+
+
+
             </div>
         </div>
         <!-- end container-fluid -->

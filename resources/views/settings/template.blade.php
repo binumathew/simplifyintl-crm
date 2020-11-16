@@ -8,17 +8,17 @@
 }
 /* Track */
 #style-1::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 #style-1::-webkit-scrollbar-thumb {
-  background: #028fab; 
+  background: #028fab;
 }
 
 /* Handle on hover */
 #style-1::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 </style>
     <!-- page wrapper start -->
@@ -27,9 +27,9 @@
 
             <div class="container-fluid">
 
-                <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
-                <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+                <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
                 <div class="row">
 
@@ -67,13 +67,13 @@
 
                         <div class="card m-b-20">
 
-                            
+
 
                             <div class="card-body right-nav">
 
                                 <ul>
 
-                                    <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                    <li><a href="{{ url('/settings') }}">General</a></li>
 
                                     <li><a href="{{url('/template')}}" class="selected">Email Template</a></li>
 
@@ -123,20 +123,20 @@
 
                                     <li><a href="#">Misc</a></li> -->
 
-                                </ul>                           
+                                </ul>
 
                             </div>
 
                         </div>
 
                     </div>
-        
+
 
         </div>
 
         <!-- page wrapper end -->
  <!--Wysiwig js-->
-<script src="{{ asset('public/plugins/tinymce/tinymce.min.js') }}"></script>
+<script src="{{ asset('plugins/tinymce/tinymce.min.js') }}"></script>
 
 @endsection
 

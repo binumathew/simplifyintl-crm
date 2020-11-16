@@ -2,7 +2,7 @@
 @section('content')
 <div class="wrapper">
     <div class="container-fluid">
-        <link href="{{ asset('public/plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('plugins/smartwizard/smart_wizard.css') }}" rel="stylesheet" type="text/css"/>
         <!-- Page-Title -->
         <div class="row">
             <div class="col-sm-12">
@@ -18,7 +18,7 @@
             </div>
         </div>
         <!-- end page title end breadcrumb -->
-                 
+
         <div class="row">
             <div class="col-sm-12">
 
@@ -42,11 +42,11 @@
             @if(!empty($sim_request))
             <div class="col-sm-12">
                 <div class="card m-b-20">
-                    <div class="card-body">                       
-                        @php $i=0; $active_flag = false; @endphp           
+                    <div class="card-body">
+                        @php $i=0; $active_flag = false; @endphp
                         <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                             <thead>
-                                <tr>                                    
+                                <tr>
                                     <th width="25%">Name:  {{$sim_request[0]->user->name}}</th>
                                     <th width="25%">Email: {{$sim_request[0]->user->email}}</th>
                                     <th width="25%">Phone: {{str_replace('+44','0',$sim_request[0]->user->phone)}}</th>
@@ -63,16 +63,16 @@
                             </tbody>
                         </table>
                     </div>
-                </div>                
+                </div>
             </div>
             @endif
         </div>
     </div>
 </div>
 
-<script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
+<script src="{{ asset('plugins/smartwizard/smart_wizard.js') }}"></script>
 
-<script src="{{ asset('public/plugins/jquery-steps/jquery.steps.min.js') }}"></script>
+<script src="{{ asset('plugins/jquery-steps/jquery.steps.min.js') }}"></script>
 
     <script type="text/javascript">
         $(document).ready(function(){
@@ -87,7 +87,7 @@
                     showPreviousButton: false,
                 },
                 anchorSettings: {
-                    anchorClickable: false, 
+                    anchorClickable: false,
                 },
             });
         });
@@ -103,39 +103,39 @@
 </script>
 <!-- <script type="text/javascript">
 	$(document).ready(function(){
-		
+
 
 		$(document).on('click','.manage_promocode',function (e) {
-			var id = $(this).attr('data-id');		
+			var id = $(this).attr('data-id');
 			var html = '<form method="post">@csrf<input type="hidden" id="order_id" name="order_id" value="'+id+'"><input type="text" name="promocode" placeholder="Promocode" class="form-control"><br/><a class="btn btn-success update_promo_code">UPDATE</a></form>';
 			$('#delivery_status_hldr').html(html);
 			$('#delvryProgressModalTitle').text('Manage Promocode');
 			$('#delvryProgressModal').modal('show');
 		});
-		
-		$(document).on('click','.update_promo_code',function (e) {	
+
+		$(document).on('click','.update_promo_code',function (e) {
 			var order_id = $('#order_id').val();
-			var promocode = $('input[name="promocode"]').val();	
+			var promocode = $('input[name="promocode"]').val();
 			$.ajax({
 				headers: {
 					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 				},
-				type: 'POST',                                                
+				type: 'POST',
 				url: base_url+'/update-promocde',
 				data: {order_id:order_id,promocode:promocode},
-				success:function(data){					
+				success:function(data){
 					$('#delvryProgressModal').modal('hide');
 				}
 			});
 		});
 
-		$(document).on('click','#save_enq_history',function (e) {		
+		$(document).on('click','#save_enq_history',function (e) {
 		var id = $('#enq_request_id').val();
 		var note = $('#enquiry_note').val();
 		$('#dlvry_status_error').html('');
 		$('#dlvry_status_error').hide();
 		if (note == "") {
-			
+
 			$('#dlvry_status_error').append('<li>Please add a note</li>');
 			$('#dlvry_status_error').show();
 		} else {
@@ -144,10 +144,10 @@
 				headers: {
 					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 				},
-				type: 'POST',                                                
+				type: 'POST',
 				url: 'save-enquiry-detail',
 				data: {id:id,note:note},
-				success:function(data){	
+				success:function(data){
 					$('#loadingsign').hide();
 					if (data.error) {
 						$('#delivery_status_hldr').html('<div class="alert alert-danger">'+data.message+'</div>');

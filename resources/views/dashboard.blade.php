@@ -3,20 +3,20 @@
    <!-- page wrapper start -->
    <div class="wrapper">
       <div class="container-fluid" id="result">
-         <link href="{{ asset('public/plugins/c3/c3.min.css') }}" rel="stylesheet" type="text/css" />
+         <link href="{{ asset('plugins/c3/c3.min.css') }}" rel="stylesheet" type="text/css" />
          <div class="row">
             <div class="col-sm-12">
                <div class="page-title-box">
-                  <div class="btn-group pull-right">                        
-                     <div class="form-group">                                 
+                  <div class="btn-group pull-right">
+                     <div class="form-group">
                         <select name="currency" class="form-control currency">
                             <option value="GBP" {{($currency == 'GBP')?'selected':''}}>GBP</option>
-                            <option value="USD" {{($currency == 'USD')?'selected':''}}>USD</option>  
+                            <option value="USD" {{($currency == 'USD')?'selected':''}}>USD</option>
                             <option value="EUR" {{($currency == 'EUR')?'selected':''}}>EUR</option>
                         </select>
                      </div>
-                     &nbsp;&nbsp; 
-                     <div class="form-group ">                                 
+                     &nbsp;&nbsp;
+                     <div class="form-group ">
                         <select name="date-range" class="form-control date-range">
                            <option value="today" {{($filter=='today')?'selected':''}}>Today </option>
                            <option value="this_week" {{($filter=='this_week')?'selected':''}}>This Week </option>
@@ -29,8 +29,8 @@
                            <!-- <option value="last_year">Last Year </option> -->
                            <!-- <option value="custom">Custom Period</option> -->
                         </select>
-                     </div>                          
-                    <!-- <ol class="breadcrumb hide-phone p-0 m-0">                           
+                     </div>
+                    <!-- <ol class="breadcrumb hide-phone p-0 m-0">
                         <li class="breadcrumb-item active">Home</li>
                     </ol> -->
                   </div>
@@ -110,7 +110,7 @@
                                  <button type="button" class="btn earning_filter btn-secondary {{ ($duration == 'year')?'active':''}}" data-filter="year">Year</button>
                               </div>
                            </div>
-                           <div id="combine-chart" class="m-t-20"></div>                           
+                           <div id="combine-chart" class="m-t-20"></div>
                         </div>
                      </div>
                   </div>
@@ -131,7 +131,7 @@
                            <div class="m-b-20">
                               <p>Yearly Earnings</p>
                               {{$cur_list[$currency].Helper::number_format(array_sum($earnings['yearly']))}}</h5>
-                              <span class="peity-line" data-width="100%" data-peity='{ "fill": ["rgba(232, 65, 38,0.3)"],"stroke": ["rgba(232, 65, 38,0.8)"]}' data-height="60">{{ implode(',',$earnings['yearly']) }}</span> 
+                              <span class="peity-line" data-width="100%" data-peity='{ "fill": ["rgba(232, 65, 38,0.3)"],"stroke": ["rgba(232, 65, 38,0.8)"]}' data-height="60">{{ implode(',',$earnings['yearly']) }}</span>
                            </div>
                         </div>
                      </div>
@@ -146,13 +146,13 @@
                      <ol class="activity-feed mb-0">
 <!--                        <li class="feed-item">
                            <div class="activity-text">Request Recieved on</div>
-                           <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($sim_request->created_at))}}</span>                        
+                           <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($sim_request->created_at))}}</span>
                        </li> -->
                        @foreach ($order_status as $status)
-                       <li class="feed-item">                                            
+                       <li class="feed-item">
                           <span class="activity-text ">{{$status->note}}</span>
                           <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($status->time))}}</span>
-                       </li>                            
+                       </li>
                         @endforeach
                      </ol>
 <!--                      <ol class="activity-feed mb-0">
@@ -200,11 +200,11 @@
                                  <th> Status </th>
                                  <th> Amount </th>
                                  <th> Gateway </th>
-                                 <th> Created On </th>         
+                                 <th> Created On </th>
                               </tr>
                               @foreach($transaction as $payment)
                                  <tr>
-                                    <td>                                                   
+                                    <td>
                                        {{ $payment->name }}
                                     </td>
                                     <td>
@@ -213,20 +213,20 @@
                                     @elseif( $payment->status == 3 )
                                        <i class="mdi mdi-checkbox-blank-circle text-warning"></i> Refund
                                     @else
-                                       <i class="mdi mdi-checkbox-blank-circle text-danger"></i> Failed                                       
+                                       <i class="mdi mdi-checkbox-blank-circle text-danger"></i> Failed
                                     @endif
                                     </td>
                                     <td class="text-right">
-                                       {{$cur_list[$payment->currency]}}{{ Helper::number_format($payment->total_amount) }}                                       
+                                       {{$cur_list[$payment->currency]}}{{ Helper::number_format($payment->total_amount) }}
                                     </td>
                                     <td>
-                                       {{ $payment->payment_method }}                                      
+                                       {{ $payment->payment_method }}
                                     </td>
                                     <td>
                                        {{ Helper::date_format($payment->created_at) }}
                                     </td>
                                  </tr>
-                              @endforeach   
+                              @endforeach
                            </tbody>
                         </table>
                      </div>
@@ -266,7 +266,7 @@
                                        @elseif($order->delivery_status == 3)
                                           <span class="badge badge-pill badge-success">Finish</span>
                                        @else
-                                          <span class="badge badge-pill badge-danger">Canceled</span>   
+                                          <span class="badge badge-pill badge-danger">Canceled</span>
                                        @endif
                                     </td>
                                     <td class="text-right">
@@ -299,13 +299,13 @@
          <script>
             chart = '<?php echo json_encode($chart); ?>';
             chart = JSON.parse(chart);
-         </script>  
-         <script src="{{ asset('public/plugins/peity-chart/jquery.peity.min.js') }}"></script>
-         <script src="{{ asset('public/plugins/d3/d3.min.js') }}"></script>
-         <script src="{{ asset('public/plugins/c3/c3.min.js') }}"></script>
-         <script src="{{ asset('public/plugins/jquery-knob/excanvas.js') }}"></script>
-         <script src="{{ asset('public/plugins/jquery-knob/jquery.knob.js') }}"></script>
-         <script src="{{ asset('public/pages/dashboard.js') }}"></script>
+         </script>
+         <script src="{{ asset('plugins/peity-chart/jquery.peity.min.js') }}"></script>
+         <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
+         <script src="{{ asset('plugins/c3/c3.min.js') }}"></script>
+         <script src="{{ asset('plugins/jquery-knob/excanvas.js') }}"></script>
+         <script src="{{ asset('plugins/jquery-knob/jquery.knob.js') }}"></script>
+         <script src="{{ asset('pages/dashboard.js') }}"></script>
 
          <script>
             $(document).ready(function () {
@@ -319,8 +319,8 @@
                   $('#currency').val(currency);
                   $('#dash-form').submit();
                });
-               
-               
+
+
                $(document).on('change','.date-range',function(){
                   var filter = $(this).val();
                   $('#filter').val(filter);
@@ -333,22 +333,22 @@
    </div>
    <!-- page wrapper end -->
 
-<!-- <div id="order_bell"></div> 
+<!-- <div id="order_bell"></div>
 @if(Auth::user()->role == 1 || Auth::user()->role == 6)
 <script>
    $(document).ready(function () {
-      setInterval(function(){  
+      setInterval(function(){
          $.ajax({
             headers: {
                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            type: 'GET',                                                
-            url: base_url+'/new-order',            
-            success:function(data){ 
+            type: 'GET',
+            url: base_url+'/new-order',
+            success:function(data){
                if(data > 0) {
-                  $('#order_bell').html("<audio  autoplay='true' hidden='true'><source  id='myAudioElement'  src='"+base_url+"/public/bell/beep.mp3' type='audio/mpeg'></audio>");
+                  $('#order_bell').html("<audio  autoplay='true' hidden='true'><source  id='myAudioElement'  src='"+base_url+"/bell/beep.mp3' type='audio/mpeg'></audio>");
                   // location.reload();
-               }                  
+               }
             }
          });
       }, 10000);

@@ -3,9 +3,9 @@
     <!-- page wrapper start -->
     <div class="wrapper">
         <div class="container-fluid">
-            <link href="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-            <link href="{{ asset('public/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+            <link href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet"/>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="page-title-box">
@@ -23,10 +23,10 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="card m-b-20">
-                        
+
                         <div class="card-body right-nav">
                             <ul>
-                                <li><a href="{{ url('/settings') }}">General</a></li>                                    
+                                <li><a href="{{ url('/settings') }}">General</a></li>
                                 <li><a href="{{ url('/template') }}">Email Template</a></li>
                                 <li><a href="{{ url('/roles') }}">Roles</a></li>
                                 <li><a href="{{ url('/countries') }}">Countries</a></li>
@@ -51,29 +51,29 @@
                                 <li><a href="#">Pusher.com</a></li>
                                 <li><a href="#">Google</a></li>
                                 <li><a href="#">Misc</a></li> -->
-                            </ul>                            
+                            </ul>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-10">
                     <div class="card m-b-20">
-                        <div class="card-body">  
+                        <div class="card-body">
                              <button class="btn btn-success pull-right" id="add_firewall">ADD IP</button>
                             <table id="firewalllist" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                 <thead>
-                                    <tr> 
+                                    <tr>
                                         <tr>
                                         <th>#</th>
-                                        <th>IP Address</th>                                     
+                                        <th>IP Address</th>
                                         <th>Description</th>
                                         <th>Created On</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php $i = 0; @endphp                
-                                    @foreach ($firewall as $ip)                                        
+                                    @php $i = 0; @endphp
+                                    @foreach ($firewall as $ip)
                                     <tr class="odd" id="ip-row{{$ip->id}}">
                                         <td>{{ ++$i }}</td>
                                         <td id="address_{{$ip->id}}">{{ $ip->ip_address }}</td>
@@ -86,12 +86,12 @@
                                             @if(Helper::has_permission('firewall', 'delete'))
                                                 &nbsp;&nbsp;&nbsp;<a data-toggle="tooltip" title="Delete" data-list="{{ $ip->id }}" class="text-danger delete_firewall" href="javascript:void(0);"><i class="mdi mdi-delete mdi-24px"></i></a>
                                              @endif
-                                        </td>                                            
+                                        </td>
                                     </tr>
                                     @php @endphp
                                     @endforeach
                                 </tbody>
-                            </table>                         
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -112,16 +112,16 @@
                                     <input type="text" id="ip_address" class="form-control" name="ip_address">
                                 </div>
                                 <div class="form-group">
-                                    <label>Descrtiption</label>                                 
+                                    <label>Descrtiption</label>
                                     <input type="text" id="description" class="form-control" name="description">
-                                </div>      
+                                </div>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-success pull-right"  id="save_whitelist">Save</button>
                             </form>
                         </div>
                     </div>
                 </div>
-            </div>                              
+            </div>
 
             <div id="firewallConfirmPopup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -132,7 +132,7 @@
                         </div>
                         <div class="modal-body">
                             <form action="{{ url('/delete-firewall') }}" method="post">
-                                @csrf                
+                                @csrf
                                 <div class="modal-body">
                                     <p>Are you sure you want to delete this item?</p>
                                     <input type="hidden" id="firewall_id" name="id">
@@ -143,16 +143,16 @@
                                 </div>
                             </form>
                         </div>
-                    </div>    
+                    </div>
                 </div>
             </div>
 
-            <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('public/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-            
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+
             <script type="text/javascript">
                 $(document).ready(function(){
                     $('#firewalllist').DataTable({ responsive: true, bSort : true, pageLength: 25 });
@@ -180,7 +180,7 @@
                         var id = $(this).data('list');
                         $('#firewall_id').val(id);
                         $('#firewallConfirmPopup').modal('show');
-                    });                   
+                    });
                 });
             </script>
         </div>
