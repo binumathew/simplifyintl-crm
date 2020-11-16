@@ -12,7 +12,9 @@ class RenewPlan implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(){
+    private $user;
+
+    public function __construct($user){
 
 
     }
