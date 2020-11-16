@@ -35,41 +35,41 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('staff:commission')
                 ->monthlyOn(1, '2:00');
-        // $schedule->command('account:autoRecharge')                             
+        // $schedule->command('account:autoRecharge')
         //          ->dailyAt('04:30');
-        $schedule->command('plan:subscription')                
+        $schedule->command('plan:subscription')
                 ->dailyAt('04:45'); //->dailyAt('04:45'); //->cron('* * * * *');
         $schedule->command('subscription:notification')
-                ->dailyAt('10:00'); 
+                ->dailyAt('10:00');
         $schedule->command('call:history')
                 ->hourly();
         $schedule->command('sim:history')
                 ->dailyAt('04:30');
         // $schedule->command('card:expiry')
-        //          ->dailyAt('12.30'); 
+        //          ->dailyAt('12.30');
         // $schedule->command('reserve:expiry')
         //          ->everyMinute();
 
                  //->cron('* * * * *');//
-        $schedule->command('autoplan:disable')                 
+        $schedule->command('autoplan:disable')
                ->dailyAt('05:45');
 
-        $schedule->command('advpaid:subscription')                 
+        $schedule->command('advpaid:subscription')
                ->dailyAt('05:50');
-        
-        $schedule->command('addon:usage')                 
+
+        $schedule->command('addon:usage')
                ->dailyAt('10:00');
-        $schedule->command('addon:usage')                 
+        $schedule->command('addon:usage')
                 ->dailyAt('14:00');
-        $schedule->command('addon:usage')                 
+        $schedule->command('addon:usage')
                 ->dailyAt('19:00');
         $schedule->command('notify:activation')
-                ->hourly();  
-                
-        // $schedule->command('addon:usage')                 
+                ->hourly();
+
+        // $schedule->command('addon:usage')
         //         ->cron('* * * * *');
 
-        // $schedule->command('switch:totalusage')                 
+        // $schedule->command('switch:totalusage')
         //        ->dailyAt('09:30');
     }
 
@@ -82,7 +82,7 @@ class Kernel extends ConsoleKernel
     {
         return 'Asia/Kolkata';
     }*/
-    
+
     /**
      * Register the commands for the application.
      *

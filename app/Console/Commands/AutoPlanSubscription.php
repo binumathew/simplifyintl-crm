@@ -67,7 +67,7 @@ class AutoPlanSubscription extends Command
     {
         if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
             $start_time = microtime(true);
-            $curr_day = Carbon::now()->format('Y-m-d');            
+            $curr_day = Carbon::now()->format('Y-m-d');
             $customer_id = Helper::get_option('mvno_customer_id');
             $mvno_key = Helper::get_option('bundle_mvno_key');
 
@@ -78,11 +78,11 @@ class AutoPlanSubscription extends Command
                     ->groupBy('user_id','transaction_id','gateway')
                     ->orderBy('user_id', 'asc')
                     ->get(); //autoplan get userid & total amount for current date
-            
+
             if($getuserid->isNotEmpty()) { //check for user exists
                 foreach ($getuserid as $userdetails) {
-                    $user_id = $userdetails->user_id; //taking the userid 
-                    
+                    $user_id = $userdetails->user_id; //taking the userid
+
                     $user = DB::table('users')->select('name','first_name','email','phone','i_account','currency','currency_symbol')
                                 ->join('country','country_id','=','country.id')
                                 ->where('users.id', $user_id)->where('users.status', '1')
@@ -92,7 +92,7 @@ class AutoPlanSubscription extends Command
                     if(!$user || $blocked){  //if in fraud or user doen't active escape
                         continue;
                     }
-                    
+
                     $next_renewal = Carbon::now()->addDays(30)->format('Y-m-d');
                     $billamount     = $userdetails->total_amount;
                     $referenceid    = $userdetails->transaction_id;
@@ -105,14 +105,14 @@ class AutoPlanSubscription extends Command
                         $api_user       = Helper::get_option('paypal_nvp_username');
                         $api_password   = Helper::get_option('paypal_nvp_password');
                         $api_signature  = Helper::get_option('paypal_nvp_signature');
-                        $version        = urlencode('86.0');  
+                        $version        = urlencode('86.0');
                         $method_name    = 'DoReferenceTransaction';
                         $payment_type   = urlencode('Sale');
 
                         $nvp_req = "METHOD=$method_name&VERSION=$version&PWD=$api_password&USER=$api_user&SIGNATURE=$api_signature&PAYMENTACTION=$payment_type&AMT=$billamount&REFERENCEID=$referenceid&CURRENCYCODE=$currency&CUSTOM=$i_account";
 
-                        $response = Helper::call_nvp_payment($api_endpoint, $nvp_req); 
-                        $rsponse_status = strtoupper($response["ACK"]); 
+                        $response = Helper::call_nvp_payment($api_endpoint, $nvp_req);
+                        $rsponse_status = strtoupper($response["ACK"]);
                     }elseif($userdetails->gateway == 'Braintree'){
                         $gateway = Helper::get_btree_gateway();
 
@@ -139,20 +139,20 @@ class AutoPlanSubscription extends Command
                             $sht_msg = $result->transaction->status.'-'.$result->transaction->processorResponseType;
                             $response['L_SHORTMESSAGE0'] = $sht_msg;
                             $response['L_LONGMESSAGE0'] = $result->transaction->processorResponseText;
-                        }                        
-                    } 
-                    
+                        }
+                    }
+
                     if($rsponse_status === 'SUCCESS') {
                         $txn_id = $response['TRANSACTIONID'];
-                        $payment['transaction_id']  = $txn_id;                        
+                        $payment['transaction_id']  = $txn_id;
                         $payment['payment_method']  = $userdetails->gateway;
-                        $payment['payment_for']     = 'Monthly Subscription';  
+                        $payment['payment_for']     = 'Monthly Subscription';
 
                         foreach($autoplanid as $autoid){
                             $plans =  AutoPlan::where('id', $autoid)->first();
                             $autoplan['transaction_id'] = $txn_id;
-                            $payment['user_id']     = $user_id;            
-                            $payment['amount']      = $plans->amount;      
+                            $payment['user_id']     = $user_id;
+                            $payment['amount']      = $plans->amount;
                             $payment['tax_amount']  = $plans->tax;
                             $payment['total_amount'] = $plans->total_amount;
                             $payment['currency'] = $currency;
@@ -171,7 +171,7 @@ class AutoPlanSubscription extends Command
                                     $next_renewal = date('Y-m-t', strtotime(Carbon::tomorrow()));
                                 }
                                 $buy_price = '0.01';
-                            }else if( $plans->plan_type === 'switch' ){   
+                            }else if( $plans->plan_type === 'switch' ){
                                 $plandetail = $plans->plan;
                                 $i_billplan = $plandetail->switch_billing_plan;
                                 $in_call_limit = $plandetail->minutes;
@@ -181,7 +181,7 @@ class AutoPlanSubscription extends Command
                             }else if( $plans->plan_type === 'bridge'){
                                 $plandetail = $plans->plan;
                                 $i_billplan = $plandetail->switch_billing_plan;
-                                $in_call_limit = $plandetail->minutes;   
+                                $in_call_limit = $plandetail->minutes;
                                 $payment['buy_price']  = $plandetail->buy_price;
                                 $buy_price = $plandetail->buy_price;
                                 $next_renewal = Carbon::now()->addDays(30)->format('Y-m-d');
@@ -189,33 +189,33 @@ class AutoPlanSubscription extends Command
                             $autoplan['next_renewal'] = $next_renewal;
                             AutoPlan::where('id', $autoid)->update($autoplan);
                             $paymentid = UserPayment::insertGetId($payment);
-                            
+
                             $childlist = explode(',', $plans->user_list); //child list for the user
-                            
+
 			                $dealercommcount    = count($childlist); //calculate commission for child
                             $promocode = $plans->sim[0]->sim_request->promocode;
-                            $dealerWhere = ['promocode' => $promocode, 'short_code' => 'DEALER'];      
+                            $dealerWhere = ['promocode' => $promocode, 'short_code' => 'DEALER'];
                             $dealer = DB::table('admins')->select('admins.id as dealer_id')
                                         ->leftJoin('tbl_roles as r', 'role', '=', 'r.id')
                                         ->where($dealerWhere)->first();
 
-                            if($dealer){                 
+                            if($dealer){
                                 $dealer_id =  $dealer->dealer_id;
                                 $revenue = DB::table('dealer_revenue')->select('amount')
                                               ->where('dealer_id',$dealer_id)
                                               ->where('expiry_at','>=', $curr_day)
-                                              ->where('status',1)->first(); 
+                                              ->where('status',1)->first();
 
                                 if($revenue){
                                     $amount = $revenue->amount;
                                     //total commission for dealer
-                                    $revenuecomm = $amount * $dealercommcount;                          
+                                    $revenuecomm = $amount * $dealercommcount;
                                     $maxend = DB::table('commission_payments')
                                         ->selectRaw('MAX(payment_end) AS max_end')
                                         ->where('comm_user', $dealer_id)
                                         ->where('autoplan_id',$autoid)->value('max_end');
 
-                                    //to check dealer commission ended to start revenue commission    
+                                    //to check dealer commission ended to start revenue commission
                                     if(!$maxend || Carbon::parse($maxend)->lessThanOrEqualTo($curr_day)){
                                         $commArray['autoplan_id']     = $autoid;
                                         $commArray['comm_user']       = $dealer_id;
@@ -225,31 +225,31 @@ class AutoPlanSubscription extends Command
                                         $commArray['comm_rate']       = $amount;
                                         $commArray['comm_type']       = 1;
                                         PaymentCommission::firstOrCreate(['autoplan_id' => $autoid,'comm_user' => $dealer_id,'payment_date' => $curr_day], $commArray);
-                                    }                                    
+                                    }
                                 }
                             }
-                            
+
                             foreach ($childlist as $child) {
                                 $userdata = ModalUser::find($child); //child user details
                                 $i_account = $userdata->i_account;
-                                
+
                                 if($plans->plan_type === 'sim'){
 
 
 
                                     $msisdn = $userdata->msisdn->phone_number;
-                                    
+
                                     if($plans->plan->provider == 'EE'){
                                         $subscription_id = $userdata->userDetail->sim_subscription_id;
                                         $end_point = '/core/subscriptions/offerings?MVNO='.$mvno_key; //api for sim
                                         $sim_api_data = ["CustomerId" => (int)$customer_id,"SubscriptionId"=>(int)$subscription_id,"Offerings"=>array(["ProductOfferingId"=> (int)$simbillplan,"OrderedProductCharacteristics"=>array(["Name"=> "MSISDN","Value"=>$msisdn])]),"Channel"=>"Web"];
-                                    
+
                                         $response = SIMHelper::call_sim_process_api($end_point, json_encode($sim_api_data));
                                     }else{
                                         $response = json_decode('{"orderCode":"O2customorder","resultType":"Ok","resultCode":"0"}');
                                     }
 
-                                    if($response->resultType == 'Ok' && $response->resultCode == 0){                                    
+                                    if($response->resultType == 'Ok' && $response->resultCode == 0){
                                         $log_data = array(
                                             'user_id' => $userdata->id,
                                             'stock_id' => $userdata->stock_id,
@@ -269,15 +269,15 @@ class AutoPlanSubscription extends Command
                                             $i_billplan = $plans->switch_billing_plan;
                                             $in_call_limit = $plans->plan->in_call_limit;
                                         }
-                                    }else{   
-                                        $notification = NotificationLog::create(['user_id'=>$child,'message' => 'Auto Subscription EE Subscription Renewal Error','description'=>'Sub ID:'.$autoid.', msg:'.json_encode($response), 'request'=>json_encode($sim_api_data), 'status'=>'0']);                                    
+                                    }else{
+                                        $notification = NotificationLog::create(['user_id'=>$child,'message' => 'Auto Subscription EE Subscription Renewal Error','description'=>'Sub ID:'.$autoid.', msg:'.json_encode($response), 'request'=>json_encode($sim_api_data), 'status'=>'0']);
                                         $obj = (object) array(
                                             'notify_id' => $notification->id,
                                             'subscripton'=> $autoid,
-                                        );  
+                                        );
                                         FailureNotification::dispatch($obj)
                                             ->delay(now()->addMinutes(1));
-                                        continue;                                   
+                                        continue;
                                     }
                                 }
                                 if($i_billplan != 0 || !is_null($i_billplan)){
@@ -286,14 +286,14 @@ class AutoPlanSubscription extends Command
                                     $temp     = SwitchHelper::call_switch_api($xml_data);
 
 	                                $method = 'accountCredit';
-	                                $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, $buy_price, $currency); 
+	                                $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, $buy_price, $currency);
                                 	$temp =  SwitchHelper::call_switch_api($credit_xml);
 	                                if (array_key_exists("fault", $temp)) {
 	                                    $notification = NotificationLog::create(['user_id'=>$child, 'message' => 'Auto Subscription Switch AddCredit Failed','description'=>'Sub ID:'.$autoid.', msg:'.json_encode($temp),'status'=>'0']);
 	                                    $obj = (object) array(
                                             'notify_id' => $notification->id,
                                             'subscripton'=> $autoid,
-                                        );  
+                                        );
                                         FailureNotification::dispatch($obj)
                                             ->delay(now()->addMinutes(1));
                                         continue;
@@ -307,62 +307,62 @@ class AutoPlanSubscription extends Command
 	                                    $obj = (object) array(
                                             'notify_id' => $notification->id,
                                             'subscripton'=> $autoid,
-                                        );  
+                                        );
                                         FailureNotification::dispatch($obj)
                                             ->delay(now()->addMinutes(1));
                                         $balance['balance_minutes'] = 0;
                                         Account::where('user_id',$child)->update($balance);
-                                        $where['user_id'] = $child; 
+                                        $where['user_id'] = $child;
                                         $where['plan_type'] = $plans->plan_type;
-                                        $update['status'] = 0; 
+                                        $update['status'] = 0;
                                         UserPlan::where($where)->update($update);
 	                                }else{
 	                                    $balance['balance_minutes'] = $in_call_limit;
 	                                    Account::where('user_id',$child)->update($balance);
-	                                    $where['user_id']       = $child; 
+	                                    $where['user_id']       = $child;
 	                                    $where['plan_type']     = $plans->plan_type;
-	                                    $update['status']       = 0; 
-	                                    UserPlan::where($where)->update($update);   
-	                                    $usage['plan_id']       = $plans->plan_id;  
+	                                    $update['status']       = 0;
+	                                    UserPlan::where($where)->update($update);
+	                                    $usage['plan_id']       = $plans->plan_id;
 	                                    $usage['user_id']       = $child;
-	                                    $usage['payment_id']    = $paymentid; 
-	                                    $usage['status']        = 1; 
+	                                    $usage['payment_id']    = $paymentid;
+	                                    $usage['status']        = 1;
 	                                    $usage['plan_type']     = $plans->plan_type;
-	                                    UserPlan::create($usage);   
+	                                    UserPlan::create($usage);
 	                                }
                                 }
-                            }                    
+                            }
                         }
                     } else if($rsponse_status === 'SUCCESSWITHWARNING') {
-                        $plans =  AutoPlan::find($autoid);//update txn num                            
+                        $plans =  AutoPlan::find($autoid);//update txn num
                         $notification = NotificationLog::create(['user_id'=>$plans->user_id,'message' => 'Auto Subscription Payment Warning','description'=>'Sub ID:'.$autoid.', card:'.$plans->card_type.', msg:'.json_encode($response),'status'=>'0']);
                         $obj = (object) array(
                             'notify_id' => $notification->id,
                             'subscripton'=> $autoid,
-                        );  
+                        );
                         FailureNotification::dispatch($obj)
                             ->delay(now()->addMinutes(1));
                     } else {
-                        $pay_error = json_encode(['code'=>$response['L_ERRORCODE0'],'smsg'=>$response['L_SHORTMESSAGE0'],'lmsg'=>$response['L_LONGMESSAGE0']]);             
-                        foreach($autoplanid as $autoid){     
-                            $plans = AutoPlan::find($autoid);//update txn num                            
+                        $pay_error = json_encode(['code'=>$response['L_ERRORCODE0'],'smsg'=>$response['L_SHORTMESSAGE0'],'lmsg'=>$response['L_LONGMESSAGE0']]);
+                        foreach($autoplanid as $autoid){
+                            $plans = AutoPlan::find($autoid);//update txn num
                             $notification = NotificationLog::create(['user_id'=>$plans->user_id,'message' => 'Auto Subscription Payment Failed','description'=>'Sub ID:'.$autoid.', card:'.$plans->card_type.', msg:'.$pay_error,'status'=>'0']);
                             $payment = ['transaction_id' => '', 'total_amount' => $plans->total_amount, 'payment_method' => 'Paypal', 'payment_for' => 'Plan Monthly Subscription', 'user_id' => $user_id, 'amount' => $plans->amount, 'tax_amount' => $plans->tax, 'description' => 'Subscription Error :'.$response['L_LONGMESSAGE0'].', ntfy_id:'.$notification->id, 'status' => '0', 'buy_price' => '0'];
-                            $paymentid = UserPayment::insertGetId($payment); 
+                            $paymentid = UserPayment::insertGetId($payment);
 
                             $obj = (object) array(
                                 'notify_id' => $notification->id,
                                 'subscripton'=> $autoid,
-                            );  
+                            );
                             FailureNotification::dispatch($obj)
                                 ->delay(now()->addMinutes(1));
                             $plans = AutoPlan::where('id', $autoid)->first();
 
                             $childlist = explode(',', $plans->user_list);
                             foreach ($childlist as $child) {
-                                $where['user_id']   = $child; 
-                                $where['plan_type'] = $plans->plan_type;             
-                                UserPlan::where($where)->update(['status' => 0]);      
+                                $where['user_id']   = $child;
+                                $where['plan_type'] = $plans->plan_type;
+                                UserPlan::where($where)->update(['status' => 0]);
                                 $balance['balance_minutes'] = 0;
                                 Account::where('user_id',$child)->update($balance);
                             }
@@ -375,7 +375,7 @@ class AutoPlanSubscription extends Command
                         $twilio_number = Helper::get_option('twilio_number');
 
                         $client = new Client($account_sid, $auth_token);
-                        try {                  
+                        try {
                             $client->messages->create(
                                 $user->phone,
                                 array(
@@ -383,9 +383,9 @@ class AutoPlanSubscription extends Command
                                     'body' => $msg
                                 )
                             );
-                        } catch (RestException $exception) {                   
+                        } catch (RestException $exception) {
                             // if ($exception->getCode() === 21211) {
-                                    
+
                             // }
                         }
                     }
@@ -410,19 +410,19 @@ class AutoPlanSubscription extends Command
                     $defult_plan = DB::table('switch_template')->where('id', $user->switch_id)->value('billing_plan');
                     $xml_data = SwitchHelper::switch_update_plan_xml($i_account, $defult_plan);
                     $temp = SwitchHelper::call_switch_api($xml_data);
-                    
+
                     $currency = $user->currency;
                     $i_billplan = $renew->switch_billing_plan;
                     $in_call_limit = '1000';
                     $method = 'accountCredit';
-                    $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, '0.01', $currency); 
+                    $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, '0.01', $currency);
                     $temp = SwitchHelper::call_switch_api($credit_xml);
                     if (array_key_exists("fault", $temp)) {
                         $notification = NotificationLog::create(['user_id' => $user_id, 'message' => 'Auto Subscription Switch AddCredit Failed', 'description' => 'Sub ID:'. $renew->autoplan_id .', msg:'.json_encode($temp), 'status' => '0']);
                         $obj = (object) array(
                             'notify_id' => $notification->id,
                             'subscripton'=> $renew->autoplan_id,
-                        );  
+                        );
                         FailureNotification::dispatch($obj)
                             ->delay(now()->addMinutes(1));
                         continue;
@@ -434,23 +434,23 @@ class AutoPlanSubscription extends Command
                         $obj = (object) array(
                             'notify_id' => $notification->id,
                             'subscripton'=> $renew->autoplan_id,
-                        );  
+                        );
                         FailureNotification::dispatch($obj)
                             ->delay(now()->addMinutes(1));
                     }else{
                         $custom_balance['balance_minutes'] = $in_call_limit;
                         Account::where('user_id',$user_id)->update($custom_balance);
                         $plans = AutoPlan::find($renew->autoplan_id);
-                        $where['user_id']       = $user_id; 
+                        $where['user_id']       = $user_id;
                         $where['plan_type']     = $plans->plan_type;
-                        $update['status']       = 0; 
+                        $update['status']       = 0;
                         UserPlan::where($where)->update($update);
-                        $usage['plan_id']       = $plans->plan_id;  
+                        $usage['plan_id']       = $plans->plan_id;
                         $usage['user_id']       = $user_id;
-                        $usage['payment_id']    = 0; 
-                        $usage['status']        = 1; 
+                        $usage['payment_id']    = 0;
+                        $usage['status']        = 1;
                         $usage['plan_type']     = $plans->plan_type;
-                        UserPlan::create($usage); 
+                        UserPlan::create($usage);
                     }
                 }
             }
@@ -465,8 +465,7 @@ class AutoPlanSubscription extends Command
               }
             });
 
-            ScheduledTask::where('command', $this->signature)
-                ->update(['run_time' => $exec_time,'next_run' => $next_run]);
+            ScheduledTask::where('command', $this->signature)->update(['run_time' => $exec_time,'next_run' => $next_run]);
         }
     }
 }
