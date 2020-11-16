@@ -14,7 +14,7 @@
                        <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($enquiry->created_at))}}</span>
                        <div class="activity-text">Handled By : <span class="font-600 text-muted"> {{$enquiry->handled_by}} </span></div>
                        <span class="activity-text ">Note : {{$enquiry->note}}</span>
-                    </li>                            
+                    </li>
                     @endforeach
                     @else
                         <li class="feed-item">
@@ -22,8 +22,8 @@
                         </li>
                     @endif
                 </ol>
-                <hr>                
-                <input type="hidden" name="request_id" id="enq_request_id" value="{{Crypt::encrypt($req_id)}}"> 
+                <hr>
+                <input type="hidden" name="request_id" id="enq_request_id" value="{{Crypt::encrypt($req_id)}}">
                 <div class="form-group">
                     <label class="form-label">Add Note</label>
                     <input type="text" name="enquiry_note" id="enquiry_note" class="form-control" required>
@@ -48,13 +48,13 @@
                 <ol class="activity-feed mb-0">
                     <li class="feed-item">
                         <div class="activity-text">Request Recieved on</div>
-                        <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($sim_request->created_at))}}</span>                        
+                        <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($sim_request->created_at))}}</span>
                     </li>
                     @foreach ($order_status as $status)
-                    <li class="feed-item">                                            
+                    <li class="feed-item">
                        <span class="activity-text ">{{$status->note}}</span>
                        <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($status->time))}}</span>
-                    </li>                            
+                    </li>
                     @endforeach
                 </ol>
                 <button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>
@@ -75,7 +75,7 @@
                 <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <table id="sim_detail_content" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                         <thead>
-                            <tr>                                            
+                            <tr>
                                 <th>#</th>
                                 <th>Phone/Sim Number</th>
                                 <th>Shipping Address</th>
@@ -109,7 +109,7 @@
                                         @endif
                                     </tr>
                                 @endforeach
-                            @endforeach                                     
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -124,22 +124,22 @@
 <ol class="activity-feed mb-0">
     <li class="feed-item">
         <div class="activity-text">Request Recieved on</div>
-        <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($port_details->created_at))}}</span>                        
+        <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($port_details->created_at))}}</span>
     </li>
     @if($port_details)
         @php $description = json_decode($port_details->description); @endphp
         @if($description)
             @foreach ($description as $details)
-            <li class="feed-item">                                            
+            <li class="feed-item">
                <span class="activity-text ">{{ $details->proceed_by }}</span>
                <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($details->proceed_at))}}</span>
-               
-            </li> 
+
+            </li>
             @endforeach
-        @endif                            
+        @endif
     @endif
 </ol>
-<button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>       
+<button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>
 @endif
 @if(isset($scheduled_task))
 <!-- Find addess popup start -->
@@ -150,7 +150,7 @@
                     <h5 class="modal-title mt-0">{{ isset($task)?'Edit':'Add'}} Scheduled Task</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-                <div class="modal-body">                    
+                <div class="modal-body">
                     <div class="card m-b-20">
                         <div class="card-body">
                             <form action="{{ url('/save-task')}}" method="post" id="task-form">
@@ -162,24 +162,24 @@
                                     <input type="text" id="description" class="form-control" name="description" value="{{isset($task)?$task->description:''}}" required>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <label>Command</label>                                  
+                                    <label>Command</label>
                                     <input type="text" id="command" class="form-control" name="command" value="{{isset($task)?$task->command:''}}" required>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <label>Status</label> 
+                                    <label>Status</label>
                                     <select name="status" class="custom-select form-control">
                                         <option value="1" @php if(!isset($task) || $task->status == 1) echo 'selected'; @endphp>Enabled</option>
                                         <option value="0" @php if(isset($task) && $task->status == 0) echo 'selected'; @endphp>Disabled</option>
-                                    </select>                                   
-                                </div>                                
+                                    </select>
+                                </div>
                                 <div class="form-group col-md-12">
                                     <div id="task_error" class="text-danger"></div>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-success pull-right">Submit</button>  
+                                    <button type="submit" class="btn btn-success pull-right">Submit</button>
                                 </div>
-                            </form>                          
+                            </form>
                         </div>
-                    </div>           
+                    </div>
                 </div>
             </div>
         </div>
@@ -199,35 +199,35 @@
                 <input type="text" id="coupon_code" class="form-control" name="coupon_code" value="{{isset($coupon)?$coupon->coupon_code:''}}" required>
             </div>
             <div class="form-group col-md-12">
-                <label>Discount Value</label>                                  
+                <label>Discount Value</label>
                 <input type="text" id="discount_value" class="form-control" name="discount_value" value="{{isset($coupon)?$coupon->discount_value:''}}" required>
             </div>
             <div class="form-group col-md-12">
-                <label>Status</label> 
+                <label>Status</label>
                 <select name="is_fixed" class="custom-select form-control">
                     <option value="1" @php if(!isset($coupon) || $coupon->is_fixed == 1) echo 'selected'; @endphp>Fixed Amount</option>
                     <option value="0" @php if(isset($coupon) && $coupon->is_fixed == 0) echo 'selected'; @endphp>Percentage</option>
-                </select>                                   
-            </div>  
+                </select>
+            </div>
             <div class="form-group col-md-12">
-                <label>Expires On</label>                                  
+                <label>Expires On</label>
                 <input type="text" id="expiry_date" class="form-control" name="expiry_date" value="{{isset($coupon)?$coupon->expiry_date:''}}" required>
             </div>
             <div class="form-group col-md-12">
-                <label>Status</label> 
+                <label>Status</label>
                 <select name="status" class="custom-select form-control">
                     <option value="1" @php if(!isset($coupon) || $coupon->status == 1) echo 'selected'; @endphp>Active</option>
                     <option value="0" @php if(isset($coupon) && $coupon->status == 0) echo 'selected'; @endphp>In-Active</option>
-                </select>                                   
-            </div>                              
+                </select>
+            </div>
             <div class="form-group col-md-12">
                 <div id="coupon_status"></div>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success pull-right" id="save_coupon">Submit</button>  
+                <button type="button" class="btn btn-success pull-right" id="save_coupon">Submit</button>
             </div>
-        </form>                          
+        </form>
     </div>
-</div>      
+</div>
 @endif
 @if(isset($selected_plans))
 <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -236,7 +236,7 @@
         <table class="table table-condensed table-bordered no margins">
             <tbody>
                 <tr>
-                    <td colspan="2">{{ $bolt->plan_name }}</td>                
+                    <td colspan="2">{{ $bolt->plan_name }}</td>
                     <td width="60px">
                         <label class="checkbox">
                             <input type="checkbox" id="add_to_all" value="all"> All
@@ -249,15 +249,15 @@
                         <td>{{ $selected->product->plan_name }}</td>
                         <td>{{$list->stock->sim_number}} /<br/>{{ ($list->stock->verified)?$list->stock->phone_number:'0759xxxxxxx' }}</td>
                         <td>
-                            <label class="checkbox">  
+                            <label class="checkbox">
                                 <input type="hidden" name="bolt_ons[{{$list->id}}]" value="0">
                                 @if($provider == 'app')
                                     <!-- <input type="hidden" name="bolt_ons[{{$list->id}}]" value="{{ $list->app_bolt }}">  -->
-                                    <input type="checkbox" class="add_to_all" name="bolt_ons[{{$list->id}}]" value="{{($list->app_bolt)?:$bolt->id}}" {{($list->app_bolt && $list->app_bolt != $bolt->id)?'disabled':''}} {{($list->app_bolt)?'checked':''}}> 
+                                    <input type="checkbox" class="add_to_all" name="bolt_ons[{{$list->id}}]" value="{{($list->app_bolt)?:$bolt->id}}" {{($list->app_bolt && $list->app_bolt != $bolt->id)?'disabled':''}} {{($list->app_bolt)?'checked':''}}>
                                 @else
                                     <!-- <input type="hidden" name="bolt_ons[{{$list->id}}]" value="{{ $list->sim_bolt }}"> -->
-                                    <input type="checkbox" class="add_to_all" name="bolt_ons[{{$list->id}}]" value="{{($list->sim_bolt)?:$bolt->id}}" {{($list->sim_bolt && $list->sim_bolt != $bolt->id)?'disabled':''}} {{($list->sim_bolt)?'checked':''}}> 
-                                @endif                          
+                                    <input type="checkbox" class="add_to_all" name="bolt_ons[{{$list->id}}]" value="{{($list->sim_bolt)?:$bolt->id}}" {{($list->sim_bolt && $list->sim_bolt != $bolt->id)?'disabled':''}} {{($list->sim_bolt)?'checked':''}}>
+                                @endif
                             </label>
                         </td>
                     </tr>
@@ -271,7 +271,7 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-success" id="manage_bolt_ons">Continue</button>
         </div>
-    </form>    
+    </form>
 </div>
 @endif
 
@@ -283,13 +283,13 @@
                 <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <table id="sim_detail_content" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                         <thead>
-                            <tr>                
+                            <tr>
                                 <th>Phone</th>
                                 <th>Number to Keep</th>
                                 <th>Provision Date</th>
                                 <th>Sim Number</th>
                                 <th>Status</th>
-                                <th>Action</th>                                     
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -312,21 +312,21 @@
                                         @break
                                         @default
                                             <span>-</span>
-                                    @endswitch                                    
-                                </td>                                
+                                    @endswitch
+                                </td>
                                 <td>
                                 @if($sim->reg_status == 1)
                                 <a title="Mark as Welcome Call Completed" href="javascript:void(0);" data-id="{{Crypt::encrypt($sim->id) }}" data-value="{{$sim->id}}" id="ad_crdt_{{$sim->id}}"><i class="mdi mdi-phone-in-talk mdi-24px"></i></a>
-                                @endif                                    
+                                @endif
                                 </td>
-                            </tr>                           
-                        @endforeach                                     
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>        
+        <button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>
     </div>
 </div>
 @endif
@@ -338,21 +338,21 @@
                 <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <table class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                         <thead>
-                            <tr>                
+                            <tr>
                                 <th>ID</th>
                                 <th>Process</th>
                                 <th>Updated</th>
-                                <th>Status</th>                                     
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                        
+
                             <tr>
                                 <td>{{ $status['request_id'] }}</td>
                                 <td>
                                     <span class="badge badge-info badge-pill">{{ $status['state'] }}</span>
                                 </td>
-                                <td>{{ $status['updated_at'] }}</td>                                
+                                <td>{{ $status['updated_at'] }}</td>
                                 <td>
                                    <span  class="badge badge-warning badge-pill">{{ $status['request_status'] }}</span>
                                 </td>
@@ -362,12 +362,12 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>        
+        <button type="button" class="btn btn-secondary pull-right" data-dismiss="modal">Close</button>
     </div>
 </div>
 @endif
 
-@if(isset($prorata_billing)) 
+@if(isset($prorata_billing))
 <div class="row">
     <div class="col-md-12">
         <div class="card m-b-20">
@@ -378,11 +378,11 @@
                     <div class="col-md-3">
                         <div class="card-body">
                             <label for="card_1{{$card->id}}0">
-                            <input type="radio" name="credit_card" id="card_1{{$card->id}}0" value="{{Crypt::encrypt($card->id)}}" {{($card->is_default)?'checked':''}}> {{ $card->card_type }} / {{ Helper::date_format($card->card_expiry, 'M Y') }} 
+                            <input type="radio" name="credit_card" id="card_1{{$card->id}}0" value="{{Crypt::encrypt($card->id)}}" {{($card->is_default)?'checked':''}}> {{ $card->card_type }} / {{ Helper::date_format($card->card_expiry, 'M Y') }}
                             </label>
                         </div>
                     </div>
-                    @endforeach                                        
+                    @endforeach
                 </div>
                 <div class="row m-b-20">
                     <div class="col-md-4">
@@ -404,7 +404,7 @@
                 </div>
                 <table id="sim_detail_content" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                     <thead>
-                        <tr>                
+                        <tr>
                             <th>Phone</th>
                             <th>Plan Name</th>
                             <th>Price</th>
@@ -418,18 +418,18 @@
                             <td>{{ ($sim->stock->verified)?$sim->stock->phone_number:'0759xxxxxxx'}}</td>
                             <td>{{$sim->auto_plan->plan->plan_name }}</td>
                             <td>{{ $currency.$sim->auto_plan->plan->sell_price }}</td>
-                            <td>   
-                                @php 
+                            <td>
+                                @php
                                 $sell_price = $sim->auto_plan->plan->sell_price;
-                                $endofday = date('t'); $cur_day = date('d',strtotime($date_from));                
+                                $endofday = date('t'); $cur_day = date('d',strtotime($date_from));
                                 $remain_days = $endofday - $cur_day + 1;
                                 $pro_rata_bill = ($sell_price/$endofday) * $remain_days;
-                                $prorata_amount += $pro_rata_bill;                    
+                                $prorata_amount += $pro_rata_bill;
                                 @endphp
-                                {{ $currency. Helper::number_format($pro_rata_bill) }}                              
-                            </td>                
-                        </tr>                           
-                        @endforeach  
+                                {{ $currency. Helper::number_format($pro_rata_bill) }}
+                            </td>
+                        </tr>
+                        @endforeach
                         <tr>
                             <td class="text-right" colspan="3">Total Amount</td>
                             <td>{{ $currency. Helper::number_format($prorata_amount) }} </td>
@@ -438,7 +438,7 @@
 
                     </tbody>
                 </table>
-            </div>            
+            </div>
         </div>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-success pull-right" id="collect_prorarta">Collect</button>
@@ -448,7 +448,7 @@
 @endif
 @if(isset($gateway))
 @if($gateway->gateway == 'Stripe')
-@php $amount = ($purchase->total_amount * 100); 
+@php $amount = ($purchase->total_amount * 100);
 $currency    = strtolower($purchase->currency);
 @endphp
 <div class="tab-pane active p-3"  role="tabpanel">
@@ -458,15 +458,15 @@ $currency    = strtolower($purchase->currency);
     <div class="col-md-4">
         <div class="card-body">
             <label for="card_1{{$card->id}}0">
-            <input type="radio" name="card_list" class="radio_card_list" id="card_1{{$card->id}}0" value="{{Crypt::encrypt($card->id)}}" {{($card->is_default)?'checked':''}}> {{ $card->card_type }} / {{ Helper::date_format($card->card_expiry, 'M Y') }} 
+            <input type="radio" name="card_list" class="radio_card_list" id="card_1{{$card->id}}0" value="{{Crypt::encrypt($card->id)}}" {{($card->is_default)?'checked':''}}> {{ $card->card_type }} / {{ Helper::date_format($card->card_expiry, 'M Y') }}
             </label>
             @if($card->is_default)
             <input type="hidden" name="credit_card" class="selected_card" value="{{ Crypt::encrypt($card->id) }}">
             @endif
         </div>
     </div>
-    @endforeach                                        
-</div>  
+    @endforeach
+</div>
 
 <div class="col-md-12 d-flex justify-content-center">
 <form action="{{url('/payment')}}" method="POST">
@@ -474,7 +474,7 @@ $currency    = strtolower($purchase->currency);
     @csrf
     <script
         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-        data-key="{{ config('app.stripe_api_key') }}"
+        data-key="{{ config('services.stripe.key') }}"
         data-amount="{{ $amount }}"
         data-name="Order Payment"
         data-description=""
@@ -491,12 +491,12 @@ $currency    = strtolower($purchase->currency);
     <div class="col-md-12 m-t-20">
         <span id="payment_status" class="text-danger"></span>
         <button type="button" class="btn btn-success waves-effect waves-light pull-right confirm_payment">Submit</button>
-    </div> 
+    </div>
 </div>
 @endif
 </div>
 @else
-<div class="tab-pane active p-3"  role="tabpanel">                      
+<div class="tab-pane active p-3"  role="tabpanel">
     <input type="hidden" name="credit_card" class="selected_card" value="new">
     <input type="hidden" name="gateway" value="{{ $gateway->gateway }}">
     <div class="row m-b-20">
@@ -504,14 +504,14 @@ $currency    = strtolower($purchase->currency);
         <div class="col-md-4">
             <div class="card-body">
                 <label for="card_1{{$card->id}}0">
-                <input type="radio" name="card_list" class="radio_card_list" id="card_1{{$card->id}}0" value="{{Crypt::encrypt($card->id)}}" {{($card->is_default)?'checked':''}}> {{ $card->card_type }} / {{ Helper::date_format($card->card_expiry, 'M Y') }} 
+                <input type="radio" name="card_list" class="radio_card_list" id="card_1{{$card->id}}0" value="{{Crypt::encrypt($card->id)}}" {{($card->is_default)?'checked':''}}> {{ $card->card_type }} / {{ Helper::date_format($card->card_expiry, 'M Y') }}
                 </label>
                 @if($card->is_default)
                 <input type="hidden" name="credit_card" class="selected_card" value="{{ Crypt::encrypt($card->id) }}">
                 @endif
             </div>
         </div>
-        @endforeach                                        
+        @endforeach
     </div>
 
     <div class="row m-b-20 {{ ($cards->isEmpty())?'d-none':'' }}">
@@ -519,7 +519,7 @@ $currency    = strtolower($purchase->currency);
         <div class="col-md-12 d-flex justify-content-center">
             <a href="javascript:void(0);" class="btn btn-success waves-effect waves-light btn_add_new_card">Add New Card</a>
         </div>
-    </div>                          
+    </div>
     <div class="m-b-20 card_form {{ ($cards->isEmpty()) ? '' : 'd-none' }}">
         <div class="row card-body">
             <div class="col-md-12">
@@ -535,8 +535,8 @@ $currency    = strtolower($purchase->currency);
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Expiry Month</label>
-                    <input type="text" name="expiry_month" class="form-control card_details" placeholder="MM">                                   
-                   
+                    <input type="text" name="expiry_month" class="form-control card_details" placeholder="MM">
+
                 </div>
             </div>
             <div class="col-md-2">
@@ -562,7 +562,7 @@ $currency    = strtolower($purchase->currency);
                     <label>Street Address</label>
                     <input type="text" name="card_street" class="form-control card_details" placeholder="Street Address">
                 </div>
-            </div>                            
+            </div>
             <div class="col-md-4">
                 <div class="form-group">
                     <label>Postal Code</label>
@@ -575,7 +575,7 @@ $currency    = strtolower($purchase->currency);
         <div class="col-md-12 m-t-20">
             <span id="payment_status" class="text-danger"></span>
             <button type="button" class="btn btn-success waves-effect waves-light pull-right confirm_payment">Submit</button>
-        </div> 
+        </div>
     </div>
 </div>
 @endif
@@ -586,7 +586,7 @@ $currency    = strtolower($purchase->currency);
         $("#pay-form").validate({
             // errorClass: "invalid form-error",
             // errorElement: 'div',
-            errorPlacement: function(error, element) {                       
+            errorPlacement: function(error, element) {
                 element.addClass('border border-danger');
                 error.insertAfter(element);
             },
@@ -594,24 +594,24 @@ $currency    = strtolower($purchase->currency);
             rules: {
                 card_number:{
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']").val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']").val() == 'new')?true:false;
                         }
                     },
                     regex:/^[0-9-]{19}$/,
                 },
                 card_holder:{
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']"). val() == 'new')?true:false;
                         }
                     },
                     lettersonly: true
                 },
                 expiry_year: {
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']"). val() == 'new')?true:false;
                         }
                     },
                     maxlength: 2,
@@ -620,8 +620,8 @@ $currency    = strtolower($purchase->currency);
                 },
                 expiry_month: {
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']"). val() == 'new')?true:false;
                         }
                     },
                     maxlength: 2,
@@ -630,8 +630,8 @@ $currency    = strtolower($purchase->currency);
                 },
                 card_cvv: {
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']"). val() == 'new')?true:false;
                         }
                     },
                     maxlength: 4,
@@ -640,16 +640,16 @@ $currency    = strtolower($purchase->currency);
                 },
                 card_postcode: {
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']"). val() == 'new')?true:false;
                         }
                     },
                     regex:/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/
                 },
                 card_street: {
                     required: {
-                        depends: function () { 
-                          return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                        depends: function () {
+                          return ($("input[name='credit_card']"). val() == 'new')?true:false;
                         }
                     },
                 },
@@ -658,15 +658,15 @@ $currency    = strtolower($purchase->currency);
             messages: {
                 card_holder:{
                     lettersonly:"Enter a valid card holder name!",
-                }, 
+                },
                 card_postcode: {
                     required:"Enter your postal code!",
-                    regex:"Invalid Postalcode",               
+                    regex:"Invalid Postalcode",
                 },
-                expiry_year: "Enter card expiry year!", 
-                expiry_month: "Enter card expiry month!",                  
-                terms_cond: 'Agree the Terms and Conditions to proceed!.', 
-                credit_card: 'Please choose a credit card or add a new one'                
+                expiry_year: "Enter card expiry year!",
+                expiry_month: "Enter card expiry month!",
+                terms_cond: 'Agree the Terms and Conditions to proceed!.',
+                credit_card: 'Please choose a credit card or add a new one'
             }
         });
 
@@ -682,7 +682,7 @@ $currency    = strtolower($purchase->currency);
 </script>
 @endif
 
-@if(isset($stock_details))                  
+@if(isset($stock_details))
 <div class="m-2">
     <form action="{{ url('/stock-manage') }}" id="stock-details" method="POST">
     <div class="row card-body">
@@ -696,8 +696,8 @@ $currency    = strtolower($purchase->currency);
         <div class="col-md-6">
             <div class="form-group">
                 <label>Sim Number</label>
-                <input type="text" name="sim_number" class="form-control" value="{{$stock->sim_number}}" disabled>                                   
-               
+                <input type="text" name="sim_number" class="form-control" value="{{$stock->sim_number}}" disabled>
+
             </div>
         </div>
         <div class="col-md-6">
@@ -705,67 +705,67 @@ $currency    = strtolower($purchase->currency);
                 <label>IMSI Number</label>
                 <input type="text" name="imsi_number" class="form-control" value="{{$stock->imsi_number}}" disabled>
             </div>
-        </div>        
+        </div>
         <div class="col-md-3">
             <div class="form-group">
                 <label>Price</label>
                 <input type="text" name="price" class="form-control card_details" value="{{$stock->price}}">
             </div>
-        </div>  
+        </div>
          <div class="col-md-3">
             <div class="form-group">
                 <label>Box Number</label>
                 <input type="text" name="box_no" class="form-control" value="{{$stock->box_no}}">
             </div>
-        </div>   
+        </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label>Category</label>
                 <input type="text" name="category" class="form-control" value="{{$stock->category}}">
             </div>
-        </div> 
+        </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label>Provider</label>
                 <input type="text" name="provider" class="form-control" value="{{$stock->provider}}">
             </div>
-        </div>               
+        </div>
         <div class="col-md-6">
-            <div class="form-group">                                                                                 
+            <div class="form-group">
                 <label for="dealer_id" class="col-form-label">Dealer</label>
                 <select name="dealer_id" id="dealer_id" class="custom-select">
                     @foreach($dealers as $dealer)
                     <option value="{{Crypt::encrypt($dealer->id)}}" {{ ($stock->dealer_id == $dealer->id)?'selected':'' }}>{{ $dealer->name }}</option>
-                    @endforeach                                               
+                    @endforeach
                 </select>
             </div>
-        </div>               
+        </div>
         <div class="col-md-6">
-            <div class="form-group">                                                                                 
+            <div class="form-group">
                 <label for="stock_status" class="col-form-label">Status</label>
                 <select name="status" id="stock_status" class="custom-select">
                     <option value="1"  {{ ($stock->status == 1)?'selected':'' }}>Active</option>
-                    <option value="0"  {{ ($stock->status == 0)?'selected':'' }}>Sold</option>                                                 
+                    <option value="0"  {{ ($stock->status == 0)?'selected':'' }}>Sold</option>
                 </select>
             </div>
-        </div> 
+        </div>
     </div>
     </form>
     @if($stock->status == 1)
     <div class="row">
         <div class="col-md-12 m-t-20">
             <button type="button" class="btn btn-success waves-effect waves-light pull-right stock_manage">Update</button>
-        </div> 
-    </div> 
+        </div>
+    </div>
     @endif
 </div>
 @endif
 
-@if(isset($subscription))  
+@if(isset($subscription))
     @foreach($options as $key => $option)
-    <div class="row">  
+    <div class="row">
         <div class="col-md-6">
-            <input type="hidden" id="subscription_cancel_id" value="{{$subscription->id}}">       
+            <input type="hidden" id="subscription_cancel_id" value="{{$subscription->id}}">
             <label for="card_{{$key}}">
                 <input type="radio" name="cancel_type" id="card_{{$key}}" {{ ($key==2)?'checked':'' }} value="{{Crypt::encrypt($key)}}"> {{$option}}
             </label>
@@ -777,8 +777,8 @@ $currency    = strtolower($purchase->currency);
             <span id="sub_status" class="text-danger"></span>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-success waves-effect waves-light pull-right confirm_subscription_cancel">Submit</button>
-        </div> 
-    </div>                                   
+        </div>
+    </div>
 @endif
 
 @if(isset($card_list))
@@ -797,14 +797,14 @@ $currency    = strtolower($purchase->currency);
     </div>
     <div class="row">
         <span id="sub_status" class="text-danger"></span>
-        <div class="col-md-12 m-t-20">            
+        <div class="col-md-12 m-t-20">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-success waves-effect waves-light pull-right change_subscription_card">Update</button>
-        </div> 
-    </div>                                 
+        </div>
+    </div>
 @endif
-@if(isset($renewal_list))     
-<div class="card-body m-2">      
+@if(isset($renewal_list))
+<div class="card-body m-2">
     <form id="renewal-form" method="POST">
         <input type="hidden" name="autoplan_id" value="{{$auto_plan->id}}">
         <div class="form-group">
@@ -812,13 +812,13 @@ $currency    = strtolower($purchase->currency);
                 <label><input type="radio" class="m-l-10" name="renewal_type" value="1" checked>  Renew Now </label>
                 <label><input type="radio" class="m-l-10" name="renewal_type" value="2">  On Next Renewal </label>
             </div>
-        </div>  
+        </div>
 
         <div class="form-group" id="mode_select">
             <div class="radio">
-                <label><input type="radio" class="m-l-10" name="payment_mode" value="1" checked>  Not Paid </label>                                
+                <label><input type="radio" class="m-l-10" name="payment_mode" value="1" checked>  Not Paid </label>
                 <label><input type="radio" class="m-l-10" name="payment_mode" value="2">  Paid </label>
-            </div>                      
+            </div>
         </div>
 
         <div class="d-none" id="transaction_details">
@@ -831,22 +831,22 @@ $currency    = strtolower($purchase->currency);
                     <option value="Stripe">Stripe</option>
                 </select>
             </div>
-            <div class="form-group">                            
-                <input class="form-control"  type="text" name="custom_txn_id" placeholder="Transaction/Reference ID">                           
+            <div class="form-group">
+                <input class="form-control"  type="text" name="custom_txn_id" placeholder="Transaction/Reference ID">
             </div>
-            <div class="form-group">                                
-                <input class="form-control"  type="text" name="custom_description" placeholder="Description">                           
-            </div>          
+            <div class="form-group">
+                <input class="form-control"  type="text" name="custom_description" placeholder="Description">
+            </div>
         </div>
         @if($auto_plan->plan_type == 'sim')
-        <div class="form-group">                
+        <div class="form-group">
             <div class="radio">
                 @if($auto_plan->bundle_id == 0)
                 <select name="plan_id" class="custom-select">
-                    <option> Choose Plan </option>                  
+                    <option> Choose Plan </option>
                     @foreach($plans as $plan)
                     <option value="{{$plan->id}}" {{($auto_plan->plan_id == $plan->id)? 'selected':''}}> {{$plan->plan_name}} </option>
-                    @endforeach                                     
+                    @endforeach
                 </select>
                 @else
                 <select name="bundle_id" class="custom-select">
@@ -859,25 +859,25 @@ $currency    = strtolower($purchase->currency);
             </div>
         </div>
         @else
-        <div class="form-group">                
-            <div class="radio">                   
+        <div class="form-group">
+            <div class="radio">
                 <select name="plan_id" class="custom-select">
                     <option> Choose Plan </option>
                     @foreach($plans as $plan)
                     <option value="{{$plan->id}}" {{($auto_plan->plan_id == $plan->id)? 'selected':''}}> {{ $plan->plan_name }} </option>
-                    @endforeach                                     
-                </select>                    
+                    @endforeach
+                </select>
             </div>
         </div>
-        @endif                       
-        <div id="subscription_error"></div>                                             
+        @endif
+        <div id="subscription_error"></div>
     </form>
     <div class="row">
         <span id="sub_status" class="text-danger"></span>
-        <div class="col-md-12 m-t-20">            
+        <div class="col-md-12 m-t-20">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-success waves-effect waves-light pull-right"  id="subscriptionRenewal">Submit</button>
-        </div> 
-    </div> 
+        </div>
+    </div>
 </div>
 @endif

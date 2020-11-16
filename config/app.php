@@ -106,15 +106,15 @@ return [
 
 
 
-    'url' => env('APP_URL', 'https://account.avoomobile.com'),
+    'url' => env('APP_URL'),
 
 
 
-    'liveurl' => env('LIVE_URL', 'https://nexrise.esimpanel.com/'),
+    'liveurl' => env('LIVE_URL'),
 
 
 
-    'suburl' => env('SUB_URL', 'https://avoo.com/'),
+    'suburl' => env('SUB_URL'),
 
 
 
@@ -255,83 +255,6 @@ return [
 
 
     'cipher' => 'AES-256-CBC',
-    /*
-    |--------------------------------------------------------------------------
-    | Stripe Config Key
-    |--------------------------------------------------------------------------
-    |
-    | 
-    |
-    */
-
-    'stripe_api_key' => env('STRIPE_APIKEY', 'pk_test_51HTj1JEYEzcmhOUxI1hAVKSnKiLtdGiKyzH542PF2wDkfUupuCK9r1DI0qxeqOE46uBhEuLAsCt4246Q80ZoH0St00roeJMUU6'),
-    'stripe_api_secret' => env('STRIPE_SECRET', 'sk_test_51HTj1JEYEzcmhOUxSwfYddFV1aGhvFJ3M2XJnAxrXTA5abwteV8S5CcLQzzhFIaNsEI9By6nwdM9GOPLftVRB6Dw00bCOkUE4R'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Gocardless 
-    |--------------------------------------------------------------------------
-    |
-    |
-    */
-
-    'gocardless' =>[
-
-    /**
-     * The environment of the Gocardless API that you want to use.
-     * 'SANDBOX' || 'LIVE'
-     */
-    'environment' => env('GOCARDLESS_ENVIRONMENT', 'sandbox'),
-
-    /**
-     * Your Gocardless API token.
-     */
-    'token' => env('GOCARDLESS_TOKEN'),
-
-        'webhooks' => [
-
-            /**
-             * Your Gocardless webhook secret endpoint.
-             */
-            'webhook_endpoint_secret' => env('GOCARDLESS_WEBHOOK_ENDPOINT_SECRET','LxqqqJ3kKdKlM5znVdNS10H1h_hjQVQeEvuqfTsB'),
-
-            /**
-             * Your Gocardless webhook model. The class should be or extend GocardlessWebhookCall.
-             */
-            // 'model' => Nestednet\Gocardless\GocardlessWebhookCall::class,
-
-            /**
-             * Define here the jobs that should run when a gocardless webhook hits your application.
-             * The key is: {event_resource}_{event_action}
-             */
-            // 'jobs' => [
-            //     // 'payments_confirmed' => \App\Jobs\GocardlessWebhooks\HandleConfirmedPayment::class
-            // ],
-        ],
-    ],
-
-    /*
-
-    |--------------------------------------------------------------------------
-    | Braintree Config Key
-    |--------------------------------------------------------------------------
-    |
-    | 
-    |
-    */
-    
-    'btree_environment' => env('BTREE_ENVIRONMENT', 'sandbox'),
-    'btree_merchantId' => env('BTREE_MERCHANT_ID', 'wcc3mq3gkdm8r5vf'),
-    'btree_publicKey' => env('BTREE_PUBLIC_KEY', 'x2mnk4qdh4gfxmsc'),
-    'btree_privateKey' => env('BTREE_PRIVATE_KEY', '04bde07824aea4fa1f0b0736a4884f6e'),
-
-    
-    // 'btree_environment' => env('BTREE_ENVIRONMENT', 'production'),
-    // 'btree_merchantId' => env('BTREE_MERCHANT_ID', 'r7hzztjnzgtj2h2w'),
-    // 'btree_publicKey' => env('BTREE_PUBLIC_KEY', 'hxtb6bshmyb26fvc'),
-    // 'btree_privateKey' => env('BTREE_PRIVATE_KEY', 'c23cd5449554b70fc2995e2b3b9b02b1'),
-
-    
 
     /*
 

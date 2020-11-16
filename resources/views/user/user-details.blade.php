@@ -63,22 +63,22 @@
                                                         <label>Order ID</label>
                                                         <input type="text" class="form-control text-uppercase" name="order_id" id="order_id" placeholder="Order ID" value="{{isset($search['order_id'])?$search['order_id']:''}}">
                                                     </div>
-                                                </div>                                                                                                            
+                                                </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label>Customer ID</label>
                                                         <input type="text" class="form-control text-uppercase" name="customer_id" placeholder="Customer ID" value="{{isset($search['customer_id'])?$search['customer_id']:''}}">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">                                           
+                                                <div class="col-md-12">
                                                     <button type="submit" class="btn btn-success waves-effect waves-light pull-right">Search</button>
                                                     <button type="button" id="resetBtn" class="btn btn-secondary" style="float: right; margin-right:10px;">Reset</button>
-                                                </div>                                    
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
-                                </div>                                
-                            </div>                            
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -93,14 +93,14 @@
                                 <h5>{{ $user->name }}</h5>
                                 <p><b>{{ $user->userDetail->user_platform.$user->id }}</b></p>
                                <!--  <p><b>{{ $user->phone }}</b></p>
-                                <p><b>{{ $user->email }}</b></p> -->                                
+                                <p><b>{{ $user->email }}</b></p> -->
                                 <a data-toggle="tooltip" title="" href="{{config('app.liveurl').'admin-authenticate/'.Crypt::encrypt($user->id) }}" target="_blank" data-original-title="Login" class="btn btn-sm btn-grey m-t-20">Login</a>
                                 <a href="#" class="btn btn-sm btn-grey m-t-20" id="change_user_status">{{ ($user->status)?'Suspend':'Resume'}}</a>
                                 @if(Helper::has_permission('users','delete'))
-                                    <a href="#" class="btn btn-sm btn-red m-t-20 delete_user" user-id="{{$user->id}}">Delete</a> 
+                                    <a href="#" class="btn btn-sm btn-red m-t-20 delete_user" user-id="{{$user->id}}">Delete</a>
                                     <form id="delete_user_{{$user->id}}" method="post" action="{{ url('/delete-user') }}">
                                         @csrf
-                                        <input type="hidden" name="user_key" value="{{ Crypt::encrypt($user->id) }}">                                    
+                                        <input type="hidden" name="user_key" value="{{ Crypt::encrypt($user->id) }}">
                                     </form>
                                 @endif
                                 <input type="hidden" id="user_id" value="{{ Crypt::encrypt($user->id) }}">
@@ -127,7 +127,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-10" id="detail-view">
                     <div class="row">
                         <div class="col-md-6">
@@ -186,7 +186,7 @@
                                             </div>
                                         </div>
                                         @php $active = ''; @endphp
-                                        @endforeach                                         
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -249,7 +249,7 @@
                                             <div class="row plan-data-listing">
                                                 <div class="col-md-6">Voice</div>
                                                 <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{($plan)? Helper::secondsToTime($plan->call_usage):'00:00:00'}} </span>Out of {{($plan)?$plan->plan->call_limit:0}} Min</div></div>
-                                            </div>                                           
+                                            </div>
                                             <div class="row plan-data-listing">
                                                 <div class="col-md-6">SMS</div>
                                                 <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{($plan)? $plan->sms_usage / 60:'0'}} SMS</span>Out of {{($plan)?$plan->plan->msg_limit:0}} SMS</div></div>
@@ -260,17 +260,17 @@
                                             <div class="row plan-data-listing">
                                                 <div class="col-md-6">Balance Credit</div>
                                                 <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{isset($user->balance->balance_amount) ? $user->balance->balance_amount : 0}}</span></div></div>
-                                            </div>                                             
+                                            </div>
                                             <div class="row plan-data-listing">
                                                 <div class="col-md-6">Balance Minutes</div>
                                                 <div class="col-md-6 text-right"><div class="mini-stat-info"><span class="counter">{{isset($user->balance->balance_minutes) ? $user->balance->balance_minutes : 0 }} min</span>Out of {{ '-' }} min</div></div>
-                                            </div>                                                                                       
+                                            </div>
                                         </div>
                                         @endif
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card m-b-20">
                                 <div class="card-body">
                                     <h4 class="mt-0 header-title">Account</h4>
@@ -319,7 +319,7 @@
                                             {{ $note->handled_by }} <cite>{{ Helper::date_format($note->created_at) }}</cite>
                                             </footer>
                                         </div>
-                                        @endforeach                                                                            
+                                        @endforeach
                                     </div>
                                     <div class="m-t-20">
                                         <label class="text-muted">Add Note</label>
@@ -331,7 +331,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card m-b-20">
                                 <div class="card-body">
                                     <div id="accordion" class="parent-accor">
@@ -397,7 +397,7 @@
                         <div class="col-md-8"><div class="mini-stat-info"><span class="counter text-purple">Balance Credit</span></div></div>
                         <div class="col-md-4 text-right">{{isset($user->balance->balance_amount) ? $user->balance->balance_amount : 0}}</div>
                         <! -- <button type="button" class="btn btn-outline-secondary waves-effect">Recharge</button> - - >
-                    </div>  -->                                                           
+                    </div>  -->
                 </div>
             </div>
             <script type="text/javascript">
@@ -414,8 +414,8 @@
                             type: 'POST',
                             data: {phone:phone,user_id:user_id},
                             url: base_url+'/reset-otp-try',
-                            success: function(response){ 
-                                $this.addClass('d-none');                   
+                            success: function(response){
+                                $this.addClass('d-none');
                             }
                         });
                     });
@@ -423,21 +423,21 @@
 
             </script>
             @endif
-            
+
             <script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
             <script src="{{ asset('public/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
             <script src="{{ asset('public/plugins/datatables/dataTables.responsive.min.js') }}"></script>
             <script src="{{ asset('public/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
-            <script src="{{ asset('public/js/jquery.creditCardValidator.js') }}"></script>  
-            <script src="{{ asset('public/js/jquery.mask.js') }}"></script> 
+            <script src="{{ asset('public/js/jquery.creditCardValidator.js') }}"></script>
+            <script src="{{ asset('public/js/jquery.mask.js') }}"></script>
             <script src="{{ asset('public/plugins/smartwizard/smart_wizard.js') }}"></script>
 
             <script type="text/javascript">
                 $(document).ready(function(){
-                    
+
                     // $('#dataTable').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});
-                    var stripe   = Stripe("{{ config('app.stripe_api_key') }}");
+                    var stripe   = Stripe("{{ config('services.stripe.key') }}");
                       var card;
                       var elements = stripe.elements({
                         fonts: [
@@ -511,7 +511,7 @@
                                   $('.btn-next').hide();
                                 }
                             });
-                      
+
                             $("#creditdebitWizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
 
                               var payment_for = $('input[name="payment_for"]:checked').val();
@@ -558,12 +558,12 @@
                         $('.finishBtn').prop('disabled',true);
                         var card_type   = $('input[name="credit_card"]').val();
                         var gateway     = $('input[name="gateway"]').val();
-                        
+
                         if($("#pay-form").valid()){
                           if(gateway == 'Stripe' && card_type == 'new'){
                               stripe.createToken(card).then(setOutcome);
                           }else{
-                             creditDebit(); 
+                             creditDebit();
                           }
                         }
                       }
@@ -593,7 +593,7 @@
                               $this.html('Finish');
                               $this.removeClass("disabled").prop("disabled", false);
                           },
-                          success:function(data){                     
+                          success:function(data){
                               if(data.status == 200) {
                                   alertify.success(data.message);
                                   $("ul.customer-details li:first-child a").click();
@@ -642,17 +642,17 @@
                             $(".debit_msg_div").hide();
                             $(this).val(0);
                             $("input[name='custom_message']").prop('required',false);
-                           } 
+                           }
                         });
                         $(document).on('click', '.radio_card_list', function(){
                             var creditcard = $(this).val();
                             $('input[name="credit_card"]').val(creditcard);
-                            card.clear(); 
-                            $('.card_form').addClass('d-none');          
+                            card.clear();
+                            $('.card_form').addClass('d-none');
                         });
                         $(document).on('click', '.gateway', function(e){
                             $('.gateway').removeClass('active');
-                            $(this).addClass('active'); 
+                            $(this).addClass('active');
                             var gateway = $(this).data('gateway');
                             var user_id = $('#user_id').val();
                             var gatewayname = $(this).attr('gateway-name');
@@ -661,9 +661,9 @@
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/credit-debit-gateway',
-                                data: {gateway:gateway,user_id:user_id},                            
+                                data: {gateway:gateway,user_id:user_id},
                                 success:function(data){
                                     $('.payform_div').html(data.html);
                                     if(gatewayname == 'Stripe'){
@@ -671,9 +671,9 @@
                                         card.destroy();
                                       }
                                       stripeElements();
-                                    }                                  
+                                    }
                                 }
-                            }); 
+                            });
                         });
 
                         $(document).on( 'change', '.collect_amount,.payment_for,.custom_amount_check', function(){
@@ -685,7 +685,7 @@
                         function getcalculated(){
                           var user_id     = $("#user_id").val();
                           var formData    = new FormData($('#pay-form')[0]);
-                          formData.append('user_id', user_id); 
+                          formData.append('user_id', user_id);
                           $.ajax({
                               headers: {
                                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -697,19 +697,19 @@
                               contentType: false,
                               dataType: 'json',
                               success:function(data){
-                                  $(".calculated_div").html('');                     
+                                  $(".calculated_div").html('');
                                   if(data.status == 200) {
                                    $(".calculated_div").html(data.page);
-                                   $('.calculated_div').show();     
+                                   $('.calculated_div').show();
                                   }
                               }
                           });
                         }
 
-                        $(document).on('click', '.btn_add_new_card', function(e){ 
+                        $(document).on('click', '.btn_add_new_card', function(e){
                             $('.card_form').removeClass('d-none');
                             $("input[name='card_list']").prop('checked',false);
-                            if(!$('.card_form').hasClass('d-none')){                                                    
+                            if(!$('.card_form').hasClass('d-none')){
                                 $("input[name='credit_card']").val('new');
                                 $("input[name='card_list']").prop('required',false);
                             }else{
@@ -720,7 +720,7 @@
                     $("#pay-form").validate({
                         // errorClass: "invalid form-error",
                         // errorElement: 'div',
-                        errorPlacement: function(error, element) {                       
+                        errorPlacement: function(error, element) {
                             element.addClass('border border-danger');
                             error.insertAfter(element);
                         },
@@ -728,24 +728,24 @@
                         rules: {
                             card_number:{
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']").val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']").val() == 'new')?true:false;
                                     }
                                 },
                                 regex:/^[0-9-]{19}$/,
                             },
                             card_holder:{
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 lettersonly: true
                             },
                             expiry_year: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 maxlength: 2,
@@ -754,8 +754,8 @@
                             },
                             expiry_month: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 maxlength: 2,
@@ -764,8 +764,8 @@
                             },
                             card_cvv: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 maxlength: 4,
@@ -774,16 +774,16 @@
                             },
                             card_postcode: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                                 regex:/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/
                             },
                             card_street: {
                                 required: {
-                                    depends: function () { 
-                                      return ($("input[name='credit_card']"). val() == 'new')?true:false; 
+                                    depends: function () {
+                                      return ($("input[name='credit_card']"). val() == 'new')?true:false;
                                     }
                                 },
                             },
@@ -792,15 +792,15 @@
                         messages: {
                             card_holder:{
                                 lettersonly:"Enter a valid card holder name!",
-                            }, 
+                            },
                             card_postcode: {
                                 required:"Enter your postal code!",
-                                regex:"Invalid Postalcode",               
+                                regex:"Invalid Postalcode",
                             },
-                            expiry_year: "Enter card expiry year!", 
-                            expiry_month: "Enter card expiry month!",                  
-                            terms_cond: 'Agree the Terms and Conditions to proceed!.', 
-                            credit_card: 'Please choose a credit card or add a new one'                
+                            expiry_year: "Enter card expiry year!",
+                            expiry_month: "Enter card expiry month!",
+                            terms_cond: 'Agree the Terms and Conditions to proceed!.',
+                            credit_card: 'Please choose a credit card or add a new one'
                         }
                     });
 
@@ -815,7 +815,7 @@
 
                     $('.card_number').mask('0000-0000-0000-0000');
 
-                    $(document).on( 'change', '#card_number', function(){                  
+                    $(document).on( 'change', '#card_number', function(){
                         var result = $("#card_number").validateCreditCard();
                         if(result.card_type !== null){
                             $('#card_type').val(result.card_type.name);
@@ -824,10 +824,10 @@
                         }
                     });
 
-                    $(document).on('click', '#resetBtn', function(e){                        
+                    $(document).on('click', '#resetBtn', function(e){
                         $('#user-form input').val('');
                     });
-                    
+
                     $(document).on('click', '.user-details', function(e) {
                         $('.user-details').removeClass('selected');
                         $(this).addClass('selected');
@@ -842,7 +842,7 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/user-data',
                             data: {user_id:user_id,page:view},
                             beforeSend: function(){
@@ -851,7 +851,7 @@
                             complete: function(){
                                 $("#preloader,#status").hide();
                             },
-                            success:function(data){ 
+                            success:function(data){
                                 // $('#preloader').hide();
                                 if (data.error) {
                                     $('#detail-view').html('<div class="text-danger">'+data.message+'</div>');
@@ -862,33 +862,33 @@
                                     }
                                     // if(view == 'invoice'){
                                     //     invoiceDatatable();
-                                    // }                                  
+                                    // }
                                     $('.dataTables_filter input').attr('placeholder', 'Search');
                                 }
                             }
                         });
                     });
- 
-                    $(document).on('click', '.show_user_data', function(e) {              
-                        e.preventDefault();   
-                        var id = $(this).attr('user-id');                
+
+                    $(document).on('click', '.show_user_data', function(e) {
+                        e.preventDefault();
+                        var id = $(this).attr('user-id');
                         $('#show_user_'+id).submit();
                     });
 
                     $(document).on('click', '.add_note', function(e) {
                         var $this = $(this);
                         var note = $('#note').val();
-                        var user_id = $('#user_id').val();                        
+                        var user_id = $('#user_id').val();
                         if(note != ''){
                             $this.prop('disabled', true);
                             $.ajax({
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/save-note',
                                 data: {user_id:user_id,note:note},
-                                success:function(data){ 
+                                success:function(data){
                                     $this.prop('disabled', false);
                                     if (data.success) {
                                         $('#note').val('');
@@ -901,14 +901,14 @@
                     });
 
                     $(document).on('click','.delete_user',function(){
-                        var id = $(this).attr('user-id'); 
+                        var id = $(this).attr('user-id');
                         $('#orderCustomLabel').text('Delete Account');
-                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this contact? <div id="custom_status"> </div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="confirm_delete_user" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>'); 
-                        $('#orderCustomModal').modal('show');            
+                        $('#orderCustombody').html('<div class="form-group">Do you really want to delete this contact? <div id="custom_status"> </div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="confirm_delete_user" data-id="'+ id +'" class="btn btn-danger pull-right">Delete</button>');
+                        $('#orderCustomModal').modal('show');
                     });
 
-                    $(document).on('click','#confirm_delete_user',function(){      
-                        var id = $(this).data('id');                   
+                    $(document).on('click','#confirm_delete_user',function(){
+                        var id = $(this).data('id');
                         $('#delete_user_'+id).submit();
                     });
 
@@ -922,12 +922,12 @@
                             type: 'POST',
                             data: {'user_id' :user_id},
                             url: base_url+'/manage-status',
-                            success: function(response){ 
+                            success: function(response){
                                 if(response.success){
                                     if(response.status){
-                                        $this.text('Suspend');                                    
+                                        $this.text('Suspend');
                                     }else{
-                                        $this.text('Resume');                                    
+                                        $this.text('Resume');
                                     }
                                 }else{
                                     alert(response.message);
@@ -936,9 +936,9 @@
                         });
                     });
 
-                    $(document).on('click','#confirm_delete_card',function(){ 
-                        var $this = $(this); 
-                        var card_id = $this.data('id');                        
+                    $(document).on('click','#confirm_delete_card',function(){
+                        var $this = $(this);
+                        var card_id = $this.data('id');
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -947,39 +947,39 @@
                             url: base_url+'/remove-card',
                             data: {card_id:card_id},
                             dataType: 'json',
-                            success: function(response){                   
+                            success: function(response){
                                 if(response.success){
                                     $('#card_item_'+response.card_id).addClass('d-none');
-                                    $('#custom_status').html('<small class="text-success">'+response.message+'</small>');                                               
-                                }else{                                     
+                                    $('#custom_status').html('<small class="text-success">'+response.message+'</small>');
+                                }else{
                                     $('#custom_status').html('<small class="text-danger">'+response.message+'</small>');
                                 }
                             }
                         });
                     });
-   
+
                     $(document).on('click', '.change_subsciption', function(e) {
                         e.preventDefault();
                         var $this = $(this);
-                        var status = $this.data('status');    
-                        var renew_id = $this.data('renew_id');                                    
+                        var status = $this.data('status');
+                        var renew_id = $this.data('renew_id');
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/manage-subscription',
                             data: { renew_id:renew_id,action:status },
-                            success:function(data){                                         
+                            success:function(data){
                                 if (data.success) {
                                     if(data.status == 1){
                                         $('#orderCustomLabel').text('Manage Subscription');
-                                        $('#orderCustombody').html(data.html); 
+                                        $('#orderCustombody').html(data.html);
                                         $('#orderCustomModal').modal('show');
                                     }else{
                                         $this.prop('checked',true);
                                         alert(data.message);
-                                    } 
+                                    }
                                 } else {
                                     $this.prop('checked',false);
                                     alert(data.message);
@@ -996,7 +996,7 @@
                         //     type: 'POST',
                         //     data: {'autoplan_id' :autoplan_id,'status_type':result,'user_id':userid,'amount':amount},
                         //     url: '<?php //echo url('/'); ?>/update-autoplan-status',
-                        //     success: function(response){ 
+                        //     success: function(response){
                         //         $('#loadingsign').hide();
                         //         if(response.status == 'success'){
                         //             thiselem.attr('data-status',0);
@@ -1006,10 +1006,10 @@
                         //         }
                         //         alert(response.message);
                         //     }
-                        // });  
+                        // });
                     });
 
-                    $(document).on('click', '.change_subscription_card', function(e) {  
+                    $(document).on('click', '.change_subscription_card', function(e) {
                         var card_id = $("input[name='user_credit_card']:checked"). val();
                         if(card_id){
                             var renew_id = $('#subscription_renew_id').val();
@@ -1017,12 +1017,12 @@
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/change-subscription-card',
                                 data: { renew_id:renew_id,card_id:card_id },
-                                success:function(data){                                         
+                                success:function(data){
                                     if (data.success) {
-                                        $('#orderCustomModal').modal('hide');                                   
+                                        $('#orderCustomModal').modal('hide');
                                     } else {
                                         $('#sub_status').text(data.message);
                                     }
@@ -1039,10 +1039,10 @@
                             $('#transaction_details').addClass('d-none');
                         }else{
                             $('#mode_select').removeClass('d-none');
-                            if($('input[name="payment_mode"]:checked').val() == 2){             
+                            if($('input[name="payment_mode"]:checked').val() == 2){
                                 $('#transaction_details').removeClass('d-none');
                             }
-                        }       
+                        }
                     });
 
                     $(document).on('change','input[name="payment_mode"]', function () {
@@ -1053,8 +1053,8 @@
                         }
                     });
 
-                    $(document).on('click','#subscriptionRenewal', function () {    
-                        $('#subscriptionRenewal').prop('disabled',true);            
+                    $(document).on('click','#subscriptionRenewal', function () {
+                        $('#subscriptionRenewal').prop('disabled',true);
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1062,12 +1062,12 @@
                             type: 'POST',
                             data: $('#renewal-form').serialize(),
                             url: base_url+'/subscription-renewal',
-                            success: function(response){                
-                                if(response.success){                   
+                            success: function(response){
+                                if(response.success){
                                     location.reload();
                                 }else{
                                     $('#subscription_error').html('<div class="alert alert-danger">'+response.message+'</div>');
-                                    // $('#subscriptionRenewal').prop('disabled', false); 
+                                    // $('#subscriptionRenewal').prop('disabled', false);
                                     setTimeout(function() {
                                         $('.alert.alert-danger').fadeOut('fast');
                                     }, 5000);
@@ -1076,17 +1076,17 @@
                         });
                     });
 
-                    $(document).on('click', '.action_refund', function(e) {              
-                        e.preventDefault();                    
+                    $(document).on('click', '.action_refund', function(e) {
+                        e.preventDefault();
                         var tx_id = $(this).data('id');
                         var amount = $(this).data('amount');
                         var currency = $(this).data('currency');
                         $('#orderCustomLabel').text('Refund Transaction');
-                        $('#orderCustombody').html('<label class="form-label">Amount</label> <div class="input-group mb-3"> <input type="hidden" name="txn_id" id="txn_id" value="'+ tx_id +'"> <div class="input-group-prepend"><span class="input-group-text">'+ currency +'</span></div> <input type="text" name="refund_amount" id="refund_amount" class="form-control" required placeholder="Amount" value="'+ amount +'" max="'+ amount +'"></div><div class="form-group"><label class="form-label">Description</label> <input type="text" name="description" id="description" class="form-control" required placeholder="Description"> <div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_refund_process" class="btn btn-danger pull-right">Refund</button>'); 
+                        $('#orderCustombody').html('<label class="form-label">Amount</label> <div class="input-group mb-3"> <input type="hidden" name="txn_id" id="txn_id" value="'+ tx_id +'"> <div class="input-group-prepend"><span class="input-group-text">'+ currency +'</span></div> <input type="text" name="refund_amount" id="refund_amount" class="form-control" required placeholder="Amount" value="'+ amount +'" max="'+ amount +'"></div><div class="form-group"><label class="form-label">Description</label> <input type="text" name="description" id="description" class="form-control" required placeholder="Description"> <div id="custom_status"></div> </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_refund_process" class="btn btn-danger pull-right">Refund</button>');
                         $('#orderCustomModal').modal('show');
                     });
-                    
-                    $(document).on('click', '#action_refund_process', function(e) {              
+
+                    $(document).on('click', '#action_refund_process', function(e) {
                         e.preventDefault();
                         $(this).attr('disabled','true');
                         var txn_id = $('#txn_id').val();
@@ -1096,10 +1096,10 @@
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            type: 'POST',                                                
+                            type: 'POST',
                             url: base_url+'/refund-process',
                             data: {txn_id:txn_id, amount:amount, description:description},
-                            success:function(data){ 
+                            success:function(data){
                                 if (data.error) {
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
@@ -1107,7 +1107,7 @@
                                     table.draw();
                                 }
                                 $('#action_refund_process').attr('disabled', false);
-                                
+
                             }
                         });
                     });
@@ -1143,24 +1143,24 @@
                             // {"data" : function (data) {
                             //     return moment(data.invoicedate).format('MMMM');
                             // },"name":"month"},
-                            {"data" : "year","name":"year"}, 
-                            {"data" : "month","name":"month"}, 
-                            {"data" : "amount","name":"amount"},                       
+                            {"data" : "year","name":"year"},
+                            {"data" : "month","name":"month"},
+                            {"data" : "amount","name":"amount"},
                             {"data" : "vat","name":"vat"},
                             {"data" : "total","name":"total"},
-                            { 
+                            {
                                 "data": "downloadurl",
                                 "render": function(data, type, row, meta){
                                     // data = '<button class="single_option btn_small btn_br_20" id="searchBtn">Generate</button>'
                                     data = '<a href="'+base_url+'/print-pdf/'+data+'"><button class="single_option btn_small btn_br_20" >Generate</button></a>'
                                     return data;
                                 }
-                            } 
+                            }
                             ],
                             "columnDefs": [
                             {"defaultContent": "-","targets": "_all"}
                             ]
-                            // "fnDrawCallback": function(oSettings) {                 
+                            // "fnDrawCallback": function(oSettings) {
                             // if (oSettings._iDisplayLength >= oSettings.fnRecordsDisplay()) {
                             // $(oSettings.nTableWrapper).find('#invoicetable_previous,#invoicetable_next').hide();
                             // }
@@ -1188,7 +1188,7 @@
                     var networklist = [];
                     $(document).on('click', '.custom_manage_bars', function(e) {
                         var $this     = $(this);
-                        var status = $this.attr('data-status');    
+                        var status = $this.attr('data-status');
                         var bar_id = $this.attr('data-bar_id');
                         status = (status == 1) ? 0 : 1;
                         $(this).attr('data-status',status);
@@ -1202,18 +1202,18 @@
                     $(document).on('click', '.custom_bar_apply', function(e) {
                         e.preventDefault();
                         var $this = $(this);
-                        var user_id  = $('#user_id').val(); 
+                        var user_id  = $('#user_id').val();
                         if(servicelist.length == 0){
                             alertify.error('Choose any bars to apply changes');
                             return;
                         }
                         alertify.confirm('Bars Confirmation', 'Are you sure you want to apply changes?',
-                        function(){                                  
+                        function(){
                             $.ajax({
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/services-change',
                                 data: { bars:JSON.stringify(servicelist),user_id:user_id,requesttype:1 },
                                 beforeSend: function(){
@@ -1222,11 +1222,11 @@
                                 complete: function(){
                                     $("#preloader,#status").hide();
                                 },
-                                success:function(data){                                         
+                                success:function(data){
                                     if(data.status == 200){
                                         alertify.success(data.message);
                                         $.each(servicelist,function(index,val){
-                                            $("[data-bar_id="+val.bar_id+"]").prop('disabled',true); 
+                                            $("[data-bar_id="+val.bar_id+"]").prop('disabled',true);
                                         });
                                     }else{
                                         revertOpted(servicelist);
@@ -1234,12 +1234,12 @@
                                     }
                                     servicelist = [];
                                 }
-                            });  
+                            });
                         },function(){ alertify.error('Option cancelled'); revertOpted(servicelist); servicelist = [];});
                     });
                     $(document).on('click', '.custom_manage_network', function(e) {
                         var $this     = $(this);
-                        var status = $this.attr('data-status');    
+                        var status = $this.attr('data-status');
                         var bar_id = $this.attr('data-bar_id');
                         status = (status == 1) ? 0 : 1;
                         $(this).attr('data-status',status);
@@ -1253,18 +1253,18 @@
                     $(document).on('click', '.custom_network_apply', function(e) {
                         e.preventDefault();
                         var $this = $(this);
-                        var user_id  = $('#user_id').val(); 
+                        var user_id  = $('#user_id').val();
                         if(networklist.length == 0){
                             alertify.error('Choose any services to apply changes');
                             return;
                         }
                         alertify.confirm('Services Confirmation', 'Are you sure you want to apply changes?',
-                        function(){                                  
+                        function(){
                             $.ajax({
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                 },
-                                type: 'POST',                                                
+                                type: 'POST',
                                 url: base_url+'/services-change',
                                 data: { bars:JSON.stringify(networklist),user_id:user_id,requesttype:2 },
                                 beforeSend: function(){
@@ -1273,11 +1273,11 @@
                                 complete: function(){
                                     $("#preloader,#status").hide();
                                 },
-                                success:function(data){                                         
+                                success:function(data){
                                     if(data.status == 200){
                                         alertify.success(data.message);
                                         $.each(networklist,function(index,val){
-                                            $("[data-bar_id="+val.bar_id+"]").prop('disabled',true); 
+                                            $("[data-bar_id="+val.bar_id+"]").prop('disabled',true);
                                         });
                                     }else{
                                         revertOpted(networklist);
@@ -1285,7 +1285,7 @@
                                     }
                                     networklist = [];
                                 }
-                            });  
+                            });
                         },function(){ alertify.error('Option cancelled'); revertOpted(networklist); networklist = [];});
                     });
                     function revertOpted(list){
@@ -1293,7 +1293,7 @@
                             if($("[data-bar_id="+val.bar_id+"]").is(':checked')){
                                 $("[data-bar_id="+val.bar_id+"]").prop('checked',false);
                             }else{
-                                $("[data-bar_id="+val.bar_id+"]").prop('checked',true); 
+                                $("[data-bar_id="+val.bar_id+"]").prop('checked',true);
                             }
                             var status = (val.status == 1) ? 0: 1;
                             $("[data-bar_id="+val.bar_id+"]").attr('data-status',status);

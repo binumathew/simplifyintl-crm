@@ -34,6 +34,14 @@ return [
         'secret' => env('SPARKPOST_SECRET'),
     ],
 
+
+     /*
+    |--------------------------------------------------------------------------
+    | Stripe
+    |--------------------------------------------------------------------------
+    */
+
+
     'stripe' => [
         'model' => App\User::class,
         'key' => env('STRIPE_KEY'),
@@ -42,6 +50,32 @@ return [
             'secret' => env('STRIPE_WEBHOOK_SECRET'),
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
+    ],
+
+
+     /*
+    |--------------------------------------------------------------------------
+    | Gocardless
+    |--------------------------------------------------------------------------
+    */
+
+    'gocardless' => [
+        'environment' => env('GOCARDLESS_ENVIRONMENT', 'sandbox'),
+        'token' => env('GC_ACCESS_TOKEN'),
+        'webhook_secret'    =>  env('GOCARDLESS_WEBHOOK_ENDPOINT_SECRET'),
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Braintree Config Key
+    |--------------------------------------------------------------------------
+    */
+    'braintree' => [
+        'environment' => env('BTREE_ENVIRONMENT'),
+        'merchantId' => env('BTREE_MERCHANT_ID'),
+        'publicKey' => env('BTREE_PUBLIC_KEY'),
+        'privateKey' => env('BTREE_PRIVATE_KEY'),
     ],
 
 ];
