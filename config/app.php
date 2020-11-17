@@ -361,8 +361,8 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
 
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class
-
+        Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class,
+        Superbalist\LaravelGoogleCloudStorage\GoogleCloudStorageServiceProvider::class,
 
     ],
 

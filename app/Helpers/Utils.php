@@ -165,4 +165,15 @@ class Utils {
             'total' => $result->total(),
         ];
     }
+
+    public static function storeFile($path,$fileContents,$disk = 'gcs'){
+
+        try{
+            $disk = Storage::disk($disk);
+            $disk->put($path, $fileContents);
+            return true;
+        }catch(\Exception $e){
+            return false;
+        }
+    }
 }

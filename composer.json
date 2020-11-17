@@ -22,6 +22,7 @@
         "predis/predis": "1.1.*@dev",
         "propaganistas/laravel-phone": "^4.2",
         "stripe/stripe-php": "^7.45",
+        "superbalist/laravel-google-cloud-storage": "^2.2",
         "twilio/sdk": "^5.33",
         "yajra/laravel-datatables-oracle": "~9.0"
     },
