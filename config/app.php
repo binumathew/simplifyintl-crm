@@ -479,7 +479,11 @@ return [
         'Carbon' => '\Carbon\Carbon',
 
         'AttHelper' => App\Helpers\AttHelper::class,
-        'MPDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class
+
+        'MPDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class,
+
+        'GlobalSim' => App\Helpers\GlobalSim::class,
+
     ],
 
 
