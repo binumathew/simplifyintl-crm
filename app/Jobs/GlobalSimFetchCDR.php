@@ -36,6 +36,7 @@ class GlobalSimFetchCDR //implements ShouldQueue
      */
     public function handle()
     {
+
         $from               = Carbon::now()->format('Y-m-d').'T00:00:00';
         $to                 = Carbon::now()->format('Y-m-d').'T23:59:59';
         
@@ -44,7 +45,7 @@ class GlobalSimFetchCDR //implements ShouldQueue
             foreach($users as $key => $list){
                 $user_id = $list->user_id;
                 try{
-                    $this->model->globalsim_fetchcrd($user_id,$from,$to);
+                    $this->model->globalsim_fetchcdr($user_id,$from,$to);
                 }catch(\Exception $exception){
                     //\Log::info('error');
                     return false;

@@ -19,7 +19,7 @@ class UserCall extends Model
                     ->join('tbl_sim_stock as tss','u.stock_id','=','tss.id')
                     ->get();
     }
-    function globalsim_fetchcrd($user_id,$from,$to){
+    function globalsim_fetchcdr($user_id,$from,$to){
         $seller_margin      = Helper::get_option('seller_percent');
         $reseller_margin    = Helper::get_option('reseller_percent');
         $user               = User::find($user_id);
