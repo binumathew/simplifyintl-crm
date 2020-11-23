@@ -10,9 +10,11 @@ use Hash;
 use Crypt;
 use Carbon;
 use Helper;
+use Utils;
 use AttHelper;
 use App\Helpers\DwpHelper;
 use SwitchHelper;
+use GlobalSim;
 use App\Models\User;
 use App\Models\Admins;
 use App\Models\SimList;
@@ -327,6 +329,37 @@ class ActivationController extends Controller
                     }
                 }else{
                     $accounts[$sim_data->stock_id] = $sim_account_id;               
+                }
+            }else if( $provider == 'E_SIM'){
+                try {
+                    $setlimit      = new \stdClass();
+                    $setlimit->bill_limit   = Utils::settings('ESIM_bill_limit');
+                    $setlimit->warn_limit   = Utils::settings('ESIM_warn_limit');
+                    $setlimit->lock_limit   = Utils::settings('ESIM_lock_limit');
+                    $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
+                    if($addcustomer == false){
+                        return response()->json(['error' => true, 'message' => 'Adding customer failed..']); 
+                    }
+                    $customer_id = $addcustomer['customer']['id'];
+    
+                    $subscribe = new \StdClass;
+                    $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
+                    $subscribe->msisdn    = $sim_data->stock->phone_number;
+                    $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
+                    $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
+                    $subscribe->sendsms         = $sim_data->send_sms;
+                    $subscribe->takepayment     = $sim_data->take_payment;
+                    $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
+                    if($bundlesubscrib == false){
+                        return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
+                    }
+                    $subsrib_id = $bundlesubscrib['subscriptionid'];
+                    $account_id = config('settings.app_prefix').$provider.$user->id;
+                    DB::table('user_data')->where('user_id', $user->id)
+                            ->update(['sim_subscription_id' => $subsrib_id,'sim_account_id'=>$account_id]);  
+                    $accounts[$sim_data->stock_id] = $account_id;
+                } catch (\Exception $th) {
+                    return response()->json(['error' => true, 'message' => 'failed to activate account']); 
                 }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $sim_account_id = $user->userDetail->site_id;            
@@ -1038,7 +1071,14 @@ class ActivationController extends Controller
         $stock_id = $request->stock_id;
         $sim_list = SimList::whereIn('stock_id', unserialize($request->stock_id))->get();
         $currency = Helper::get_option('currency_symbol');
-        $view = view('activation.provision', compact('sim_list', 'stock_id','step'))->render();
+        $provider = [];
+        $user     = [];
+        foreach ($sim_list as $sim) {
+            array_push($provider,$sim->auto_plan->plan->provider);
+            $userid = $sim->sim_request->user_id;
+            $user   = User::find($userid);
+        }
+        $view = view('activation.provision', compact('sim_list', 'stock_id','step','provider','user'))->render();
         return response()->json(['error' => false, 'html' => $view]);
     }
 
@@ -1118,14 +1158,41 @@ class ActivationController extends Controller
     * @return \Illuminate\Contracts\Support\Renderable
     */ 
     public function provision_process(Request $request)
-    {     
+    { 
+        //dd($request->all());    
         parse_str($request->provision, $provision);
+        $sim_list = SimList::where('id', $provision['list_id'])->first();
+        $provider = $sim_list->stock->provider;
+        if($provider == 'E_SIM'){
+            try {
+                SimList::where('id', $provision['list_id'])
+                ->update(['activate_onfirstuse' => $provision['activate_onfirstuse'], 'send_sms' => $provision['send_sms'],'take_payment'=>$provision['take_payment'],'provision_date'=>$provision['activation']]);
+                $provision_status =  $sim_list->provision;
+                if($provision_status == 0){
+                    $iccid      = $sim_list->stock->sim_number;
+                    $getmsisdn  = GlobalSim::AssignMsisdn($iccid);
+                    if($getmsisdn == false){
+                        return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
+                    }
+                    $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+                    $transid = $getmsisdn['STATUS_Response']['TRANSACTION_ID'];
+                    SimStock::whereId($sim_list->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
+                    SimList::where('id', $provision['list_id'])
+                        ->update(['provision_id' => $transid,'provision' => 4]); 
+                }
+                return response()->json(['error' => false]);
+            } catch (\Exception $th) {
+                return response()->json(['error' => true, 'message' =>'provision failed..']);
+            }
+        }else{
+            dd('hii');
         SimList::where('id', $provision['list_id'])
             ->update(['porting_to' => $provision['porting_to'], 'pac_no' => $provision['pac_code']]);
-        $sim_list = SimList::where('id', $provision['list_id'])->first();
+        
         $sim_number = $sim_list->stock->sim_number;
         $note = 'Provisioned ( '.$sim_number.' ) by '.Auth::user()->first_name.' '.Auth::user()->last_name.' on';
         DB::table('delivery_history')->insert(['sim_request_id' => $sim_list->request_id ,'proceed_by' => Auth::id(),  'type' => 1, 'note' => $note]);
+
         if($sim_list->port){
             $data['pac_code'] = $sim_list->pac_no;
             $data['cli'] = $sim_list->porting_to;
@@ -1229,6 +1296,7 @@ class ActivationController extends Controller
             // $response  = json_decode(DwpHelper::dwp_response_handler($response));
             // print_r($response);
             // die();
+        }
         }
     }
 

@@ -65,7 +65,85 @@
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>  -->
 
 <div class="row">
+@if(in_array('E_SIM', $provider))
 	<div class="col-md-9">
+		<div class="card m-b-20">
+			<div class="card-body">
+				<div class="table-responsive b-0 fixed-solution" data-pattern="priority-columns">
+					<form id="provision-form">
+					<table id="tech-companies-1-clone" class="table  table-striped inner-form">
+						<thead>
+							<tr>
+								<th colspan="2" nowrap="nowrap" width="200">Product</th>
+								<th nowrap="nowrap" width="200">Mobile Number <span style="color: #f00">*</span></th>
+								<th nowrap="nowrap" width="200">Username</th>
+								<th nowrap="nowrap"> Sim Serial Number <span style="color: #f00">*</span></th>
+								<th nowrap="nowrap" width="190">subscription Date</th>
+								<th nowrap="nowrap" title="If 'yes', the sim will have subscription date set on bundle first used.">Activate On First Use</th>
+								<th nowrap="nowrap" width="100">Send SMS</th>
+								<th nowrap="nowrap" title="Decide whether to take payment now or at time of the subscription.">Take Payment</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach ($sim_list as $sim)
+							<tr>
+								<td colspan="2" style="vertical-align: middle;">
+								<input type="hidden" id="port_request" value="{{$sim->port}}">
+								<input type="hidden" id="list_id" name="list_id" value="{{$sim->id}}">
+								{{ $sim->auto_plan->plan->plan_name }} ({{ $sim->auto_plan->plan->provider }})
+								</td>
+								<td><input class="form-control" id="port_cli_{{$sim->id}}" name="porting_to" type="text" value="{{($sim->porting_to)?:''}}" maxlength="11"{{(!$sim->port)?'readonly':''}}></td>
+								<td><input class="form-control" name="user_name" type="text" value="{{$sim->sim_request->order_id}}"></td>
+								<td>
+									<div class="input-group">
+										<input class="form-control" id="sim_number_{{$sim->id}}" name="sim_serial" type="text" value="{{ $sim->stock->sim_number }}" readonly>
+										<div class="input-group-append">
+											<span class="input-group-text"><i class="mdi mdi-rotate-3d mdi-18px verify_sim_number" data-sim_id="{{$sim->id}}"></i></span>
+										</div>
+									</div>
+								</td>
+								<td>
+									<div class="input-group">
+										<input type="text" name="activation" class="form-control {{($sim->port)?'':'act_datepicker'}}" placeholder="yyyy-mm-dd" {{($sim->port)?'disabled':''}}>
+										<div class="input-group-append">
+											<span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+										</div>
+									</div>
+								</td>
+								<td>
+									<select class="form-control" name="activate_onfirstuse">
+										<option value="yes">Yes</option>
+										<option value="no" selected>No</option>
+									</select>
+								</td>
+								<td>
+									<select class="form-control" name="send_sms">
+										<option value="yes" selected>Yes</option>
+										<option value="no">No</option>
+									</select>
+								</td>
+								<td>
+									<select class="form-control" name="take_payment" required>
+										<option value="yes" selected>Yes</option>
+										<option value="no">No</option>
+									</select>
+								</td>
+								<td></td>
+							</tr>
+							@endforeach
+						</tbody>
+					</table>
+			            <div class="my-3">
+			            	<a href="javascript:void(0)" class="btn btn-secondary sim_provisioning m-10 waves-light" data-stock_id="{{$stock_id}}"><strong>Back</strong></a>
+			                <button class="btn btn-success waves-effect waves-light pull-right m-10" id="provision_process" data-stock_id="{{$stock_id}}"><strong>Continue</strong></button>
+			            </div>
+		        	</form>
+				</div>
+			</div>
+		</div>
+	</div>
+@else
+<div class="col-md-9">
 		<div class="card m-b-20">
 			<div class="card-body">
 				<div class="table-responsive b-0 fixed-solution" data-pattern="priority-columns">
@@ -165,9 +243,7 @@
 			</div>
 		</div>
 	</div>
-
-
-
+@endif
 	<div class="col-md-3">
 		<div class="card m-b-20">
 		    <div class="card-body right-nav">
@@ -196,6 +272,13 @@
             startDate: today,
             format: 'yyyy-mm-dd',
             daysOfWeekDisabled: [0,6],
+        });
+		$('.act_datepicker').datepicker({
+            autoclose: true,
+            orientation:'bottom left',
+            minDate: today,
+            startDate: today,
+            format: 'yyyy-mm-dd',
         });
 
 		$.validator.addMethod('regex', function(value, element, regexp) {

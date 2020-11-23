@@ -1,5 +1,11 @@
 @extends('layouts.home')
 @section('content')
+<style type="text/css">
+  .text-danger{
+    position: absolute;
+    top: 100%;
+  }
+</style>
 <div class="wrapper">
     <div class="container-fluid">
         <!-- <link href="{{ asset('plugins/smartwizard/smart_wizard.min.css') }}" rel="stylesheet" type="text/css"/>
@@ -98,7 +104,7 @@
                                   <td>{{ $simDetail['status'] }}</td>
                                   <td>
                                     <input type="hidden" id="sim_stock_{{ $simDetail['idetifier'] }}" name="act_sim_stock" value="{{ $simDetail['stockId'] }}">
-                                    @if($provider == 'O2' || $provider == 'VUK' || $provider == 'EE_O2')
+                                    @if($provider == 'O2' || $provider == 'VUK' || $provider == 'EE_O2' || $provider == 'E_SIM')
                                       @if($simDetail['provision'] < 3)
                                       <button class="btn btn-info btn-xs sim_provisioning" data-stock_id="{{ $simDetail['stockId'] }}">Provision</button>
                                       @elseif($simDetail['provision'] == 3)
