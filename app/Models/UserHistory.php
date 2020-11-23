@@ -1,15 +1,12 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use DB;
 
-use Carbon;
-use Helper;
 
-class UserCall extends Model
+
+class UserHistory extends Model
 {
-    protected $table = 'user_calls_copy';
+
+    protected $table = 'usage_history_copy';
     public $timestamps = true;
 }
