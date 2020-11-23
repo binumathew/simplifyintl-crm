@@ -10,12 +10,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use Carbon;
 use Log;
+use Utils;
 
+use App\Models\User;
 use App\Models\UserCall;
 use App\Models\UserHistory;
 use App\Helpers\GlobalSim as SimHelper;
 
-class GlobalSim //implements ShouldQueue
+class GlobalSim implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -37,15 +39,14 @@ class GlobalSim //implements ShouldQueue
     public function handle()
     {
 
-        $from               = Carbon::now()->format('Y-m-d').'T00:00:00';
-        $to                 = Carbon::now()->format('Y-m-d').'T23:59:59';
-        $user_id = $this->user_id;
+        $from               = Carbon::now()->subDays(3)->format('Y-m-d').'T00:00:00';
+        $to                 = Carbon::now()->subDays(3)->format('Y-m-d').'T23:59:59';
+        $user_id            = $this->user_id;
 
         $seller_margin      = Utils::settings('seller_percent');
         $reseller_margin    = Utils::settings('reseller_percent');
         $user               = User::find($user_id);
-        $msisdn             = '447872286827'; //$user->msisdn->phone_number;
-        $user_id            = 1;//$user->user_id;
+        $msisdn             = $user->msisdn->phone_number;
         $country_name       = $user->country->country_name;
         $call_log           = SimHelper::getCalls($msisdn,$from,$to);
         $data_log           = SimHelper::getDataHistory($msisdn,$from,$to);
@@ -104,9 +105,6 @@ class GlobalSim //implements ShouldQueue
                 }
             }
         }
-
-
-
         if(!empty($data_history)){
             UserHistory::insert($data_history);
         }

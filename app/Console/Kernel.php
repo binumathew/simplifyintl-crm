@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\AdvPaidSubscription::class,
         \App\Console\Commands\AddonUsage::class,
         \App\Console\Commands\ActivationNotify::class,
+        \App\Console\Commands\FetchCDR::class,
     ];
 
     /**
@@ -65,7 +66,8 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('19:00');
         $schedule->command('notify:activation')
                 ->hourly();
-
+        $schedule->command('fetch:cdr')
+                ->dailyAt('20:00');
         // $schedule->command('addon:usage')
         //         ->cron('* * * * *');
 
