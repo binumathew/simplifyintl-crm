@@ -77,5 +77,15 @@ return [
         'publicKey' => env('BTREE_PUBLIC_KEY'),
         'privateKey' => env('BTREE_PRIVATE_KEY'),
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | Braintree Config Key
+    |--------------------------------------------------------------------------
+    */
+    'globalsim' =>  [
+        'api'   =>  env('GLOBAL_SIM_API'),
+        'username'  =>  env('GLOBAL_SIM_USERNAME'),
+        'password'  =>  env('GLOBAL_SIM_PASSWORD'),
+    ]
 
 ];
