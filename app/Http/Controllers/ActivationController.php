@@ -11,6 +11,7 @@ use Crypt;
 use Carbon;
 use Helper;
 use Utils;
+use Log;
 use AttHelper;
 use App\Helpers\DwpHelper;
 use SwitchHelper;
@@ -353,7 +354,11 @@ class ActivationController extends Controller
                     DB::table('user_data')->where('user_id', $user->id)
                             ->update(['sim_account_id'=>$account_id,'esim_customer'=>$esim_customer_id,'esim_user'=>$esim_user_id,'bill_limit'=>$sim_data->bill_limit,'warn_limit'=>$sim_data->warn_limit,'lock_limit'=>$sim_data->lock_limit]);  
                     $accounts[$sim_data->stock_id] = $account_id;
-                } catch (\Exception $th) {
+                } catch (\Exception $e) {
+                    Log::error('ESIMACTIVATION',[
+                        'user_id' => $user->id,
+                        'error' =>   $e->getMessage()
+                    ]);
                     return response()->json(['error' => true, 'message' => 'failed to activate account']); 
                 }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
@@ -475,7 +480,11 @@ class ActivationController extends Controller
                     }
                     $subsrib_id = $bundlesubscrib['subscriptionid'];
                     $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
-                } catch (\Throwable $th) {
+                } catch (\Exception $e) {
+                    Log::error('ESIMSUBSCRIPTION',[
+                        'user_id' => $user->id,
+                        'error' =>   $e->getMessage()
+                    ]);
                     return response()->json(['error' => true, 'message' => 'subscription failed..']); 
                 }
             } else {
@@ -1194,7 +1203,12 @@ class ActivationController extends Controller
                         ->update(['provision_id' => $transid,'provision' => 4]); 
                 }
                 return response()->json(['error' => false]);
-            } catch (\Exception $th) {
+            } catch (\Exception $e) {
+                Log::error('AssignMsisdn',[
+                    'order' => $sim_list->sim_request->order_id,
+                    'simnumber' => $sim_list->stock->sim_number,
+                    'error' =>   $e->getMessage()
+                ]);
                 return response()->json(['error' => true, 'message' =>'provision failed..']);
             }
         }else{
