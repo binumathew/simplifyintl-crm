@@ -1190,8 +1190,9 @@ class ActivationController extends Controller
                 $provision_status =  $sim_list->provision;
                 if($provision_status == 0){
                     $iccid      = $sim_list->stock->sim_number;
-                    $getmsisdn  = GlobalSim::AssignMsisdn($iccid);
-                    dd($getmsisdn);
+                    //$getmsisdn   = GlobalSim::AssignMsisdn($iccid);
+                    $getsimdetails = GlobalSim::GetGlobalDetails($iccid);
+                    dd($getsimdetails);
                     if($getmsisdn == false){
                         return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
                     }

@@ -219,6 +219,26 @@ class GlobalSim {
             return false;
         }
     }
+    public static function GetGlobalDetails($iccid){
+        try{
+            $params = [
+                'iccid' =>$iccid,
+                'Authentication' => [
+                    'Username' => config('services.globalsim.username'),
+                    'Password' => config('services.globalsim.password'),
+                ]
+                ];
+            $result = self::get($params,'GetGlobalDetails');
+            if($result !== false) {
+                return  json_decode(json_encode(simplexml_load_string($result)),true);
+            }
+        }catch(\Exception $e){
+            Log::error('GetGlobalDetails',[
+                'error' =>   $e->getMessage()
+            ]);
+            return false;
+        }
+    }
     
 }
 
