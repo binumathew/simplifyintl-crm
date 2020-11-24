@@ -1206,7 +1206,7 @@ class ActivationController extends Controller
                     'simnumber' => $sim_list->stock->sim_number,
                     'error' =>   $e->getMessage()
                 ]);
-                return response()->json(['error' => true, 'message' =>'Provision failed..','err' => $e->getMessage()]);
+                return response()->json(['error' => true, 'message' =>'Provision failed..','err' => $e->getMessage() ,'msisdn' => $getmsisdn]);
             }
         }else{
 
