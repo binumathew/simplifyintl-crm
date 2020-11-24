@@ -41,7 +41,7 @@
         <script src="{{ asset('pages/morris.init.js') }}"></script>
         <script src="{{ asset('plugins/chartist/js/chartist.min.js') }}"></script>
         <script src="{{ asset('plugins/chartist/js/chartist-plugin-tooltip.min.js') }}"></script>
-        <script src="{{ asset('plugins/chart/Chart.js') }}"></script>
+        <script src="{{ asset('plugins/chart/chart.js') }}"></script>
         <script src="{{ asset('plugins/flot-chart/jquery.flot.min.js') }}"></script>
         <script src="{{ asset('plugins/flot-chart/jquery.flot.time.js') }}"></script>
         <script src="{{ asset('plugins/flot-chart/jquery.flot.tooltip.min.js') }}"></script>

@@ -92,8 +92,7 @@ class StockController extends Controller
     {
 
         $stock = DB::table('tbl_sim_stock as ts')->select('ts.id','phone_number','sim_number','provider','category','verified','box_no','price',
-
-                    DB::raw('CONCAT(a.first_name," ",a.last_name) as fullname'),'ts.status')->join('admins as a','dealer_id','=','a.id');
+                                DB::raw('CONCAT(a.first_name," ",a.last_name) as fullname'),'ts.status')->join('admins as a','dealer_id','=','a.id');
 
 
 

@@ -35,6 +35,8 @@ class SimCallData extends Command
     {
         $this->schedule = $schedule;
         parent::__construct();
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 10000);
     }
 
     /**
@@ -69,6 +71,8 @@ class SimCallData extends Command
     private function updateCalllogs($localfile){
         $start_time = microtime(true);
         $cdr_list = $call_data = $data_history = [];
+        $seller_margin   = Helper::get_option('seller_percent');
+        $reseller_margin = Helper::get_option('reseller_percent');
         // $getfile = Storage::disk('calllogs')->get($localfile);
         $getfile = storage_path('/app/calllogs/'.$localfile);
         $readfile = fopen($getfile, "r");
@@ -102,8 +106,15 @@ class SimCallData extends Command
                     $from_number = str_replace("+","", $user->trusted_number);
                 }else{ continue;}
             }
-            $cost = trim($cdr[8]);
+            $basecost = (float)trim($cdr[8]);
+            $resellercost  = $endusercost = 0;
+            if($basecost != 0){
+                $resellercost = round(($basecost + ($basecost*($seller_margin/100))),4);
+                $endusercost  = round(($resellercost + ($resellercost*($reseller_margin/100))),4);
+            }
             $prevcheck = $from;
+            $provider = strval(trim($cdr[10]));
+            $provider = ($provider == 'O2')? 'O2':'VF';
             $dial_code = $country[$country_code]->dial_code;
             $country_name = $country[$country_code]->country_name;
             $connect = date("Y-m-d H:i:s",strtotime($cdr[1].' '.$cdr[2]));            
@@ -113,7 +124,7 @@ class SimCallData extends Command
                 // }
                 $duration = (double)trim($cdr[7]);
                 $duration = $duration*1024;
-                $data = ['user_id' => $user_id, 'from_number' => $from_number, 'to_number'=> "", 'date' => $connect, 'duration' => $duration, 'amount' => $cost, 'service_type' => 'DATA','provider' => 'O2'];
+                $data = ['user_id' => $user_id, 'from_number' => $from_number, 'to_number'=> "", 'date' => $connect, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'DATA', 'provider' => $provider];
                 $data_history[] = $data; 
                 continue;
             }
@@ -124,8 +135,8 @@ class SimCallData extends Command
                 // if($data_max >= $connect){                                   
                 //     continue;
                 // }
-                if($service == 'O2_SMS' || $service == 'O2_PREMSMS'){
-                    $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $duration, 'amount' => $cost, 'service_type' => 'SMS_MO', 'provider' => 'O2'];
+                if(preg_match('/SMS/', $service) || preg_match('/MMS/', $service)){
+                    $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $duration,  'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO', 'provider' => $provider];
                     $data_history[] = $smsdata; 
                     continue;
                 }
@@ -134,25 +145,38 @@ class SimCallData extends Command
             //     continue;
             // }
             $disconnect = date("Y-m-d H:i:s", (strtotime(date($connect)) + $duration));
-            $to_number  = str_replace("+","", $dial_code.$to_number);
+            if(strlen($to_number) <= 10){
+                $to_number  = str_replace("+","", $dial_code.$to_number);
+            }else{
+                $to_number  = str_replace("+","", $to_number);  
+            }
             $i_cdr = $user_id.$j.time();
             $service_type = 1;
-            if($service == 'O2_VML' || $service == 'O2Dise_VML'){
+            if(preg_match('/VML/', $service)){
                 $service_type = 3;
             }
             
-            $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $from_number, 'cli_in' => $from_number, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $cost, 'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name];
+            $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $from_number, 'cli_in' => $from_number, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $endusercost,'base_cost'=>$basecost,'reseller_cost'=>$resellercost,'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name,'provider' => $provider];
             $call_data[] = $simhis_data;
         }
 
         if(!empty($data_history)){
-            DB::table('usage_history')->insert($data_history);
+            foreach (array_chunk($data_history,1000) as $history){
+               DB::table('usage_history')->insert($history);
+            }                    
         } 
-        if(!empty($call_data)){                    
-            DB::table('user_calls')->insert($call_data);
+        if(!empty($call_data)){ 
+            foreach (array_chunk($call_data,1000) as $calls){                   
+                DB::table('user_calls')->insert($calls);
+            }
         }
 
-        //$delete = Storage::disk('calllogs')->delete($localfile);
+        $twobefore = Carbon::now()->subDays(2)->format('Ymd');
+        $twobfile  = $twobefore.'.csv';
+        $exists    = Storage::disk('calllogs')->exists($twobfile);
+        if($exists){
+           $delete = Storage::disk('calllogs')->delete($twobfile); 
+        }
 
         $end_time = microtime(true);
         $exec_time = round(($end_time - $start_time), 5);
