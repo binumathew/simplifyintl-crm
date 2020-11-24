@@ -6,6 +6,7 @@ use Carbon;
 use GuzzleHttp\Client;
 use Utils;
 use Helper;
+use Log;
 
 class GlobalSim {
 
@@ -122,6 +123,9 @@ class GlobalSim {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
         }catch(\Exception $e){
+            Log::error('AssignMsisdn',[
+                'error' =>   $e->getMessage()
+            ]);
             return false;
         }
     }
