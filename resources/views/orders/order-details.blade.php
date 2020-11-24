@@ -434,7 +434,7 @@
                             $this.prop('disabled', false);
                             alert(data.message);
                         } else {
-                            location.reload();
+                            //location.reload();
                         }
                     }
                 });
