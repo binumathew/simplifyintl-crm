@@ -169,15 +169,14 @@ class ActivationController extends Controller
             $txn_id = $response['transaction_id'];
             $payment_id = $response['payment_id'];      
             $renew_on = date('Y-m-01',strtotime('next month'));
-            $now = Carbon::now()->format('Y-m-d H:i:s'); 
-            $i_billplan = $plan->plan->switch_billing_plan; 
-            DB::table('auto_plan_custom')->insert(['user_id' => $user->id, 'autoplan_id' => $autoplan_id, 'renew_on' => $renew_on, 'switch_billing_plan' => $i_billplan, 'created_at' => $now]);
+            $now = Carbon::now()->format('Y-m-d H:i:s');      
             if($card->gateway == 'Paypal'){
                 $auto_plan_data['transaction_id'] = $txn_id;
                 DB::table('user_credit_cards')->where('id', $card_id)->update(['transaction_id' => $txn_id]);
             }
-            $auto_plan_data['next_renewal'] = date('Y-m-t',strtotime('next month'));
-            $auto_plan_data['switch_billing_plan'] = $plan->plan->switch_billing_plan;            
+            $auto_plan_data['next_renewal'] = $renew_on;
+            $auto_plan_data['switch_billing_plan'] = $plan->plan->switch_billing_plan;
+            $auto_plan_data['adv_pay'] = $plan->adv_pay+1;          
             DB::table('auto_plan')->where('id', $autoplan_id)->update($auto_plan_data);  
             return response()->json(['error' => false, 'message' => $response['message'], 'next_renewal' => $auto_plan_data['next_renewal']]);     
         }else{
