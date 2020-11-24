@@ -1184,33 +1184,33 @@ class ActivationController extends Controller
         parse_str($request->provision, $provision);
         $sim_list = SimList::where('id', $provision['list_id'])->first();
         $provider = $sim_list->stock->provider;
-        if($provider == 'E_SIM'){
-            try {
-                SimList::where('id', $provision['list_id'])->update(['activate_onfirstuse' => $provision['activate_onfirstuse'], 'send_sms' => $provision['send_sms'],'take_payment'=>$provision['take_payment'],'provision_date'=>$provision['activation'],'bill_limit'=>$provision['bill_limit'],'warn_limit'=>$provision['warn_limit'],'lock_limit'=>$provision['warn_limit']]);
-                $provision_status =  $sim_list->provision;
-                if($provision_status == 0){
-                    $iccid      = $sim_list->stock->sim_number;
-                    //$getmsisdn   = GlobalSim::AssignMsisdn($iccid);
-                    $getsimdetails = GlobalSim::GetGlobalDetails($iccid);
-                    dd($getsimdetails);
-                    if($getmsisdn == false){
-                        return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
-                    }
-                    $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
-                    $transid = $getmsisdn['STATUS_Response']['TRANSACTION_ID'];
-                    SimStock::whereId($sim_list->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
-                    SimList::where('id', $provision['list_id'])->update(['provision_id' => $transid,'provision' => 4]);
-                }
-                return response()->json(['error' => false]);
-            } catch (\Exception $e) {
-                Log::error('AssignMsisdn',[
-                    'order' => $sim_list->sim_request->order_id,
-                    'simnumber' => $sim_list->stock->sim_number,
-                    'error' =>   $e->getMessage()
-                ]);
-                return response()->json(['error' => true, 'message' =>'Provision failed..','err' => $e->getMessage() ,'msisdn' => $getmsisdn]);
-            }
-        }else{
+        // if($provider == 'E_SIM'){
+        //     try {
+        //         SimList::where('id', $provision['list_id'])->update(['activate_onfirstuse' => $provision['activate_onfirstuse'], 'send_sms' => $provision['send_sms'],'take_payment'=>$provision['take_payment'],'provision_date'=>$provision['activation'],'bill_limit'=>$provision['bill_limit'],'warn_limit'=>$provision['warn_limit'],'lock_limit'=>$provision['warn_limit']]);
+        //         $provision_status =  $sim_list->provision;
+        //         if($provision_status == 0){
+        //             $iccid      = $sim_list->stock->sim_number;
+        //             //$getmsisdn   = GlobalSim::AssignMsisdn($iccid);
+        //             $getsimdetails = GlobalSim::GetGlobalDetails($iccid);
+        //             dd($getmsisdn);
+        //             if($getmsisdn == false){
+        //                 return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
+        //             }
+        //             $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+        //             $transid = $getmsisdn['STATUS_Response']['TRANSACTION_ID'];
+        //             SimStock::whereId($sim_list->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
+        //             SimList::where('id', $provision['list_id'])->update(['provision_id' => $transid,'provision' => 4]);
+        //         }
+        //         return response()->json(['error' => false]);
+        //     } catch (\Exception $e) {
+        //         Log::error('AssignMsisdn',[
+        //             'order' => $sim_list->sim_request->order_id,
+        //             'simnumber' => $sim_list->stock->sim_number,
+        //             'error' =>   $e->getMessage()
+        //         ]);
+        //         return response()->json(['error' => true, 'message' =>'Provision failed..','err' => $e->getMessage() ,'msisdn' => $getmsisdn]);
+        //     }
+        // }else{
 
         SimList::where('id', $provision['list_id'])
             ->update(['porting_to' => $provision['porting_to'], 'pac_no' => $provision['pac_code']]);
@@ -1323,7 +1323,7 @@ class ActivationController extends Controller
             // print_r($response);
             // die();
         }
-        }
+        //}
     }
 
     /**
