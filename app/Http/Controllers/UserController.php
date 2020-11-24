@@ -669,7 +669,7 @@ class UserController extends Controller
         $next_renewal = Carbon::now()->addDays(30)->format('Y-m-d');
         $plans = AutoPlan::where('id',$request->autoplan_id)->first();
         if($plans->plan_type == 'sim' && $plans->plan->network->service_type == 2){
-            $next_renewal = date('Y-m-t', strtotime(Carbon::tomorrow()));
+            $next_renewal = Carbon::now()->addMonth()->firstOfMonth()->format('Y-m-d');
         }
         $user = User::find($plans->user_id);        
         $blocked = Helper::check_fraudster($plans->user_id); //check whether user is in fraud list

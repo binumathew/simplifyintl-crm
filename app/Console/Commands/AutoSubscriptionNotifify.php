@@ -59,9 +59,11 @@ class AutoSubscriptionNotifify extends Command
         if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
             $start_time = microtime(true);
             $next_day = Carbon::now()->addDays(2)->format('Y-m-d');
+            $tomorrow = Carbon::tomorrow()->format('Y-m-d');
             $auto_plan = AutoPlan::select('user_id', DB::raw("GROUP_CONCAT(id) as id"))
-                        ->where('next_renewal', $next_day)->where('adv_pay', 0)
-                        ->where('status', 1)->groupBy('user_id','card_id')->get();
+                        ->where('next_renewal', $next_day)->where('status_changeon', '!=', $tomorrow)
+                        ->where('adv_pay', 0)->where('status', 1)
+                        ->groupBy('user_id','card_id')->get();
 
             foreach($auto_plan as $plan){ //in 48 hours
                 $user = ModalUser::select('id','first_name','phone')
