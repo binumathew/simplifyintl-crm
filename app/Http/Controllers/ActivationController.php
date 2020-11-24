@@ -333,30 +333,25 @@ class ActivationController extends Controller
             }else if( $provider == 'E_SIM'){
                 try {
                     $setlimit      = new \stdClass();
-                    $setlimit->bill_limit   = Utils::settings('ESIM_bill_limit');
-                    $setlimit->warn_limit   = Utils::settings('ESIM_warn_limit');
-                    $setlimit->lock_limit   = Utils::settings('ESIM_lock_limit');
+                    $setlimit->bill_limit   = $sim_data->bill_limit;
+                    $setlimit->warn_limit   = $sim_data->warn_limit;
+                    $setlimit->lock_limit   = $sim_data->lock_limit;
                     $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
+
                     if($addcustomer == false){
                         return response()->json(['error' => true, 'message' => 'Adding customer failed..']); 
                     }
-                    $customer_id = $addcustomer['customer']['id'];
-    
-                    $subscribe = new \StdClass;
-                    $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
-                    $subscribe->msisdn    = $sim_data->stock->phone_number;
-                    $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
-                    $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
-                    $subscribe->sendsms         = $sim_data->send_sms;
-                    $subscribe->takepayment     = $sim_data->take_payment;
-                    $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
-                    if($bundlesubscrib == false){
-                        return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
-                    }
-                    $subsrib_id = $bundlesubscrib['subscriptionid'];
+                    $esim_customer_id = $addcustomer['customer']['id'];
+                    /* Add user for Esim */
+                        $adduser      = GlobalSim::AddUser($user,$esim_customer_id);
+                        if($adduser == false){
+                            return response()->json(['error' => true, 'message' => 'Adding user failed..']); 
+                        }
+                        $esim_user_id = $adduser['user']['id'];
+                    /*  END                 */
                     $account_id = config('settings.app_prefix').$provider.$user->id;
                     DB::table('user_data')->where('user_id', $user->id)
-                            ->update(['sim_subscription_id' => $subsrib_id,'sim_account_id'=>$account_id]);  
+                            ->update(['sim_account_id'=>$account_id,'esim_customer'=>$esim_customer_id,'esim_user'=>$esim_user_id,'bill_limit'=>$sim_data->bill_limit,'warn_limit'=>$sim_data->warn_limit,'lock_limit'=>$sim_data->lock_limit]);  
                     $accounts[$sim_data->stock_id] = $account_id;
                 } catch (\Exception $th) {
                     return response()->json(['error' => true, 'message' => 'failed to activate account']); 
@@ -465,6 +460,24 @@ class ActivationController extends Controller
 
                 // $response = Helper::call_sim_process_api($end_point, json_encode($data));
                 $response = json_decode('{"orderCode":"ee_custom","Subscription":{"SubscriptionId":"ee_custom_id"},"resultType":"Ok","resultCode":"0"}');
+            }if(is_null($user_data->sim_subscription_id) && $provider == 'E_SIM'){
+                try {
+                    $subscribe = new \StdClass;
+                    $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
+                    $subscribe->msisdn    = $sim_data->stock->phone_number;
+                    $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
+                    $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
+                    $subscribe->sendsms         = $sim_data->send_sms;
+                    $subscribe->takepayment     = $sim_data->take_payment;
+                    $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
+                    if($bundlesubscrib == false){
+                        return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
+                    }
+                    $subsrib_id = $bundlesubscrib['subscriptionid'];
+                    $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
+                } catch (\Throwable $th) {
+                    return response()->json(['error' => true, 'message' => 'subscription failed..']); 
+                }
             } else {
                 $response = json_decode('{"orderCode":"o2order","Subscription":{"SubscriptionId":"o2subid"},"resultType":"Ok","resultCode":"0"}');
             }
@@ -497,9 +510,9 @@ class ActivationController extends Controller
                     $user_list = implode(',', $user_ids);
 
                     if(!DB::table('trusted_numbers')->where('trusted_number',$trust_number)->exists()) {
-                    DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => $default_number]);                     
+                        
+                    DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => 1]);                    
                     }
-
                     if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
 
                         $trusted = DB::table('trusted_numbers')->where('trusted_number',$trust_number)->first();
@@ -1166,7 +1179,7 @@ class ActivationController extends Controller
         if($provider == 'E_SIM'){
             try {
                 SimList::where('id', $provision['list_id'])
-                ->update(['activate_onfirstuse' => $provision['activate_onfirstuse'], 'send_sms' => $provision['send_sms'],'take_payment'=>$provision['take_payment'],'provision_date'=>$provision['activation']]);
+                ->update(['activate_onfirstuse' => $provision['activate_onfirstuse'], 'send_sms' => $provision['send_sms'],'take_payment'=>$provision['take_payment'],'provision_date'=>$provision['activation'],'bill_limit'=>$provision['bill_limit'],'warn_limit'=>$provision['warn_limit'],'lock_limit'=>$provision['warn_limit']]);
                 $provision_status =  $sim_list->provision;
                 if($provision_status == 0){
                     $iccid      = $sim_list->stock->sim_number;

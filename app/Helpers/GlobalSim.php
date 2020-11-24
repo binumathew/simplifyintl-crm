@@ -4,7 +4,8 @@ namespace App\Helpers;
 use Spatie\ArrayToXml\ArrayToXml;
 use Carbon;
 use GuzzleHttp\Client;
-
+use Utils;
+use Helper;
 
 class GlobalSim {
 
@@ -169,6 +170,44 @@ class GlobalSim {
                 ]
                 ];
             $result = self::get($params,'AddCustomer');
+            if($result !== false) {
+                return  json_decode(json_encode(simplexml_load_string($result)),true);
+            }
+        }catch(\Exception $e){
+            return false;
+        }
+    }
+    public static function AddUser($user,$customer_id){
+        try{
+            $params = [
+                'User' =>[
+                    'Administrator'=>true,
+                    'TimeZone'=>$user->country->time_zone,
+                    'CustomerID'=>$customer_id,
+                    'Username'=>$user->msisdn->phone_number,
+                    'Password'=>Helper::random(8),
+                    'Title'=>'',
+                    'FirstName'=>$user->first_name,
+                    'MiddleInitials'=>'',
+                    'Surname'=>$user->last_name,
+                    'Country'=>$user->country->short_code,
+                ],
+                'Contact' =>[
+                    'Email'=>$user->email,
+                    'CallKeyID'=>$user->order->order_id,
+                ],
+                'Address' =>[
+                    'Line1'=>$user->userDetail->address,
+                    'Line2'=>$user->userDetail->city,
+                    'Country'=>$user->country->short_code,
+                    'Postcode'=>$user->userDetail->postal_code,
+                ],
+                'Authentication' => [
+                    'Username' => config('services.globalsim.username'),
+                    'Password' => config('services.globalsim.password'),
+                ]
+                ];
+            $result = self::get($params,'CreateUser');
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }

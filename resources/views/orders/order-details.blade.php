@@ -440,6 +440,11 @@
                 });
             }
         });
+        $(document).on( 'keypress', '.number', function(event){
+            if(event.charCode >= 48 && event.charCode <= 57){
+                return true;
+            }else{  return false; }
+        });
     });
 </script>
 @endsection

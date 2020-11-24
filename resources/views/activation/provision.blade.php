@@ -133,6 +133,26 @@
 							@endforeach
 						</tbody>
 					</table>
+					<br>
+					<table id="tech-companies-2-clone" class="table  table-striped inner-form">
+						<thead>
+							<tr>
+								<th nowrap="nowrap" width="200">Bill Limit</th>
+								<th nowrap="nowrap" width="200">Warn Limit</th>
+								<th nowrap="nowrap" width="200">Lock Limit</th>
+							</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td><div class="input-group"><input class="form-control number" id="bill_limit" name="bill_limit" type="text" value="0" maxlength="8" placeholder="Bill Limit" required></div>
+							</td>
+							<td><div class="input-group"><input class="form-control number" id="warn_limit" name="warn_limit" type="text" value="0" maxlength="8" placeholder="Warn Limit" required></div>
+							</td>
+							<td><div class="input-group"><input class="form-control number" id="lock_limit" name="lock_limit" type="text" value="0" maxlength="8" placeholder="Lock Limit" required></div>
+							</td>
+						</tr>
+						</tbody>
+					</table>
 			            <div class="my-3">
 			            	<a href="javascript:void(0)" class="btn btn-secondary sim_provisioning m-10 waves-light" data-stock_id="{{$stock_id}}"><strong>Back</strong></a>
 			                <button class="btn btn-success waves-effect waves-light pull-right m-10" id="provision_process" data-stock_id="{{$stock_id}}"><strong>Continue</strong></button>
