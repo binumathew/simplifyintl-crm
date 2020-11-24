@@ -1206,10 +1206,10 @@ class ActivationController extends Controller
                     'simnumber' => $sim_list->stock->sim_number,
                     'error' =>   $e->getMessage()
                 ]);
-                return response()->json(['error' => true, 'message' =>'provision failed..', 'err' => $e->getMessage()]);
+                return response()->json(['error' => true, 'message' =>'Provision failed..','err' => $e->getMessage()]);
             }
         }else{
-            dd('hii');
+
         SimList::where('id', $provision['list_id'])
             ->update(['porting_to' => $provision['porting_to'], 'pac_no' => $provision['pac_code']]);
 
