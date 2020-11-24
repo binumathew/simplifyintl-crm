@@ -144,10 +144,6 @@
                   <div class="card-body">
                      <h4 class="mt-0 m-b-15 header-title">Recent Activity Feed</h4>
                      <ol class="activity-feed mb-0">
-<!--                        <li class="feed-item">
-                           <div class="activity-text">Request Recieved on</div>
-                           <span class="date font-600 text-muted">{{ date('M d, Y H:i',strtotime($sim_request->created_at))}}</span>
-                       </li> -->
                        @foreach ($order_status as $status)
                        <li class="feed-item">
                           <span class="activity-text ">{{$status->note}}</span>
@@ -155,30 +151,6 @@
                        </li>
                         @endforeach
                      </ol>
-<!--                      <ol class="activity-feed mb-0">
-                        <li class="feed-item">
-                           <span class="date">Sep 25</span>
-                           <span class="activity-text">Added a new customer</span>
-                        </li>
-                        <li class="feed-item">
-                           <span class="date">Sep 24</span>
-                           <span class="activity-text">Customer credit card updated</span>
-                        </li>
-                        <li class="feed-item">
-                           <span class="date">Sep 23</span>
-                           <span class="activity-text">New delivery note added</span>
-                        </li>
-                        <li class="feed-item">
-                           <span class="date">Sep 21</span>
-                           <span class="activity-text">New order shippied</span>
-                        </li>
-                        <li class="feed-item">
-                           <span class="date">Sep 21</span>
-                           <span class="activity-text">New order shippied</span>
-                        </li>
-
-                     </ol> -->
-
                      <!-- <div class="text-center">
                         <a href="#" class="btn btn-sm btn-primary">View More</a>
                      </div> -->
