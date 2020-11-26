@@ -73,7 +73,34 @@ class ActivationController extends Controller
 
         $step = 1;
     	$sim_list = SimList::whereIn('stock_id', unserialize($request->stock_id))->get();
-    	$currency = Helper::get_option('currency_symbol');
+        $currency = Helper::get_option('currency_symbol');
+        foreach($sim_list as $sim_data){
+            $provider = $sim_data->stock->provider;
+            if($provider == 'E_SIM'){
+                try {
+                    $provision_status =  $sim_data->provision;
+                    if($provision_status == 4){
+                        $iccid          = $sim_data->stock->sim_number;
+                        $getmsisdn      = GlobalSim::AssignMsisdn($iccid);
+                        if($getmsisdn == false){
+                            return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
+                        }
+                        $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+                        SimStock::whereId($sim_data->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
+                    }else{
+                        return response()->json(['error' => true, 'message' =>'Please complete the provision' ]);  
+                    }
+                } catch (\Exception $e) {
+                    Log::error('ASSIGNMSISDN',[
+                        'order' => $sim_data->sim_request->order_id,
+                        'simnumber' => $sim_data->stock->sim_number,
+                        'error' =>   $e->getMessage()
+                    ]);
+                    return response()->json(['error' => true, 'message' =>'Assign number failed..','err' => $e->getMessage() ]);
+                }
+            }
+        }
+        $sim_list = SimList::whereIn('stock_id', unserialize($request->stock_id))->get();
         // if($sim_list[0]->stock->provider == 'EE'){
     	    $view = view('activation.list_wizard', compact('sim_list', 'currency','step'))->render();
         // }else{
