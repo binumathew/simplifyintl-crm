@@ -13,5 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/globalsim-webhook', 'UserController@handleWebhook');
+Route::any('/globalsim-webhook', 'UserController@handleWebhook');
 
