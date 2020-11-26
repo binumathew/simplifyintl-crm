@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Jobs\FetchCDR\GlobalSim;
 use Log;
 
 class UserController extends Controller
@@ -22,6 +23,7 @@ class UserController extends Controller
                 Log::info('globalsim-webhook',[
                     'all'  =>  $request->all(),
                     'content' => $request->getContent(),
+                    'parsed' => GlobalSim::webhookContent($request->getContent()),
                     'query' => $request->query()
                 ]);
 

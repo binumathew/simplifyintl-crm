@@ -239,7 +239,16 @@ class GlobalSim {
             return false;
         }
     }
-    
+
+    public function webhookContent($content){
+
+        try{
+            return json_decode(json_encode(simplexml_load_string($content)),true);
+        }catch(\Exception $e){
+            return false;
+        }
+    }
+
 }
 
 
