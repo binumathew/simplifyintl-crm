@@ -24,6 +24,7 @@ class UserController extends Controller
                     'all'  =>  $request->all(),
                     'content' => $request->getContent(),
                     'parsed' => GlobalSim::webhookContent($request->getContent()),
+                    'method' => $request->method(),
                     'query' => $request->query()
                 ]);
 
