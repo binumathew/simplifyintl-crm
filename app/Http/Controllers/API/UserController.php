@@ -3,6 +3,7 @@ namespace App\Http\Controllers\API;
 
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Log;
 
 class UserController extends Controller
@@ -13,9 +14,17 @@ class UserController extends Controller
 
     }
 
-	public function test()
+	public function handleWebhook(Request $request)
 	{
             try{
+
+
+                Log::info('globalsim-webhook',[
+                    'all'  =>  $request->all(),
+                    'content' => $request->getContent(),
+                    'query' => $request->query()
+                ]);
+
                 return [
                     'result' => true
                 ];
