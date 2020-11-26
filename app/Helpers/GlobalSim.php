@@ -240,7 +240,7 @@ class GlobalSim {
         }
     }
 
-    public function webhookContent($content){
+    public static function webhookContent($content){
 
         try{
             return json_decode(json_encode(simplexml_load_string($content)),true);
