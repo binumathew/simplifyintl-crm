@@ -85,7 +85,23 @@ class ActivationController extends Controller
                         if($getmsisdn == false){
                             return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
                         }
-                        $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+                        if($getmsisdn['@attributes']['status'] == 'fail'){
+                            $getsiminfo     = GlobalSim::getSimInfo($iccid);
+                            if($getsiminfo == false){
+                                return response()->json(['error' => true, 'message' =>'Failed to fetch sim info']);
+                            }
+                            if($getsiminfo['@attributes']['status'] == 'success'){
+                                if(gettype($getsiminfo['Sim']['ActiveProfileLastUsed']) == 'array'){
+                                    return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
+                                }else{
+                                    $msisdn  = $getsiminfo['Sim']['PublicNumber'];
+                                }
+                            }else{
+                                return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
+                            }
+                        }else{
+                            $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+                        }
                         SimStock::whereId($sim_data->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
                     }else{
                         return response()->json(['error' => true, 'message' =>'Please complete the provision' ]);  

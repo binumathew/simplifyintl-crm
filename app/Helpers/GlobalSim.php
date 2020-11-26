@@ -32,7 +32,6 @@ class GlobalSim {
             return false;
         }
     }
-
     public static function getCallHistory($msisdn,$from,$to){
             try{
                 $params = [
@@ -245,6 +244,27 @@ class GlobalSim {
         try{
             return json_decode(json_encode(simplexml_load_string($content)),true);
         }catch(\Exception $e){
+            return false;
+        }
+    }
+
+    public static function getSimInfo($iccid){
+        try{
+            $params = [
+                'ICCID' =>$iccid,
+                'Authentication' => [
+                    'Username' => config('services.globalsim.username'),
+                    'Password' => config('services.globalsim.password'),
+                ]
+                ];
+            $result = self::get($params,'SimInformationByMSISDN');
+            if($result !== false) {
+                return  json_decode(json_encode(simplexml_load_string($result)),true);
+            }
+        }catch(\Exception $e){
+            Log::error('SimInformationByMSISDN',[
+                'error' =>   $e->getMessage()
+            ]);
             return false;
         }
     }
