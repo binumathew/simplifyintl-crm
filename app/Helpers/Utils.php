@@ -181,49 +181,9 @@ class Utils {
 
         try{
             $options = new QROptions([
-                'version'      => 7,
-                'outputType'   => QRCode::OUTPUT_MARKUP_SVG,
-                'eccLevel'     => QRCode::ECC_L,
-                'svgViewBoxSize' => 530,
-                'addQuietzone' => true,
-                'cssClass'     => 'my-css-class',
-                'svgOpacity'   => 1.0,
-                'svgDefs'      => '
-                    <linearGradient id="g2">
-                        <stop offset="0%" stop-color="#39F" />
-                        <stop offset="100%" stop-color="#F3F" />
-                    </linearGradient>
-                    <linearGradient id="g1">
-                        <stop offset="0%" stop-color="#F3F" />
-                        <stop offset="100%" stop-color="#39F" />
-                    </linearGradient>
-                    <style>rect{shape-rendering:crispEdges}</style>',
-                'moduleValues' => [
-                    // finder
-                    1536 => 'url(#g1)', // dark (true)
-                    6    => '#fff', // light (false)
-                    // alignment
-                    2560 => 'url(#g1)',
-                    10   => '#fff',
-                    // timing
-                    3072 => 'url(#g1)',
-                    12   => '#fff',
-                    // format
-                    3584 => 'url(#g1)',
-                    14   => '#fff',
-                    // version
-                    4096 => 'url(#g1)',
-                    16   => '#fff',
-                    // data
-                    1024 => 'url(#g2)',
-                    4    => '#fff',
-                    // darkmodule
-                    512  => 'url(#g1)',
-                    // separator
-                    8    => '#fff',
-                    // quietzone
-                    18   => '#fff',
-                ],
+                'version'    => 5,
+                'outputType' => QRCode::OUTPUT_MARKUP_SVG,
+                'eccLevel'   => QRCode::ECC_L,
             ]);
             $qrcode = (new QRCode($options))->render($txt);
             return $qrcode;
