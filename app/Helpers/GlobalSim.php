@@ -215,6 +215,9 @@ class GlobalSim {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
         }catch(\Exception $e){
+            Log::error('AddUser',[
+                'error' =>   $e->getMessage()
+            ]);
             return false;
         }
     }
