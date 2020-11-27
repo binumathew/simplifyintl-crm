@@ -142,6 +142,7 @@ class GlobalSim {
                 'activateonfirstuse' => $subscribe->actfirstuse,
                 'sendsms' => $subscribe->sendsms,
                 'takepayment' =>$subscribe->takepayment,
+                'repeatnumber'=>0,
                 'Authentication' => [
                     'Username' => config('services.globalsim.username'),
                     'Password' => config('services.globalsim.password'),
