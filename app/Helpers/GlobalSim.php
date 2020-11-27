@@ -142,14 +142,12 @@ class GlobalSim {
                 'activateonfirstuse' => $subscribe->actfirstuse,
                 'sendsms' => $subscribe->sendsms,
                 'takepayment' =>$subscribe->takepayment,
-                'repeatnumber' => '',
                 'Authentication' => [
                     'Username' => config('services.globalsim.username'),
                     'Password' => config('services.globalsim.password'),
                 ]
                 ];
             $result = self::get($params,'BundleSubscribe');
-            dd($result);
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
