@@ -45,7 +45,7 @@ class UserController extends Controller
             try{
                 $qrcode = gzencode(Utils::qrcode('LPA:1$ecprsp.eastcompeace.com$2D5DB6B3962D4ECC8C871E068708900D') ,9);
                 return response($qrcode)
-                        // ->header('Content-Type','image/svg+xml')
+                        ->header('Content-Type','image/svg+xml')
                         ->header('Vary', 'Accept-Encoding')
                         ->header('Content-Encoding', 'gzip');
             }catch(\Exception $e){
