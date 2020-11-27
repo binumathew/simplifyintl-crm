@@ -149,11 +149,15 @@ class GlobalSim {
                 ]
                 ];
             $result = self::get($params,'BundleSubscribe');
+            dd($result);
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
             return false;
         }catch(\Exception $e){
+            Log::error('BundleSubscribe',[
+                'error' =>   $e->getMessage()
+            ]);
             return false;
         }
     }
@@ -184,6 +188,9 @@ class GlobalSim {
             }
             return false;
         }catch(\Exception $e){
+            Log::error('AddCustomer',[
+                'error' =>   $e->getMessage()
+            ]);
             return false;
         }
     }
