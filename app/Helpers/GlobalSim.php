@@ -47,6 +47,7 @@ class GlobalSim {
                 if($result !== false) {
                     return  json_decode(json_encode(simplexml_load_string($result)),true);
                 }
+                return false;
             }catch(\Exception $e){
                 return false;
             }
@@ -66,6 +67,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             return false;
         }
@@ -85,6 +87,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             return false;
         }
@@ -102,6 +105,7 @@ class GlobalSim {
           if($result !== false) {
               return  json_decode(json_encode(simplexml_load_string($result)),true);
           }
+          return false;
       }catch(\Exception $e){
           return false;
       }
@@ -121,6 +125,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             Log::error('AssignMsisdn',[
                 'error' =>   $e->getMessage()
@@ -147,6 +152,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             return false;
         }
@@ -176,6 +182,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             return false;
         }
@@ -211,9 +218,13 @@ class GlobalSim {
                 ]
                 ];
             $result = self::get($params,'CreateUser');
+            Log::error('AddUser',[
+                'response' =>   $result
+            ]);
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             Log::error('AddUser',[
                 'error' =>   $e->getMessage()
@@ -234,6 +245,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             Log::error('GetGlobalDetails',[
                 'error' =>   $e->getMessage()
@@ -264,6 +276,7 @@ class GlobalSim {
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
+            return false;
         }catch(\Exception $e){
             Log::error('SimInformationByMSISDN',[
                 'error' =>   $e->getMessage()
