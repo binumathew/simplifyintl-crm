@@ -76,43 +76,48 @@ class ActivationController extends Controller
         $currency = Helper::get_option('currency_symbol');
         foreach($sim_list as $sim_data){
             $provider = $sim_data->stock->provider;
-            if($provider == 'E_SIM'){
-                try {
-                    $provision_status =  $sim_data->provision;
-                    if($provision_status == 4){
-                        $iccid          = $sim_data->stock->sim_number;
-                        $getmsisdn      = GlobalSim::AssignMsisdn($iccid);
-                        if($getmsisdn == false){
-                            return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
-                        }
-                        if($getmsisdn['@attributes']['status'] == 'fail'){
-                            $getsiminfo     = GlobalSim::getSimInfo($iccid);
-                            if($getsiminfo == false){
-                                return response()->json(['error' => true, 'message' =>'Failed to fetch sim info']);
-                            }
-                            if($getsiminfo['@attributes']['status'] == 'success'){
-                                if(gettype($getsiminfo['Sim']['ActiveProfileLastUsed']) == 'array'){
-                                    return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
-                                }else{
-                                    $msisdn  = $getsiminfo['Sim']['PublicNumber'];
+            if(!$sim_data->stock->verified){
+                if($provider == 'E_SIM'){
+                    try {
+                        $provision_status =  $sim_data->provision;
+                        if($provision_status == 4){
+                            $iccid          = $sim_data->stock->sim_number;
+                            // $getmsisdn      = GlobalSim::AssignMsisdn($iccid);
+                            // if($getmsisdn == false){
+                            //     return response()->json(['error' => true, 'message' =>'Failed to assign msisdn']);
+                            // }
+                            // if($getmsisdn['@attributes']['status'] == 'fail'){
+                                $getsiminfo     = GlobalSim::getSimInfo($iccid);
+                                if($getsiminfo == false){
+                                    return response()->json(['error' => true, 'message' =>'Failed to fetch sim info']);
                                 }
-                            }else{
-                                return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
-                            }
+                                if($getsiminfo['@attributes']['status'] == 'success'){
+                                    if(gettype($getsiminfo['Sim']['ActiveProfileLastUsed']) == 'array'){
+                                        return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
+                                    }else{
+                                        $msisdn         = $getsiminfo['Sim']['PublicNumber'];
+                                        $esimuser       = $getsiminfo['Sim']['UserId'];
+                                        $esimcustomer   = $getsiminfo['Sim']['CustomerId'];
+                                    }
+                                }else{
+                                    return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
+                                }
+                            // }else{
+                            //     $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+                            // }
+                            SimStock::whereId($sim_data->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
+                            SimList::whereId($sim_data->id)->update(['esim_customer'=>$esimcustomer,'esim_user'=>$esimuser]);
                         }else{
-                            $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
+                            return response()->json(['error' => true, 'message' =>'Please complete the provision' ]);  
                         }
-                        SimStock::whereId($sim_data->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
-                    }else{
-                        return response()->json(['error' => true, 'message' =>'Please complete the provision' ]);  
+                    } catch (\Exception $e) {
+                        Log::error('ASSIGNMSISDN',[
+                            'order' => $sim_data->sim_request->order_id,
+                            'simnumber' => $sim_data->stock->sim_number,
+                            'error' =>   $e->getMessage()
+                        ]);
+                        return response()->json(['error' => true, 'message' =>'Assign number failed..','err' => $e->getMessage() ]);
                     }
-                } catch (\Exception $e) {
-                    Log::error('ASSIGNMSISDN',[
-                        'order' => $sim_data->sim_request->order_id,
-                        'simnumber' => $sim_data->stock->sim_number,
-                        'error' =>   $e->getMessage()
-                    ]);
-                    return response()->json(['error' => true, 'message' =>'Assign number failed..','err' => $e->getMessage() ]);
                 }
             }
         }
@@ -375,22 +380,41 @@ class ActivationController extends Controller
                 }
             }else if( $provider == 'E_SIM'){
                 try {
+                    /* Add/modify customer for Esim */
                     $setlimit      = new \stdClass();
                     $setlimit->bill_limit   = $sim_data->bill_limit;
                     $setlimit->warn_limit   = $sim_data->warn_limit;
                     $setlimit->lock_limit   = $sim_data->lock_limit;
-                    $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
-
-                    if($addcustomer == false){
-                        return response()->json(['error' => true, 'message' => 'Adding customer failed..']);
+                   
+                    if($sim_data->esim_customer){
+                        $modifycustomer  = GlobalSim::ModifyCustomer($user,$setlimit,$sim_data->esim_customer);
+                        if($modifycustomer == false){
+                            return response()->json(['error' => true, 'message' => 'Modify customer failed..']);
+                        }
+                        $esim_customer_id = $modifycustomer['customer']['id'];
+                    }else{
+                        $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
+                        if($addcustomer == false){
+                            return response()->json(['error' => true, 'message' => 'Adding customer failed..']);
+                        }
+                        $esim_customer_id = $addcustomer['customer']['id'];
                     }
-                    $esim_customer_id = $addcustomer['customer']['id'];
-                    /* Add user for Esim */
+                    /* END Customer for Esim */
+
+                    /* Add/modify user for Esim */
+                    if($sim_data->esim_user){
+                        $modifyuser      = GlobalSim::ModifyUser($user,$esim_customer_id,$sim_data->esim_user);
+                        if($modifyuser == false){
+                            return response()->json(['error' => true, 'message' => 'Modify user failed..']);
+                        }
+                        $esim_user_id = $modifyuser['user']['id'];
+                    }else{
                         $adduser      = GlobalSim::AddUser($user,$esim_customer_id);
                         if($adduser == false){
                             return response()->json(['error' => true, 'message' => 'Adding user failed..']);
                         }
                         $esim_user_id = $adduser['user']['id'];
+                    }
                     /*  END                 */
                     $account_id = config('settings.app_prefix').$provider.$user->id;
                     DB::table('user_data')->where('user_id', $user->id)
