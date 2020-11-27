@@ -14,4 +14,5 @@ use Illuminate\Http\Request;
 */
 
 Route::any('/globalsim-webhook', 'UserController@handleWebhook');
+Route::get('/qr', 'UserController@qrcode');
 
