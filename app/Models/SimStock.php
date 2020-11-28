@@ -21,4 +21,8 @@ class SimStock extends Model
     {
         return $this->hasOne('App\Models\Provider','short_code','provider');
     }
+    public function stockcode()
+    {
+        return $this->hasOne('App\Models\SimStockCode','stock_id','id');
+    }
 }

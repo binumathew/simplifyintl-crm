@@ -8,10 +8,12 @@ use Crypt;
 use Excel;
 use Helper;
 use DataTables;
+use Carbon;
 use App\Models\SimList;
 use App\Models\SimRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use App\Jobs\Delivery\SoftDelivery;
 
 class DeliveryController extends Controller
 {
@@ -99,14 +101,26 @@ class DeliveryController extends Controller
         if (!Helper::has_permission('delivery','edit')) {
             return response()->json(['error' => true, 'message' => 'Access denied']);
         }
-
         $admin = Auth::user();
         $request_id = $request->selected;
         $sim_request = SimRequest::whereIn('id',$request_id)->get();
         if ($sim_request->isNotEmpty()) {
             $note = 'Packed by '.$admin->first_name.' '.$admin->last_name.' and Shipped via '. $request->agent .' on ';
+            $agent = $request->agent;
             foreach ($sim_request as $request) {
                 if ($request->delivery_status == 0) {
+                    if($agent == 'Soft Delivery'){
+                        try {
+                            $request_id    = $request->id;
+                            SoftDelivery::dispatch($request_id)
+                                    ->delay(Carbon::now()->addSeconds(10));
+                        } catch (\Exception $e) {
+                            Log::error('SoftDelivery',[
+                                'error' =>   $e->getMessage()
+                            ]);
+                        }
+                        
+                    }
                     DB::beginTransaction();
                     try {
                         DB::table('tbl_sim_request')->where('id', $request->id)->update(['delivery_status' => 1]);

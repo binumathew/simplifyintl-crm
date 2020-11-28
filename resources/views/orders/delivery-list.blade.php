@@ -218,7 +218,7 @@
                 var id = $(this).attr('data-id');
                 if ($(this).val() == 1) {
                     $('#orderCustomLabel').text('Update Order Status');
-                    $('#orderCustombody').html('<div class="form-group"><label class="form-label">Shipping Via</label> <select id="shiping_process" class="form-control" name="shiping_process"> <option value="Royal Mail First Class Delivery" selected>Royal Mail First Class</option> <option value="Royal Mail Special Delivery">Royal Mail Special Delivery</option> <option value="Royal Mail Next Day Delivery">Royal Mail Next Day Delivery</option> <option value="other">Other</option> </select></div> <div class="form-group d-none other_delivery"> <input type="text" name="shiping_agent" id="shiping_agent" class="form-control" required placeholder="Shipping Agent Name" value="Royal Mail First Class Delivery"></div> <div id="custom_status"></div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_shipping" data-id="'+ id +'" class="btn btn-success pull-right">Save</button>');
+                    $('#orderCustombody').html('<div class="form-group"><label class="form-label">Shipping Via</label> <select id="shiping_process" class="form-control" name="shiping_process"> <option value="Royal Mail First Class Delivery" selected>Royal Mail First Class</option> <option value="Royal Mail Special Delivery">Royal Mail Special Delivery</option> <option value="Royal Mail Next Day Delivery">Royal Mail Next Day Delivery</option><option value="Soft Delivery">Soft Delivery</option> <option value="other">Other</option> </select></div> <div class="form-group d-none other_delivery"> <input type="text" name="shiping_agent" id="shiping_agent" class="form-control" required placeholder="Shipping Agent Name" value="Royal Mail First Class Delivery"></div> <div id="custom_status"></div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="action_shipping" data-id="'+ id +'" class="btn btn-success pull-right">Save</button>');
                     $('#orderCustomModal').modal('show');
                 }else{
                     $('#orderCustomLabel').text('Order Cancellation');
@@ -414,7 +414,7 @@
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
                                     $('#custom_status').html('<div class="text-success">'+data.message+'</div>');
-                                    $('#orderCustomModal').modal('hide');
+                                    //$('#orderCustomModal').modal('hide');
                                     $('#orderlist').DataTable().draw();
                                 }
                             }
