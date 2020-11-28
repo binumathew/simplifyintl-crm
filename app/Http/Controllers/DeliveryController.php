@@ -9,6 +9,7 @@ use Excel;
 use Helper;
 use DataTables;
 use Carbon;
+use Utils;
 use App\Models\SimList;
 use App\Models\SimRequest;
 use Illuminate\Http\Request;
@@ -380,7 +381,13 @@ class DeliveryController extends Controller
         if ($sim_request->isEmpty()) {
             return response()->json(['error' => true, 'message' => 'Order details doesn\'t exist']);
         }
-        $view = view('welcome-letter', compact('sim_request'))->render();
+        $qrcode   = '';
+        $sim_list = SimList::where('request_id',$request_id)->first();
+        $qrdata = $sim_list->stock->stockcode->qr_code;
+        if($qrdata){
+            $qrcode =  Utils::qrcode($qrdata);
+        }
+        $view = view('welcome-letter', compact('sim_request','qrcode'))->render();
         return response()->json(['error' => false, 'html' => $view]);
     }
 
