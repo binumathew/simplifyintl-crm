@@ -414,7 +414,7 @@
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
                                 } else {
                                     $('#custom_status').html('<div class="text-success">'+data.message+'</div>');
-                                    //$('#orderCustomModal').modal('hide');
+                                    $('#orderCustomModal').modal('hide');
                                     $('#orderlist').DataTable().draw();
                                 }
                             }
