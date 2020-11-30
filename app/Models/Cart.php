@@ -16,7 +16,7 @@ class Cart extends Model
 {
     protected $table = 'tbl_cart';
 
-    protected $fillable = ['user_id', 'category', 'category_id', 'amount', 'provider', 'promocode','sim_count','item_count'];
+    protected $fillable = ['user_id', 'category', 'category_id', 'amount', 'provider', 'promocode','sim_count','item_count','e_sim'];
     
     public $timestamps = false;
 
@@ -25,6 +25,7 @@ class Cart extends Model
         // $this->hasMany('App\Models\CartList','cart_id','id')
                 // ->where('expire_at','<', Carbon::now())->delete();
         $cart_id = $this->id;
+        $esim    = $this->e_sim;
         $selected = $this->hasMany('App\Models\CartList','cart_id','id')->get();
         $expire_at = Carbon::now()->addMinutes(20)->format('Y-m-d H:i:s');
         
@@ -43,7 +44,8 @@ class Cart extends Model
                                     $query->where('box_no', $box_no);
                                 }
                 $auto = $query->where('provider', $provider)
-                            ->where('status', 1)->first();
+                            ->where('status', 1)
+                            ->where('e_sim',$esim)->first();
                 if($auto){
                     CartList::where('id', $list->id)
                         ->update(['stock_id' => $auto->id, 'expire_at' => $expire_at]);  
@@ -69,7 +71,8 @@ class Cart extends Model
                                 $query->where('box_no', $box_no);
                             }
                 $auto = $query->where('provider', $provider)
-                            ->where('status', 1)->first();
+                            ->where('status', 1)
+                            ->where('e_sim',$esim)->first();
                 if($auto){            
                     $reserve = ['cart_id' => $cart_id, 'stock_id' => $auto->id, 
                                 'created_at' => $created_at, 'expire_at' => $expire_at];

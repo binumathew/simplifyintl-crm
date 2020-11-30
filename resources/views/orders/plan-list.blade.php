@@ -47,6 +47,15 @@
                                 <div class="tab-content">
                                     @foreach($providers as $key => $provider)
                                     <div class="tab-pane {{($key == '0')?'active':''}} p-3" id="{{strtolower($provider->provider)}}" role="tabpanel">
+                                    @if($provider->short_code == 'E_SIM')
+                                    <div class="p-3" style="padding:0 0 1rem;">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="e_sim" name="e_sim" value="1">
+                                                <label class="custom-control-label" for="e_sim">ESIM</label>
+                                            </div>
+                                        </div>
+                                    <br>  
+                                    @endif
                                         <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                             <table class="table table-striped dt-responsive nowrap table-vertical datatable" width="100%" cellspacing="0">
                                                 <thead>
@@ -142,6 +151,7 @@
                             $('#plan_error').html('<div class="alert alert-danger alert-colored mb-0" role="alert">Please select atleast one product!</div>');
                         }
                     });
+                    
                 });
             </script>
         </div>

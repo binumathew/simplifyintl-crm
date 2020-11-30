@@ -93,17 +93,18 @@ class OrderController extends Controller
     * @return status
     */
     public function selected_plan(Request $request)
-    {        
+    {       
         $error = true; $user_id = 0;
         $promo = Auth::user()->promocode;
-        $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];        
+        $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];   
+        $esim    = $request->e_sim ?? 0;    
         foreach($request->product as $key => $quantity){
             $plan = TblPlan::where('id', $key)->first();
             if($quantity){                
                 if(Cart::whereIn('id', $cartIds)->where('category_id', $plan->id)->exists()){
-                    $cart = Cart::whereIn('id', $cartIds)->where('category_id', $plan->id)->update(['sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price,'promocode' => $promo]);
+                    $cart = Cart::whereIn('id', $cartIds)->where('category_id', $plan->id)->update(['sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price,'promocode' => $promo,'e_sim'=>$esim]);
                 }else{
-                    $cart = Cart::create(['category' => 'plan', 'category_id' => $plan->id, 'provider' => $plan->sim_provider->id, 'sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price, 'promocode' => $promo, 'user_id' => $user_id]);
+                    $cart = Cart::create(['category' => 'plan', 'category_id' => $plan->id, 'provider' => $plan->sim_provider->id, 'sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price, 'promocode' => $promo, 'user_id' => $user_id,'e_sim'=>$esim]);
                     array_push($cartIds, $cart->id);            
                     $request->session()->put('cart_id', $cartIds);
                 }
