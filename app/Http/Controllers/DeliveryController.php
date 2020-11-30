@@ -112,17 +112,25 @@ class DeliveryController extends Controller
                 if ($request->delivery_status == 0) {
                     $request_id    = $request->id;
                     $simlist = SimList::where('request_id',$request_id)->first();
-                    if($agent == 'Soft Delivery' && $simlist->stock->e_sim){
-                        try {
+                    if($simlist->stock->provider == 'E_SIM' && $agent == 'Soft Delivery'){
+                        if( $simlist->stock->e_sim){
+                            try {
+                                
+                                SoftDelivery::dispatch($request_id)
+                                        ->delay(Carbon::now()->addSeconds(10));
+                            } catch (\Exception $e) {
+                                Log::error('SoftDelivery',[
+                                    'error' =>   $e->getMessage()
+                                ]);
+                            }
                             
-                            SoftDelivery::dispatch($request_id)
-                                    ->delay(Carbon::now()->addSeconds(10));
-                        } catch (\Exception $e) {
-                            Log::error('SoftDelivery',[
-                                'error' =>   $e->getMessage()
+                        }else{
+                            Log::error('SOFTDELIVERY',[
+                                'order_id' =>   $request->order_id,
+                                'message'=>'Contains physical sim not possible to send as soft delivery'
                             ]);
+                            return response()->json(['error' => true, 'message' => $request->order_id .' contains physical sim. Not possible to send as soft delivery!.']);
                         }
-                        
                     }
                     DB::beginTransaction();
                     try {
