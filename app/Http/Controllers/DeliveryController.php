@@ -110,9 +110,11 @@ class DeliveryController extends Controller
             $agent = $request->agent;
             foreach ($sim_request as $request) {
                 if ($request->delivery_status == 0) {
-                    if($agent == 'Soft Delivery'){
+                    $request_id    = $request->id;
+                    $simlist = SimList::where('request_id',$request_id)->first();
+                    if($agent == 'Soft Delivery' && $simlist->stock->e_sim){
                         try {
-                            $request_id    = $request->id;
+                            
                             SoftDelivery::dispatch($request_id)
                                     ->delay(Carbon::now()->addSeconds(10));
                         } catch (\Exception $e) {
@@ -383,8 +385,8 @@ class DeliveryController extends Controller
         }
         $qrcode   = '';
         $sim_list = SimList::where('request_id',$request_id)->first();
-        $qrdata = $sim_list->stock->stockcode->qr_code;
-        if($qrdata){
+        if($sim_list->stock->e_sim){
+            $qrdata = $sim_list->stock->stockcode->qr_code;
             $qrcode =  Utils::qrcode($qrdata);
         }
         $view = view('welcome-letter', compact('sim_request','qrcode'))->render();
