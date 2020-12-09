@@ -541,6 +541,11 @@ class ActivationController extends Controller
                     $subscribe->sendsms         = $sim_data->send_sms;
                     $subscribe->takepayment     = $sim_data->take_payment;
                     $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
+                    Log::error('ESIMSUBSCRIPTION',[
+                        'user_id' => $user->id,
+                        'error' =>   $bundlesubscrib
+                    ]);
+                    return;
                     if($bundlesubscrib == false){
                         return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
                     }
