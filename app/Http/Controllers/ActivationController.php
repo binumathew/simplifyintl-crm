@@ -545,7 +545,6 @@ class ActivationController extends Controller
                         'user_id' => $user->id,
                         'error' =>   $bundlesubscrib
                     ]);
-                    return;
                     if($bundlesubscrib == false){
                         return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
                     }
