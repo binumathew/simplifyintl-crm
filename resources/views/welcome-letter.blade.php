@@ -89,12 +89,12 @@ $simList = $request->list()->get();
                 @endif
                 <ol>
                     <li><strong>Call your friendly {{ config('settings.app_name') }} Customer Service team on 0333 9989 900</strong></li>
-                    @if($list->stock->provider =='E_SIM' && $list->stock->e_sim)
+                    @if($list->stock->provider =='E_SIM' && $list->stock->is_esim)
                     <li><strong>Scan the Qrcode</strong></li>
                     @endif
                     
                 </ol>
-                @if($list->stock->provider =='E_SIM' && $list->stock->e_sim)
+                @if($list->stock->provider =='E_SIM' && $list->stock->is_esim)
                 <img src="{{$qrcode}}" alt="QR Code" width="200" height="200" style="display: block;margin-left: auto;margin-right: auto;"/>
                 @endif
                 <div class="line">&nbsp;</div>
