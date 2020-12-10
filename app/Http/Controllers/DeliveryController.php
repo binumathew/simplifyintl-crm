@@ -114,7 +114,7 @@ class DeliveryController extends Controller
                     $request_id    = $request->id;
                     $simlist = SimList::where('request_id',$request_id)->first();
                     if($simlist->stock->provider == 'E_SIM' && $agent == 'Soft Delivery'){
-                        if( $simlist->stock->e_sim){
+                        if( $simlist->stock->is_esim){
                             try {
                                 
                                 SoftDelivery::dispatch($request_id)
