@@ -394,7 +394,7 @@ class DeliveryController extends Controller
         }
         $qrcode   = '';
         $sim_list = SimList::where('request_id',$request_id)->first();
-        if($sim_list->stock->e_sim){
+        if($sim_list->stock->is_esim){
             $qrdata = $sim_list->stock->stockcode->qr_code;
             $qrcode =  Utils::qrcode($qrdata);
         }
