@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use Mail;
+use Helper;
 use App\Mail\OrderRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -40,9 +41,11 @@ class OrderRequestJob implements ShouldQueue
     public function handle()
     {
         $when = now()->addMinutes(5);
+        $bcc_emails = Helper::get_option('bcc_emails');
+        $bcc_emails = explode(',', $bcc_emails);
         Mail::to($this->details->email)
             // ->cc()
-            ->bcc('jijo.joseph@gencomtel.com')
+            ->bcc($bcc_emails)
             ->send(new OrderRequest($this->details));
             // ->later($when, new OrderRequest($obj));
     }

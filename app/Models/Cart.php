@@ -16,7 +16,7 @@ class Cart extends Model
 {
     protected $table = 'tbl_cart';
 
-    protected $fillable = ['user_id', 'category', 'category_id', 'amount', 'provider', 'promocode','sim_count','item_count','e_sim'];
+    protected $fillable = ['user_id', 'category', 'category_id', 'amount', 'provider', 'promocode','sim_count','item_count','is_esim'];
     
     public $timestamps = false;
 

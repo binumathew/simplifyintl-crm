@@ -93,11 +93,11 @@ class OrderController extends Controller
     * @return status
     */
     public function selected_plan(Request $request)
-    {       
+    {    
         $error = true; $user_id = 0;
         $promo = Auth::user()->promocode;
         $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];   
-        $is_esim = 1;//$request->is_esim ?? 0;    
+        $is_esim = $request->is_esim ?? 1;     
         foreach($request->product as $key => $quantity){
             $plan = TblPlan::where('id', $key)->first();
             if($quantity){                

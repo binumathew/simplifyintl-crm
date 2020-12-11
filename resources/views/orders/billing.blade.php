@@ -68,7 +68,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text" id="dial_code">{{ $dial_code }}</span>
                                             </div>
-                                            <input id="phone" name="phone" type="text" class="form-control identifier" autocomplete="off" value="{{ ($user)? str_replace($user->country->dial_code, '', $user->phone):'' }}">
+                                            <input id="phone" name="phone" type="text" class="form-control identifier" autocomplete="off" value="{{ ($user)? str_replace($user->country->dial_code, '', $user->phone):'' }}" maxlength="12">
                                         </div>
                                     </div>
                                     <div class="col-md-6">

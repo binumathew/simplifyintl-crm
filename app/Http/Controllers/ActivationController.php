@@ -379,6 +379,7 @@ class ActivationController extends Controller
                     $accounts[$sim_data->stock_id] = $sim_account_id;
                 }
             }else if( $provider == 'E_SIM'){
+                
                 try {
                     /* Add/modify customer for Esim */
                     $setlimit      = new \stdClass();
@@ -388,13 +389,21 @@ class ActivationController extends Controller
                    
                     if($sim_data->esim_customer){
                         $modifycustomer  = GlobalSim::ModifyCustomer($user,$setlimit,$sim_data->esim_customer);
-                        if($modifycustomer == false){
+                        if($modifycustomer == false || $modifycustomer['@attributes']['status'] == 'fail'){
+                            Log::error('ModifyCustomer',[
+                                'user_id' => $user->id,
+                                'error' =>   $modifycustomer
+                            ]);
                             return response()->json(['error' => true, 'message' => 'Modify customer failed..']);
                         }
                         $esim_customer_id = $modifycustomer['customer']['id'];
                     }else{
                         $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
-                        if($addcustomer == false){
+                        if($addcustomer == false ||  $addcustomer['@attributes']['status'] == 'fail'){
+                            Log::error('AddCustomer',[
+                                'user_id' => $user->id,
+                                'error' =>   $addcustomer
+                            ]);
                             return response()->json(['error' => true, 'message' => 'Adding customer failed..']);
                         }
                         $esim_customer_id = $addcustomer['customer']['id'];
@@ -404,13 +413,21 @@ class ActivationController extends Controller
                     /* Add/modify user for Esim */
                     if($sim_data->esim_user){
                         $modifyuser      = GlobalSim::ModifyUser($user,$esim_customer_id,$sim_data->esim_user);
-                        if($modifyuser == false){
+                        if($modifyuser == false || $modifyuser['@attributes']['status'] == 'fail'){
+                            Log::error('ModifyUser',[
+                                'user_id' => $user->id,
+                                'error' =>   $modifyuser
+                            ]);
                             return response()->json(['error' => true, 'message' => 'Modify user failed..']);
                         }
                         $esim_user_id = $modifyuser['user']['id'];
                     }else{
                         $adduser      = GlobalSim::AddUser($user,$esim_customer_id);
-                        if($adduser == false){
+                        if($adduser == false || $adduser['@attributes']['status'] == 'fail'){
+                            Log::error('AddUser',[
+                                'user_id' => $user->id,
+                                'error' =>   $modifyuser
+                            ]);
                             return response()->json(['error' => true, 'message' => 'Adding user failed..']);
                         }
                         $esim_user_id = $adduser['user']['id'];
@@ -541,11 +558,11 @@ class ActivationController extends Controller
                     $subscribe->sendsms         = $sim_data->send_sms;
                     $subscribe->takepayment     = $sim_data->take_payment;
                     $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
-                    Log::error('ESIMSUBSCRIPTION',[
-                        'user_id' => $user->id,
-                        'error' =>   $bundlesubscrib
-                    ]);
-                    if($bundlesubscrib == false){
+                    if($bundlesubscrib == false || $bundlesubscrib['@attributes']['status'] == 'fail'){
+                        Log::error('ESIMSUBSCRIPTION',[
+                            'user_id' => $user->id,
+                            'error' =>   $bundlesubscrib
+                        ]);
                         return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
                     }
                     $subsrib_id = $bundlesubscrib['subscriptionid'];

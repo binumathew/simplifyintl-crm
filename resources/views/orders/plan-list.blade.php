@@ -50,8 +50,8 @@
                                     @if($provider->short_code == 'E_SIM')
                                     <div class="p-3" style="padding:0 0 1rem;">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="is_esim" name="is_esim" value="1">
-                                                <label class="custom-control-label" for="is_esim">ESIM</label>
+                                                <input type="checkbox" class="custom-control-input" id="is_esim" name="is_esim" value="0">
+                                                <label class="custom-control-label" for="is_esim">Physical Sim</label>
                                             </div>
                                         </div>
                                     <br>  

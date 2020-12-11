@@ -16,7 +16,7 @@
 										<p>									
 											Scan the Qrcode to activate the sim. 
 										</p>	
-										<img src="{{$data->qrcode}}" alt="QR Code" />																
+										<img src="{{$data->qrcode}}" alt="QR Code" width="300" height="300"/>																
      								</span>
 								</p>
 								<p>***This is an automatically generated email, please do not reply***</p>
