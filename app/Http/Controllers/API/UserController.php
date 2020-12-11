@@ -19,15 +19,13 @@ class UserController extends Controller
 	public function handleWebhook(Request $request)
 	{
             try{
-
-
-                Log::info('globalsim-webhook',[
-                    'all'  =>  $request->all(),
-                    'content' => $request->getContent(),
-                    'parsed' => GlobalSim::webhookContent($request->getContent()),
-                    'method' => $request->method(),
-                    'query' => $request->query()
-                ]);
+                // Log::info('globalsim-webhook',[
+                //     'all'  =>  $request->all(),
+                //     'content' => $request->getContent(),
+                //     'parsed' => GlobalSim::webhookContent($request->getContent()),
+                //     'method' => $request->method(),
+                //     'query' => $request->query()
+                // ]);
 
                 return [
                     'result' => true
@@ -39,22 +37,6 @@ class UserController extends Controller
                 ];
             }
     }
-
-    public function qrcode(Request $request)
-	{
-            try{
-                $qrcode = gzencode(Utils::qrcode('LPA:1$ecprsp.eastcompeace.com$2D5DB6B3962D4ECC8C871E068708900D') ,9);
-                return response($qrcode)
-                        ->header('Content-Type','image/svg+xml')
-                        ->header('Vary', 'Accept-Encoding')
-                        ->header('Content-Encoding', 'gzip');
-            }catch(\Exception $e){
-                return [
-                    'result'    => false,
-                    'error' =>  $e->getMessage()
-                ];
-            }
-	}
 }
 
 
