@@ -154,6 +154,7 @@
                     <div class="card m-b-20">
                         <div class="card-body">
                             <form action="{{ url('/save-task')}}" method="post" id="task-form">
+                            @csrf
                                 <div class="form-group col-md-12">
                                     @if(isset($task))
                                     <input type="hidden" id="task_id" name="id" value="{{$task->id}}">

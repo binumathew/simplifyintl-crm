@@ -166,7 +166,7 @@
                     },
                     type:"POST",
                     url:base_url+'/execute-task',
-                    headers: { 'X-CSRF-TOKEN': $('input[name=_token]').val()  },
+                    // headers: { 'X-CSRF-TOKEN': $('input[name=_token]').val()  },
                     data:{task_id:task_id},
                     success:function(){
                         location.reload();
