@@ -39,8 +39,8 @@ class GlobalSim implements ShouldQueue
     public function handle()
     {
 
-        $from               = Carbon::now()->subDays(3)->format('Y-m-d').'T00:00:00';
-        $to                 = Carbon::now()->subDays(3)->format('Y-m-d').'T23:59:59';
+        $from               = Carbon::now()->format('Y-m-d').'T00:00:00';
+        $to                 = Carbon::now()->format('Y-m-d').'T23:59:59';
         $user_id            = $this->user_id;
 
         $seller_margin      = Utils::settings('seller_percent');
