@@ -40,7 +40,7 @@ use App\Models\SimRequest;
 use App\Models\UserPayment;
 use App\Models\AutoRecharge;
 use App\Models\UserCreditCard;
-
+use App\Models\Account;
 
 use Illuminate\Http\Request;
 use Twilio\Rest\Client;
@@ -549,31 +549,54 @@ class ActivationController extends Controller
                 // $response = Helper::call_sim_process_api($end_point, json_encode($data));
                 $response = json_decode('{"orderCode":"ee_custom","Subscription":{"SubscriptionId":"ee_custom_id"},"resultType":"Ok","resultCode":"0"}');
             }if(is_null($user_data->sim_subscription_id) && $provider == 'E_SIM'){
-                try {
-                    $subscribe = new \StdClass;
-                    $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
-                    $subscribe->msisdn    = $sim_data->stock->phone_number;
-                    $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
-                    $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
-                    $subscribe->sendsms         = $sim_data->send_sms;
-                    $subscribe->takepayment     = $sim_data->take_payment;
-                    $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
-                    if($bundlesubscrib == false || $bundlesubscrib['@attributes']['status'] == 'fail'){
+                if($sim_data->auto_plan->plan->sim_billing_plan != 0){
+                    try {
+                        $subscribe = new \StdClass;
+                        $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
+                        $subscribe->msisdn    = $sim_data->stock->phone_number;
+                        $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
+                        $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
+                        $subscribe->sendsms         = $sim_data->send_sms;
+                        $subscribe->takepayment     = $sim_data->take_payment;
+                        $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
+                        if($bundlesubscrib == false || $bundlesubscrib['@attributes']['status'] == 'fail'){
+                            Log::error('ESIMSUBSCRIPTION',[
+                                'user_id' => $user->id,
+                                'error' =>   $bundlesubscrib
+                            ]);
+                            return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
+                        }
+                        $subsrib_id = $bundlesubscrib['subscriptionid'];
+                    } catch (\Exception $e) {
                         Log::error('ESIMSUBSCRIPTION',[
                             'user_id' => $user->id,
-                            'error' =>   $bundlesubscrib
+                            'error' =>   $e->getMessage()
                         ]);
-                        return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
+                        return response()->json(['error' => true, 'message' => 'subscription failed..']);
                     }
-                    $subsrib_id = $bundlesubscrib['subscriptionid'];
-                    $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
-                } catch (\Exception $e) {
-                    Log::error('ESIMSUBSCRIPTION',[
-                        'user_id' => $user->id,
-                        'error' =>   $e->getMessage()
-                    ]);
-                    return response()->json(['error' => true, 'message' => 'subscription failed..']);
                 }
+                if($sim_data->auto_plan->plan->prepaid_credit != 0){
+                    try {
+                        $addcreditreq = GlobalSim::AddPrePaidCredit($user->userDetail->esim_customer,$sim_data->auto_plan->plan->prepaid_credit);
+                        if($addcreditreq == false || $addcreditreq['@attributes']['status'] == 'fail'){
+                            Log::error('AddPrePaidCredit',[
+                                'user_id' => $user->id,
+                                'error' =>   $addcreditreq
+                            ]);
+                            return response()->json(['error' => true, 'message' =>'Add credit failed']);
+                        }
+                        $user_balance = Account::where('user_id',$user->id)->first();
+                        $balance['balance_amount'] = $user_balance->balance_amount + $sim_data->auto_plan->plan->prepaid_credit;
+                        Account::where('user_id', $user->id)->update($balance);
+                    } catch (\Exception $e) {
+                        Log::error('AddPrePaidCredit',[
+                            'user_id' => $user->id,
+                            'error' =>   $e->getMessage()
+                        ]);
+                        return response()->json(['error' => true, 'message' => 'Add credit failed..']);
+                    }
+                }
+                $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
             } else {
                 $response = json_decode('{"orderCode":"o2order","Subscription":{"SubscriptionId":"o2subid"},"resultType":"Ok","resultCode":"0"}');
             }

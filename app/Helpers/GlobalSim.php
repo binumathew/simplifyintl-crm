@@ -367,6 +367,31 @@ class GlobalSim {
             return false;
         }
     }
+    public static function AddPrePaidCredit($esim_customer,$amount){
+        try{
+            $params = [
+                'Credit' =>[
+                    'CustomerID'=>$esim_customer,
+                    'Amount'=>$amount,
+                    'Narrative'=>"Add Credit ".$esim_customer,
+                ],
+                'Authentication' => [
+                    'Username' => config('services.globalsim.username'),
+                    'Password' => config('services.globalsim.password'),
+                ]
+                ];
+            $result = self::get($params,'AddPrePaidCredit');
+            if($result !== false) {
+                return  json_decode(json_encode(simplexml_load_string($result)),true);
+            }
+            return false;
+        }catch(\Exception $e){
+            Log::error('AddPrePaidCredit',[
+                'error' =>   $e->getMessage()
+            ]);
+            return false;
+        }
+    }
 
 }
 
