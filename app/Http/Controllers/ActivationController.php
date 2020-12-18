@@ -470,6 +470,7 @@ class ActivationController extends Controller
                         ->update(['sim_account_id' => $account_id]);
                 $accounts[$sim_data->stock_id] = $account_id;
             }
+            AutoPlan::whereId($sim_data->autoplan_id)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
             SimList::where('id', $sim_data->id)->update(['user_id' => $user->id]);
             User::where('id', $user->id)->update(['dealer_id' => $dealer_id]);
         }
