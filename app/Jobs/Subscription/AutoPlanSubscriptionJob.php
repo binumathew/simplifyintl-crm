@@ -58,6 +58,8 @@ class AutoPlanSubscriptionJob //implements ShouldQueue
                 $blocked = Helper::check_fraudster($item->user_id);
 
                 if($user && !$blocked){
+                    $net_out_charge = $vat_out_charge = $total_out_charge = $billamount = $billtax = $billtotal = 0;
+
                     $next_renewal       = Carbon::now()->addDays(30)->format('Y-m-d');
 
                     $childlist          = explode(',', $item->user_list); 
@@ -73,13 +75,13 @@ class AutoPlanSubscriptionJob //implements ShouldQueue
 
                     if($item->plan->provider == 'E_SIM'){
                         if($item->plan->prepaid_credit != 0){
+                            $esim_credit_amount = 0;
                             $esim_credit_amount = ($item->plan->prepaid_credit * $childcount);
                             $esim_credit        = Helper::vataddCalculation($esim_credit_amount,$user->country->tax);
-                            $esim_credit_tax    = $esim_credit->tax_amount;
-                            $esim_credit_total  = $esim_credit->total_amount;
+
                             $billamount = $billamount + $esim_credit_amount;
-                            $billtax    = $billtax + $esim_credit_tax;
-                            $billtotal  = $billtotal + $esim_credit_total;
+                            $billtax    = $billtax + $esim_credit->tax_amount;
+                            $billtotal  = $billtotal + $esim_credit->total_amount;
                         }
                     }
 
