@@ -160,6 +160,29 @@ class GlobalSim {
             return false;
         }
     }
+    public static function BundleUnSubscribe($unsubscribe){
+        try{
+            $params = [
+                'bundleid' => $unsubscribe->bundle_id,
+                'sim' => $unsubscribe->msisdn,
+                'action' => $unsubscribe->action,
+                'Authentication' => [
+                    'Username' => config('services.globalsim.username'),
+                    'Password' => config('services.globalsim.password'),
+                ]
+                ];
+            $result = self::get($params,'BundleUnSubscribe');
+            if($result !== false) {
+                return  json_decode(json_encode(simplexml_load_string($result)),true);
+            }
+            return false;
+        }catch(\Exception $e){
+            Log::error('BundleUnSubscribe',[
+                'error' =>   $e->getMessage()
+            ]);
+            return false;
+        }
+    }
     public static function AddCustomer($user,$setlimit){
         try{
             $params = [

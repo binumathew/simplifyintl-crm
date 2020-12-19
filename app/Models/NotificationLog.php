@@ -8,7 +8,7 @@ class NotificationLog extends Model
 {
 	protected $table = 'notification_log';
 
-    protected $fillable = ['user_id', 'message', 'description', 'status'];
+    protected $fillable = ['user_id', 'message', 'description', 'status','payload'];
     
     public $timestamps = true;
 }

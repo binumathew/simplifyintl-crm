@@ -964,5 +964,122 @@ class Helper
         }else { $phone = '+'.$phone;}
         return $phone;
     }
+    public static function paypalReferencePayment($billamount,$referenceid,$currency,$i_account){
+
+        try{
+            $api_endpoint   = 'https://api-3t.paypal.com/nvp';
+            $api_user       = Helper::get_option('paypal_nvp_username');
+            $api_password   = Helper::get_option('paypal_nvp_password');
+            $api_signature  = Helper::get_option('paypal_nvp_signature');
+            $version        = urlencode('86.0');  
+            $method_name    = 'DoReferenceTransaction';
+            $payment_type   = urlencode('Sale'); 
+
+            $nvp_req = "METHOD=$method_name&VERSION=$version&PWD=$api_password&USER=$api_user&SIGNATURE=$api_signature&PAYMENTACTION=$payment_type&AMT=$billamount&REFERENCEID=$referenceid&CURRENCYCODE=$currency&CUSTOM=$i_account";
+
+            $response           = Helper::call_nvp_payment($api_endpoint, $nvp_req); 
+            $response['status'] = strtoupper($response["ACK"]);
+            return $response;
+        }catch(\Exception $e){
+            Log::error('paypalReferencePayment',[
+                'error' =>   $e->getMessage(),
+                'reference_id'=>$referenceid
+            ]);
+            return false;
+        }
+    }
+    public static function braintreeReferencePayment($billamount,$referenceid){
+
+        try{
+            $gateway = Helper::get_btree_gateway();
+
+            $sale = $gateway->transaction()->sale([
+                    'amount' => $billamount,
+                    'paymentMethodToken' => $referenceid,
+                    'options' => [
+                        'submitForSettlement' => True
+                    ]
+                ]);
+
+            if(isset($sale->success) && $sale->success == true){
+                $response['status'] = 'SUCCESS';
+                $response['TRANSACTIONID'] = $sale->transaction->id;
+            }else{
+                $response['status'] = 'FAILED';
+                $response['L_ERRORCODE0'] = '';
+                $response['L_SHORTMESSAGE0'] = '';
+                $response['L_LONGMESSAGE0'] = $sale->message;
+            }
+            return $response;
+        }catch(\Exception $e){
+            Log::error('braintreeReferencePayment',[
+                'error' =>   $e->getMessage(),
+                'reference_id'=>$referenceid
+            ]);
+            return false;
+        }
+    }
+    public static function stripeReferencePayment($billamount,$referenceid,$user_id){
+        $success = false;
+        try{
+            $stripe        = Stripe::setApiKey(config('services.stripe.secret'));
+            $user          = User::where('id', $user_id)->first();
+            $customer_id   = $user->userDetail->stripe_customer;
+            
+            $intent = \Stripe\PaymentIntent::create([
+                'amount' => $billamount * 100,
+                'currency' =>$user->country->currency,
+                'customer' => $customer_id,
+                'payment_method' => $referenceid,
+                'off_session' => true,
+                'confirm' => true,
+                'description' => 'Monthly plan subscription',
+            ]);
+            
+            $response['status'] = 'SUCCESS';
+            $response['TRANSACTIONID'] = $intent->id;
+            $response['txn_card_id']   = $intent->payment_method;
+            $success = true;
+            return $response;
+        }catch(\Stripe\Error\Card $e) {
+            $error = $e->getJsonBody();
+
+        }catch(\Stripe\Exception\CardException $e) {
+            // Card was declined.
+            $error = $e->getJsonBody();
+        } catch (\Stripe\Exception\RateLimitException $e) {
+            // Too many requests made to the API too quickly
+            $error = $e->getJsonBody();
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+          // Invalid parameters were supplied to Stripe's API
+            $error = $e->getJsonBody();
+        } catch (\Stripe\Exception\AuthenticationException $e) {
+          // Authentication with Stripe's API failed
+          // (maybe you changed API keys recently)
+            $error = $e->getJsonBody();
+        } catch (\Stripe\Exception\ApiConnectionException $e) {
+          // Network communication with Stripe failed
+            $error = $e->getJsonBody();
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+          // Display a very generic error to the user, and maybe send
+          // yourself an email
+            $error = $e->getJsonBody();
+        } catch (\Exception $e) {
+
+          $error = ['Something else happened, completely unrelated to Stripe'];
+        }
+        if($success == false){
+            Log::error('stripeReferencePayment',[
+                'error' =>   $error,
+                'reference_id'=>$referenceid
+            ]);
+            $response['status'] = 'FAILED';
+            $response['L_ERRORCODE0'] = '';
+            $response['L_SHORTMESSAGE0'] = '';
+            $response['L_LONGMESSAGE0'] = json_encode($error);
+            return $response;
+        }
+        
+    }
 }
 ?>

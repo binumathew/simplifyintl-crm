@@ -3,14 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Model
 {
+    use Notifiable;
+
     protected $table = 'users';
     
     protected $fillable = ['name', 'first_name', 'last_name','username', 'phone', 'email', 'password', 'country_id', 'parent_id', 'stock_id', 'switch_id', 'time_zone', 'status'];
 
     public $timestamps = true;
+
+    public function routeNotificationForTwilio()
+    {
+        return $this->phone;
+    }
 
     public function country()
     {
