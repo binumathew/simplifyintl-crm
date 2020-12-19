@@ -4,6 +4,7 @@ use DB;
 use Auth;
 use Session;
 use Carbon;
+use Log;
 use Braintree_Gateway;
 use App\Models\User;
 use App\Models\Country;
