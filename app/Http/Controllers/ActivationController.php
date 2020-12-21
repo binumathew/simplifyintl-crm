@@ -568,6 +568,8 @@ class ActivationController extends Controller
                             return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
                         }
                         $subsrib_id = $bundlesubscrib['subscriptionid'];
+                        DB::table('user_data')->where('user_id', $user->id)
+                        ->update(['activate_onfirstuse' => $sim_data->activate_onfirstuse,'send_sms'=>$sim_data->send_sms,'take_payment'=>$sim_data->take_payment]);
                     } catch (\Exception $e) {
                         Log::error('ESIMSUBSCRIPTION',[
                             'user_id' => $user->id,
