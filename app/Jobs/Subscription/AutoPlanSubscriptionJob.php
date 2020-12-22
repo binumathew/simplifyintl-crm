@@ -156,7 +156,8 @@ class AutoPlanSubscriptionJob //implements ShouldQueue
                         $l_msg = isset($result['L_LONGMESSAGE0'])?$result['L_LONGMESSAGE0']:'';
                         $pay_error = json_encode(['code'=>$error_code,'smsg'=>$s_msg,'lmsg'=>$l_msg]);
 
-                        $notifydata = ['user_id'=>$item->user_id,'message' => 'Auto Subscription Payment Failed','description'=>'Sub ID:'.$item->id.', card:'.$item->card_type.', msg:'.$pay_error,'status'=>'0'];
+                        $payload = json_encode(['type'=>'plan_recurring','auto_plan'=>$item->id]);
+                        $notifydata = ['user_id'=>$item->user_id,'message' => 'Auto Subscription Payment Failed','description'=>'Sub ID:'.$item->id.', card:'.$item->card_type.', msg:'.$pay_error,'status'=>'0','payload'=>$payload];
 
                         $notify = $this->failedNotify($notifydata,$item->id,1); 
 
