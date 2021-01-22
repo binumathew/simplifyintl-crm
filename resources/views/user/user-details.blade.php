@@ -111,7 +111,7 @@
                                     <li><a href="#" class="user-details selected " data-view="overview"><i class="mdi mdi-home"></i> Overview </a></li>
                                     <li><a href="#" class="user-details" data-view="basic_details"><i class="mdi mdi-table-edit"></i> Edit Details </a></li>
                                     <li><a href="#" class="user-details" data-view="auto_subscription"><i class="mdi mdi-autorenew"></i> Subscription </a></li>
-                                    <li><a href="#" class="user-details" data-view="credit_debit"><i class="mdi mdi-wallet"></i> Credit/Debit </a></li>
+                                    <!-- <li><a href="#" class="user-details" data-view="credit_debit"><i class="mdi mdi-wallet"></i> Credit/Debit </a></li> -->
                                     <li><a href="{{ url('/direct-debit/'.Crypt::encrypt($user->id))}}" ><i class="mdi mdi-bank"></i> Direct Debit </a></li>
                                     <li><a href="#" class="user-details" data-view="plan_history"><i class="mdi mdi-chart-pie"></i> Plan History </a></li>
                                     <li><a href="#" class="user-details" data-view="call_history"><i class="mdi mdi-phone-outgoing"></i> CDRs </a></li>
