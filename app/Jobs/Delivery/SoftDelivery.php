@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Carbon;
 use Mail;
 use Utils;
+use Log;
 
 use App\Models\User;
 use App\Models\SimList;
