@@ -380,70 +380,70 @@ class ActivationController extends Controller
                 }
             }else if( $provider == 'E_SIM'){
                 
-                try {
-                    /* Add/modify customer for Esim */
-                    $setlimit      = new \stdClass();
-                    $setlimit->bill_limit   = $sim_data->bill_limit;
-                    $setlimit->warn_limit   = $sim_data->warn_limit;
-                    $setlimit->lock_limit   = $sim_data->lock_limit;
+                // try {
+                //     /* Add/modify customer for Esim */
+                //     $setlimit      = new \stdClass();
+                //     $setlimit->bill_limit   = $sim_data->bill_limit;
+                //     $setlimit->warn_limit   = $sim_data->warn_limit;
+                //     $setlimit->lock_limit   = $sim_data->lock_limit;
                    
-                    if($sim_data->esim_customer){
-                        $modifycustomer  = GlobalSim::ModifyCustomer($user,$setlimit,$sim_data->esim_customer);
-                        if($modifycustomer == false || $modifycustomer['@attributes']['status'] == 'fail'){
-                            Log::error('ModifyCustomer',[
-                                'user_id' => $user->id,
-                                'error' =>   $modifycustomer
-                            ]);
-                            return response()->json(['error' => true, 'message' => 'Modify customer failed..']);
-                        }
-                        $esim_customer_id = $modifycustomer['customer']['id'];
-                    }else{
-                        $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
-                        if($addcustomer == false ||  $addcustomer['@attributes']['status'] == 'fail'){
-                            Log::error('AddCustomer',[
-                                'user_id' => $user->id,
-                                'error' =>   $addcustomer
-                            ]);
-                            return response()->json(['error' => true, 'message' => 'Adding customer failed..']);
-                        }
-                        $esim_customer_id = $addcustomer['customer']['id'];
-                    }
-                    /* END Customer for Esim */
+                //     if($sim_data->esim_customer){
+                //         $modifycustomer  = GlobalSim::ModifyCustomer($user,$setlimit,$sim_data->esim_customer);
+                //         if($modifycustomer == false || $modifycustomer['@attributes']['status'] == 'fail'){
+                //             Log::error('ModifyCustomer',[
+                //                 'user_id' => $user->id,
+                //                 'error' =>   $modifycustomer
+                //             ]);
+                //             return response()->json(['error' => true, 'message' => 'Modify customer failed..']);
+                //         }
+                //         $esim_customer_id = $modifycustomer['customer']['id'];
+                //     }else{
+                //         $addcustomer  = GlobalSim::AddCustomer($user,$setlimit);
+                //         if($addcustomer == false ||  $addcustomer['@attributes']['status'] == 'fail'){
+                //             Log::error('AddCustomer',[
+                //                 'user_id' => $user->id,
+                //                 'error' =>   $addcustomer
+                //             ]);
+                //             return response()->json(['error' => true, 'message' => 'Adding customer failed..']);
+                //         }
+                //         $esim_customer_id = $addcustomer['customer']['id'];
+                //     }
+                //     /* END Customer for Esim */
 
-                    /* Add/modify user for Esim */
-                    if($sim_data->esim_user){
-                        $modifyuser      = GlobalSim::ModifyUser($user,$esim_customer_id,$sim_data->esim_user);
-                        if($modifyuser == false || $modifyuser['@attributes']['status'] == 'fail'){
-                            Log::error('ModifyUser',[
-                                'user_id' => $user->id,
-                                'error' =>   $modifyuser
-                            ]);
-                            return response()->json(['error' => true, 'message' => 'Modify user failed..']);
-                        }
-                        $esim_user_id = $modifyuser['user']['id'];
-                    }else{
-                        $adduser      = GlobalSim::AddUser($user,$esim_customer_id);
-                        if($adduser == false || $adduser['@attributes']['status'] == 'fail'){
-                            Log::error('AddUser',[
-                                'user_id' => $user->id,
-                                'error' =>   $modifyuser
-                            ]);
-                            return response()->json(['error' => true, 'message' => 'Adding user failed..']);
-                        }
-                        $esim_user_id = $adduser['user']['id'];
-                    }
-                    /*  END                 */
-                    $account_id = config('settings.app_prefix').$provider.$user->id;
-                    DB::table('user_data')->where('user_id', $user->id)
-                            ->update(['sim_account_id'=>$account_id,'esim_customer'=>$esim_customer_id,'esim_user'=>$esim_user_id,'bill_limit'=>$sim_data->bill_limit,'warn_limit'=>$sim_data->warn_limit,'lock_limit'=>$sim_data->lock_limit]);
-                    $accounts[$sim_data->stock_id] = $account_id;
-                } catch (\Exception $e) {
-                    Log::error('ESIMACTIVATION',[
-                        'user_id' => $user->id,
-                        'error' =>   $e->getMessage()
-                    ]);
-                    return response()->json(['error' => true, 'message' => 'failed to activate account']);
-                }
+                //     /* Add/modify user for Esim */
+                //     if($sim_data->esim_user){
+                //         $modifyuser      = GlobalSim::ModifyUser($user,$esim_customer_id,$sim_data->esim_user);
+                //         if($modifyuser == false || $modifyuser['@attributes']['status'] == 'fail'){
+                //             Log::error('ModifyUser',[
+                //                 'user_id' => $user->id,
+                //                 'error' =>   $modifyuser
+                //             ]);
+                //             return response()->json(['error' => true, 'message' => 'Modify user failed..']);
+                //         }
+                //         $esim_user_id = $modifyuser['user']['id'];
+                //     }else{
+                //         $adduser      = GlobalSim::AddUser($user,$esim_customer_id);
+                //         if($adduser == false || $adduser['@attributes']['status'] == 'fail'){
+                //             Log::error('AddUser',[
+                //                 'user_id' => $user->id,
+                //                 'error' =>   $modifyuser
+                //             ]);
+                //             return response()->json(['error' => true, 'message' => 'Adding user failed..']);
+                //         }
+                //         $esim_user_id = $adduser['user']['id'];
+                //     }
+                //     /*  END                 */
+                //     $account_id = config('settings.app_prefix').$provider.$user->id;
+                //     DB::table('user_data')->where('user_id', $user->id)
+                //             ->update(['sim_account_id'=>$account_id,'esim_customer'=>$esim_customer_id,'esim_user'=>$esim_user_id,'bill_limit'=>$sim_data->bill_limit,'warn_limit'=>$sim_data->warn_limit,'lock_limit'=>$sim_data->lock_limit]);
+                //     $accounts[$sim_data->stock_id] = $account_id;
+                // } catch (\Exception $e) {
+                //     Log::error('ESIMACTIVATION',[
+                //         'user_id' => $user->id,
+                //         'error' =>   $e->getMessage()
+                //     ]);
+                //     return response()->json(['error' => true, 'message' => 'failed to activate account']);
+                // }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $sim_account_id = $user->userDetail->site_id;
                 if(is_null($sim_account_id) || $sim_account_id == ''){
@@ -550,55 +550,55 @@ class ActivationController extends Controller
                 // $response = Helper::call_sim_process_api($end_point, json_encode($data));
                 $response = json_decode('{"orderCode":"ee_custom","Subscription":{"SubscriptionId":"ee_custom_id"},"resultType":"Ok","resultCode":"0"}');
             }if(is_null($user_data->sim_subscription_id) && $provider == 'E_SIM'){
-                if($sim_data->auto_plan->plan->sim_billing_plan != 0){
-                    try {
-                        $subscribe = new \StdClass;
-                        $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
-                        $subscribe->msisdn    = $sim_data->stock->phone_number;
-                        $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
-                        $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
-                        $subscribe->sendsms         = $sim_data->send_sms;
-                        $subscribe->takepayment     = $sim_data->take_payment;
-                        $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
-                        if($bundlesubscrib == false || $bundlesubscrib['@attributes']['status'] == 'fail'){
-                            Log::error('ESIMSUBSCRIPTION',[
-                                'user_id' => $user->id,
-                                'error' =>   $bundlesubscrib
-                            ]);
-                            return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
-                        }
-                        $subsrib_id = $bundlesubscrib['subscriptionid'];
-                        DB::table('user_data')->where('user_id', $user->id)
-                        ->update(['activate_onfirstuse' => $sim_data->activate_onfirstuse,'send_sms'=>$sim_data->send_sms,'take_payment'=>$sim_data->take_payment]);
-                    } catch (\Exception $e) {
-                        Log::error('ESIMSUBSCRIPTION',[
-                            'user_id' => $user->id,
-                            'error' =>   $e->getMessage()
-                        ]);
-                        return response()->json(['error' => true, 'message' => 'subscription failed..']);
-                    }
-                }
-                if($sim_data->auto_plan->plan->prepaid_credit != 0){
-                    try {
-                        $addcreditreq = GlobalSim::AddPrePaidCredit($user->userDetail->esim_customer,$sim_data->auto_plan->plan->prepaid_credit);
-                        if($addcreditreq == false || $addcreditreq['@attributes']['status'] == 'fail'){
-                            Log::error('AddPrePaidCredit',[
-                                'user_id' => $user->id,
-                                'error' =>   $addcreditreq
-                            ]);
-                            return response()->json(['error' => true, 'message' =>'Add credit failed']);
-                        }
-                        $user_balance = Account::where('user_id',$user->id)->first();
-                        $balance['balance_amount'] = $user_balance->balance_amount + $sim_data->auto_plan->plan->prepaid_credit;
-                        Account::where('user_id', $user->id)->update($balance);
-                    } catch (\Exception $e) {
-                        Log::error('AddPrePaidCredit',[
-                            'user_id' => $user->id,
-                            'error' =>   $e->getMessage()
-                        ]);
-                        return response()->json(['error' => true, 'message' => 'Add credit failed..']);
-                    }
-                }
+                // if($sim_data->auto_plan->plan->sim_billing_plan != 0){
+                //     try {
+                //         $subscribe = new \StdClass;
+                //         $subscribe->bundle_id = $sim_data->auto_plan->plan->sim_billing_plan;
+                //         $subscribe->msisdn    = $sim_data->stock->phone_number;
+                //         $subscribe->date      = Carbon::parse($sim_data->activation)->format('Y-m-d H:i:s');
+                //         $subscribe->actfirstuse     = $sim_data->activate_onfirstuse;
+                //         $subscribe->sendsms         = $sim_data->send_sms;
+                //         $subscribe->takepayment     = $sim_data->take_payment;
+                //         $bundlesubscrib = GlobalSim::BundleSubscribe($subscribe);
+                //         if($bundlesubscrib == false || $bundlesubscrib['@attributes']['status'] == 'fail'){
+                //             Log::error('ESIMSUBSCRIPTION',[
+                //                 'user_id' => $user->id,
+                //                 'error' =>   $bundlesubscrib
+                //             ]);
+                //             return response()->json(['error' => true, 'message' =>'Bundle subscription failed']);
+                //         }
+                //         $subsrib_id = $bundlesubscrib['subscriptionid'];
+                //         DB::table('user_data')->where('user_id', $user->id)
+                //         ->update(['activate_onfirstuse' => $sim_data->activate_onfirstuse,'send_sms'=>$sim_data->send_sms,'take_payment'=>$sim_data->take_payment]);
+                //     } catch (\Exception $e) {
+                //         Log::error('ESIMSUBSCRIPTION',[
+                //             'user_id' => $user->id,
+                //             'error' =>   $e->getMessage()
+                //         ]);
+                //         return response()->json(['error' => true, 'message' => 'subscription failed..']);
+                //     }
+                // }
+                // if($sim_data->auto_plan->plan->prepaid_credit != 0){
+                //     try {
+                //         $addcreditreq = GlobalSim::AddPrePaidCredit($user->userDetail->esim_customer,$sim_data->auto_plan->plan->prepaid_credit);
+                //         if($addcreditreq == false || $addcreditreq['@attributes']['status'] == 'fail'){
+                //             Log::error('AddPrePaidCredit',[
+                //                 'user_id' => $user->id,
+                //                 'error' =>   $addcreditreq
+                //             ]);
+                //             return response()->json(['error' => true, 'message' =>'Add credit failed']);
+                //         }
+                //         $user_balance = Account::where('user_id',$user->id)->first();
+                //         $balance['balance_amount'] = $user_balance->balance_amount + $sim_data->auto_plan->plan->prepaid_credit;
+                //         Account::where('user_id', $user->id)->update($balance);
+                //     } catch (\Exception $e) {
+                //         Log::error('AddPrePaidCredit',[
+                //             'user_id' => $user->id,
+                //             'error' =>   $e->getMessage()
+                //         ]);
+                //         return response()->json(['error' => true, 'message' => 'Add credit failed..']);
+                //     }
+                // }
                 $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
             } else {
                 $response = json_decode('{"orderCode":"o2order","Subscription":{"SubscriptionId":"o2subid"},"resultType":"Ok","resultCode":"0"}');
@@ -682,23 +682,23 @@ class ActivationController extends Controller
                         }
                     }
 
-                    $welcome_msg = "Greetings! from ".config('settings.app_name')." Mobile. Now you can download ".config('settings.app_name')." Mobile App for making FREE and affordable international calls. https://bit.ly/2C1SyOw\n\nThankyou.";
+                    // $welcome_msg = "Greetings! from ".config('settings.app_name')." Mobile. Now you can download ".config('settings.app_name')." Mobile App for making FREE and affordable international calls. https://bit.ly/2C1SyOw\n\nThankyou.";
 
-                    $account_sid = Helper::get_option('twilio_account_sid');
-                    $auth_token =  Helper::get_option('twilio_auth_token');
-                    $twilio_number = Helper::get_option('twilio_number');
-                    try {
-                        $client = new Client($account_sid, $auth_token);
-                        $client->messages->create(
-                            $trust_number,
-                            array(
-                                'from' => $twilio_number,
-                                'body' => $welcome_msg
-                            )
-                        );
-                    } catch (RestException $exception) {
+                    // $account_sid = Helper::get_option('twilio_account_sid');
+                    // $auth_token =  Helper::get_option('twilio_auth_token');
+                    // $twilio_number = Helper::get_option('twilio_number');
+                    // try {
+                    //     $client = new Client($account_sid, $auth_token);
+                    //     $client->messages->create(
+                    //         $trust_number,
+                    //         array(
+                    //             'from' => $twilio_number,
+                    //             'body' => $welcome_msg
+                    //         )
+                    //     );
+                    // } catch (RestException $exception) {
 
-                    }
+                    // }
                 }
             }else{
                 NotificationLog::create(['user_id'=>$user->id,'message' => 'Plan Subscription Failed','description'=>json_encode($response).', admin:'.Auth::id(),'status'=>'0']);
