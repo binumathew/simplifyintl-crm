@@ -238,6 +238,9 @@ class GlobalSim {
                     'Password' => config('services.globalsim.password'),
                 ]
                 ];
+            Log::info('modifycustomerrequest',[
+                'request'=>$params
+            ]);
             $result = self::get($params,'ModifyCustomer');
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
