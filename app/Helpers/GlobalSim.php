@@ -316,7 +316,7 @@ class GlobalSim {
                 ],
                 'Contact' =>[
                     'Email'=>$user->email,
-                    'CallKeyID'=>$user->order->order_id,
+                    'CallKeyID'=>$customer_id,
                 ],
                 'Address' =>[
                     'Line1'=>$user->userDetail->address,
