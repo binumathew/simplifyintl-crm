@@ -437,13 +437,13 @@ class ActivationController extends Controller
                     // DB::table('user_data')->where('user_id', $user->id)
                     //         ->update(['sim_account_id'=>$account_id,'esim_customer'=>$esim_customer_id,'esim_user'=>$esim_user_id,'bill_limit'=>$sim_data->bill_limit,'warn_limit'=>$sim_data->warn_limit,'lock_limit'=>$sim_data->lock_limit]);
                     $accounts[$sim_data->stock_id] = $account_id;
-                } catch (\Exception $e) {
-                    Log::error('ESIMACTIVATION',[
-                        'user_id' => $user->id,
-                        'error' =>   $e->getMessage()
-                    ]);
-                    return response()->json(['error' => true, 'message' => 'failed to activate account']);
-                }
+                // } catch (\Exception $e) {
+                //     Log::error('ESIMACTIVATION',[
+                //         'user_id' => $user->id,
+                //         'error' =>   $e->getMessage()
+                //     ]);
+                //     return response()->json(['error' => true, 'message' => 'failed to activate account']);
+                // }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $sim_account_id = $user->userDetail->site_id;
                 if(is_null($sim_account_id) || $sim_account_id == ''){
