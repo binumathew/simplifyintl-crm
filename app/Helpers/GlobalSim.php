@@ -187,7 +187,7 @@ class GlobalSim {
         try{
             $params = [
                 'Customer' =>[
-                    'CompanyName'=>$user->first_name.' '.$user->last_name,
+                    'CompanyName'=>$user->username,
                     'Country'=>$user->country->short_code,
                     'BillingTrigger'=>$setlimit->bill_limit,
                     'WarningTrigger'=>$setlimit->warn_limit,
@@ -221,7 +221,7 @@ class GlobalSim {
             $params = [
                 'Customer' =>[
                     'ID'=>$esim_customer,
-                    'CompanyName'=>$user->first_name.' '.$user->last_name,
+                    'CompanyName'=>$user->username,
                     'Country'=>$user->country->short_code,
                     'BillingTrigger'=>$setlimit->bill_limit,
                     'WarningTrigger'=>$setlimit->warn_limit,
@@ -270,7 +270,7 @@ class GlobalSim {
                 ],
                 'Contact' =>[
                     'Email'=>$user->email,
-                    'CallKeyID'=>$user->order->order_id,
+                    'CallKeyID'=>$customer_id,
                 ],
                 'Address' =>[
                     'Line1'=>$user->userDetail->address,
