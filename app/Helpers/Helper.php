@@ -13,6 +13,7 @@ use App\Models\UserPayment;
 use App\Models\UserCreditCard;
 use App\Models\NotificationLog;
 use App\Models\Cart;
+use App\Models\Account;
 use Braintree_Exception_NotFound;
 
 use Stripe\Stripe;
@@ -623,8 +624,8 @@ class Helper
                 $sim_cost += $list->stock->price;
             }
         }
-
-        $total = $amount + $extra_credit + $sim_cost + $sim_bolt_p + $app_bolt_p;
+        $getcreditamount = Helper::vataddCalculation($extra_credit,$tax);
+        $total = $amount + $sim_cost + $sim_bolt_p + $app_bolt_p + $getcreditamount->total_amount;
 
         $discount_amount = 0;
         $now = Carbon::now()->format('Y-m-d');
@@ -642,10 +643,12 @@ class Helper
             }
         }
 
-
         $net_amount = 100/(100+$tax) * $amount;
-        $vat_amount = $total - $net_amount;
-        $total = $total - $discount_amount;
+        $net_amount = number_format($net_amount,2,'.','');
+        $vat_amount = ($amount - $net_amount) + $getcreditamount->tax_amount;
+        $tax_amount = number_format($vat_amount,2,'.','');
+        $amount     = $total - $tax_amount;
+        $total      = $total - $discount_amount;
         $total_amount = number_format($total, 2, '.', "");
 
         $obj = new \stdClass();

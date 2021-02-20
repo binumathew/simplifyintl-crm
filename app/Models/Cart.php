@@ -16,7 +16,7 @@ class Cart extends Model
 {
     protected $table = 'tbl_cart';
 
-    protected $fillable = ['user_id', 'category', 'category_id', 'amount', 'provider', 'promocode','sim_count','item_count','is_esim'];
+    protected $fillable = ['user_id', 'category', 'category_id', 'amount', 'provider', 'promocode','sim_count','item_count','is_esim','credit'];
     
     public $timestamps = false;
 
@@ -58,6 +58,8 @@ class Cart extends Model
 
         $sim_count = $this->hasMany('App\Models\CartList','cart_id','id')->count();   
         $total_count = $this->sim_count * $this->item_count;
+        $credit      = DB::table('tbl_cart')->select('credit')->whereId($cart_id)->first();
+        $credit      = $credit->credit/$total_count;
         if($total_count > $sim_count){
             $limit = $total_count - $sim_count;        
             $created_at = Carbon::now();
@@ -75,7 +77,7 @@ class Cart extends Model
                             ->where('is_esim',$is_esim)->first();
                 if($auto){            
                     $reserve = ['cart_id' => $cart_id, 'stock_id' => $auto->id, 
-                                'created_at' => $created_at, 'expire_at' => $expire_at];
+                                'created_at' => $created_at, 'expire_at' => $expire_at,'credit'=>$credit];
                     if($total_count > $this->hasMany('App\Models\CartList','cart_id','id')->count()){
                         CartList::insert($reserve);
                     }

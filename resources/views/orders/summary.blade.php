@@ -50,14 +50,21 @@
                                             </thead>
                                             <tbody>
                                             @php $net_amount = $vat_amount = $total_amount = 0;
-                                            $currency = $user->country->currency_symbol; @endphp
+                                            $currency = $user->country->currency_symbol; $credit = 0; @endphp
                                             @foreach($cart as $item)
                                               @php
+                                              if($item->credit != 0){
+                                                  foreach($item->selected as $cartlist){
+                                                    $credit    += $cartlist->credit;
+                                                  }
+                                              }
+                                              $getcredit = Helper::vataddCalculation($credit,$user->country->tax);
+                                              
                                                 $sell_price = $item->product->sell_price;
                                                 $net_sell = Helper::number_format(100/(100 + $user->country->tax) * $sell_price);
                                                 $net_price = Helper::number_format($net_sell * $item->item_count);
                                                 $net_amount += $net_price;
-                                                $vat_amount += (($sell_price * $item->item_count)- $net_price);
+                                                $vat_amount += (($sell_price * $item->item_count)- $net_price) + $getcredit->tax_amount;
                                               @endphp
                                                 <tr>
                                                     <td>{{ $item->product->plan_name }}</td>
@@ -110,9 +117,15 @@
                                                     <td class="text-right" colspan="3">VAT</td>
                                                     <td class="text-right"><b>{{ $currency.number_format($vat_amount,2)}}</b></td>
                                                 </tr>
+                                                @if($credit != 0)
+                                                <tr>
+                                                    <td class="text-right" colspan="3">Credit</td>
+                                                    <td class="text-right"><b>{{ $currency.number_format($credit,2)}}</b></td>
+                                                </tr>
+                                                @endif
                                                 <tr>
                                                     <td class="text-right" colspan="3">Total</td>
-                                                    <td class="text-right"><b>{{ $currency.number_format(($net_amount+$vat_amount),2) }}</b></td>
+                                                    <td class="text-right"><b>{{ $currency.number_format(($net_amount+$vat_amount+$credit),2) }}</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>

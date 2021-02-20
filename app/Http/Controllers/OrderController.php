@@ -97,14 +97,23 @@ class OrderController extends Controller
         $error = true; $user_id = 0;
         $promo = Auth::user()->promocode;
         $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];   
-        $is_esim = $request->is_esim ?? 1;     
+        $is_esim = $request->is_esim ?? 1;    
+        $credit  = 0; 
         foreach($request->product as $key => $quantity){
             $plan = TblPlan::where('id', $key)->first();
-            if($quantity){                
+
+            if(in_array( $plan->sim_provider->short_code,['E_SIM'])){
+                $credit = array_filter(config('topup.topup_amounts'), function($ar) {
+                            return ($ar['default'] == '1');
+                        });
+                $credit = (!empty($credit)) ? $credit[array_key_first($credit)]['amount']/100 : 0;
+            }
+            if($quantity){ 
+                $credit = $credit * $quantity;               
                 if(Cart::whereIn('id', $cartIds)->where('category_id', $plan->id)->exists()){
-                    $cart = Cart::whereIn('id', $cartIds)->where('category_id', $plan->id)->update(['sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price,'promocode' => $promo,'is_esim'=>$is_esim]);
+                    $cart = Cart::whereIn('id', $cartIds)->where('category_id', $plan->id)->update(['sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price,'promocode' => $promo,'is_esim'=>$is_esim,'credit'=>$credit]);
                 }else{
-                    $cart = Cart::create(['category' => 'plan', 'category_id' => $plan->id, 'provider' => $plan->sim_provider->id, 'sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price, 'promocode' => $promo, 'user_id' => $user_id,'is_esim'=>$is_esim]);
+                    $cart = Cart::create(['category' => 'plan', 'category_id' => $plan->id, 'provider' => $plan->sim_provider->id, 'sim_count' => 1, 'item_count' => $quantity, 'amount' => $quantity * $plan->sell_price, 'promocode' => $promo, 'user_id' => $user_id,'is_esim'=>$is_esim,'credit'=>$credit]);
                     array_push($cartIds, $cart->id);            
                     $request->session()->put('cart_id', $cartIds);
                 }
@@ -208,6 +217,7 @@ class OrderController extends Controller
             $list['porting_to'] = $provision['porting_to'][$key];
             $list['pac_no'] = $provision['pac_code'][$key];
             $list['provision_date'] = $provision['transfer'][$key];
+            $list['credit'] = $provision['credit'][$key];
             CartList::where('id', $key)->update($list);
         }
 
@@ -475,8 +485,8 @@ class OrderController extends Controller
                 $sim_cost += $list->stock->price;
             }
         }
-
-        $total = $amount + $extra_credit + $sim_cost + $sim_bolt_p + $app_bolt_p;  
+        $getcreditamount = Helper::vataddCalculation($extra_credit,$tax);
+        $total = $amount + $sim_cost + $sim_bolt_p + $app_bolt_p + $getcreditamount->total_amount;  
 
         $discount_amount = 0;
         $now = Carbon::now()->format('Y-m-d');
@@ -495,9 +505,13 @@ class OrderController extends Controller
         }
         
         $net_amount = 100/(100+$tax) * $amount;
-        $vat_amount = $total - $net_amount;
-        $total = $total - $discount_amount;
+        $net_amount = number_format($net_amount,2,'.','');
+        $vat_amount = ($amount - $net_amount) + $getcreditamount->tax_amount;
+        $tax_amount = number_format($vat_amount,2,'.','');
+        $amount     = $total - $tax_amount;
+        $total      = $total - $discount_amount;
         $total_amount = number_format($total, 2, '.', "");
+        
 
         if($request->gateway != 'Stripe'){
             if($request->credit_card != 'new'){
@@ -518,7 +532,7 @@ class OrderController extends Controller
         }    
         $data['user_id'] = $user->id;
         $data['i_account'] = $user->i_account;
-        $data['currency'] = $user->country->currency;              
+        $data['currency'] = 'INR';//$user->country->currency;              
         $data['net_amount'] = Helper::number_format($net_amount);
         $data['vat_amount'] = Helper::number_format($vat_amount);
         $data['total_amount'] = Helper::number_format($total_amount);
@@ -603,6 +617,7 @@ class OrderController extends Controller
                             $port_data['status'] = 0;
                             DB::table('tbl_porting')->insert($port_data);
                         }
+                        DB::table('auto_plan_meta')->insert(['autoplan_id'=>$auto_plan_id,'credit'=>$item_list[$list_key]->credit]);
                         DB::table('tbl_sim_list')->insert($sim_list);
                         DB::table('tbl_sim_stock')->where('id', $item_list[$list_key]->stock_id)->update(['status' => 0]);
                         $list_key++;

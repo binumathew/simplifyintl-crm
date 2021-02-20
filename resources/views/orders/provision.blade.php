@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-
+			@php $topup = config('topup.topup_amounts'); @endphp
 			<div class="row">
 				<div class="col-md-9">
 					<div class="card m-b-20">
@@ -37,6 +37,7 @@
 											<th>Number To Keep</th>
 											<th>Pac Code</th>
 											<th>Transfer/Activation Date</th>
+											<th>Prepaid Credit</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -73,7 +74,20 @@
 													</div>
 												</div>
 											</td>
+											@if($selected->product->provider == 'E_SIM')
+											@if(!empty($topup))
+											<td>
+												<select name="credit[{{$list->id}}]" class="form-control " data-list_id="{{$list->id}}">
+												@foreach($topup as $key => $top)
+												@php $credit_amount = ($top['amount']/100);  @endphp
+													<option value="{{ $credit_amount }}" {{ ($list->credit == $credit_amount)?'selected':'' }}>£{{ $credit_amount }}</option>
+												@endforeach
+												</select>
+											</td>
+											@endif
+											@endif
 					                    </tr>
+										
 					                    @endforeach
 					                @endforeach
 									</tbody>
