@@ -532,7 +532,7 @@ class OrderController extends Controller
         }    
         $data['user_id'] = $user->id;
         $data['i_account'] = $user->i_account;
-        $data['currency'] = 'INR';//$user->country->currency;              
+        $data['currency'] = $user->country->currency;              
         $data['net_amount'] = Helper::number_format($net_amount);
         $data['vat_amount'] = Helper::number_format($vat_amount);
         $data['total_amount'] = Helper::number_format($total_amount);

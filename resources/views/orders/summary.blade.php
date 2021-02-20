@@ -113,16 +113,16 @@
                                                     <td class="text-right" colspan="3">Sub Total</td>
                                                     <td class="text-right"><b>{{ $currency.number_format($net_amount,2)}}</b></td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="text-right" colspan="3">VAT</td>
-                                                    <td class="text-right"><b>{{ $currency.number_format($vat_amount,2)}}</b></td>
-                                                </tr>
                                                 @if($credit != 0)
                                                 <tr>
                                                     <td class="text-right" colspan="3">Credit</td>
                                                     <td class="text-right"><b>{{ $currency.number_format($credit,2)}}</b></td>
                                                 </tr>
                                                 @endif
+                                                <tr>
+                                                    <td class="text-right" colspan="3">VAT</td>
+                                                    <td class="text-right"><b>{{ $currency.number_format($vat_amount,2)}}</b></td>
+                                                </tr>
                                                 <tr>
                                                     <td class="text-right" colspan="3">Total</td>
                                                     <td class="text-right"><b>{{ $currency.number_format(($net_amount+$vat_amount+$credit),2) }}</b></td>

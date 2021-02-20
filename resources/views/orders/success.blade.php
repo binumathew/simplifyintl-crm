@@ -62,7 +62,7 @@
 
                                         foreach($sim as $list) {
                                             if($list['extra_credit'] > 0 ) {
-                                                $extra .='<tr><td>Topup <i> 0'. ltrim($list['phone_number'],'44') .'</i></td><td></td><td>' .$currency.''.number_format($list['extra_credit'], 2, '.', "").'</td></tr>';
+                                                $extra .='<tr><td>Topup-credit <i> 0'. ltrim($list['phone_number'],'44') .'</i></td><td></td><td>' .$currency.''.number_format($list['extra_credit'], 2, '.', "").'</td></tr>';
                                             }
                                             $premium_cost += $list['sim_cost'];
                                         }
