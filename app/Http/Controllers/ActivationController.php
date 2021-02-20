@@ -578,9 +578,9 @@ class ActivationController extends Controller
                         return response()->json(['error' => true, 'message' => 'subscription failed..']);
                     }
                 }
-                if($sim_data->auto_plan->plan->prepaid_credit != 0){
+                if($sim_data->credit != 0){
                     try {
-                        $addcreditreq = GlobalSim::AddPrePaidCredit($user->userDetail->esim_customer,$sim_data->auto_plan->plan->prepaid_credit);
+                        $addcreditreq = GlobalSim::AddPrePaidCredit($user->userDetail->esim_customer,$sim_data->credit);
                         if($addcreditreq == false || $addcreditreq['@attributes']['status'] == 'fail'){
                             Log::error('AddPrePaidCredit',[
                                 'user_id' => $user->id,
@@ -589,7 +589,7 @@ class ActivationController extends Controller
                             return response()->json(['error' => true, 'message' =>'Add credit failed']);
                         }
                         $user_balance = Account::where('user_id',$user->id)->first();
-                        $balance['balance_amount'] = $user_balance->balance_amount + $sim_data->auto_plan->plan->prepaid_credit;
+                        $balance['balance_amount'] = $user_balance->balance_amount + $sim_data->credit;
                         Account::where('user_id', $user->id)->update($balance);
                     } catch (\Exception $e) {
                         Log::error('AddPrePaidCredit',[
@@ -988,27 +988,27 @@ class ActivationController extends Controller
                     // );
                     // DB::table('avoo_sim_log')->insert($log_data);
 
-                    $payment = ['user_id' => $parent_id, 'pay_to' => $user->id, 'transaction_id' => $txn_id, 'buy_price' => '0',
-                        'amount' => $sim_data->credit, 'tax_amount' => 0, 'total_amount' => $sim_data->credit, 'currency' => $country->currency, 'category' => 'switch', 'card_type' => $card_type,  'payment_method' => $payment_method, 'payment_for' => 'Credit Added','description' => 'credit added to app'];
+                    // $payment = ['user_id' => $parent_id, 'pay_to' => $user->id, 'transaction_id' => $txn_id, 'buy_price' => '0',
+                    //     'amount' => $sim_data->credit, 'tax_amount' => 0, 'total_amount' => $sim_data->credit, 'currency' => $country->currency, 'category' => 'switch', 'card_type' => $card_type,  'payment_method' => $payment_method, 'payment_for' => 'Credit Added','description' => 'credit added to app'];
 
-                    $method = 'accountCredit'; //accountAddFunds
-                    $swithlog['description']    = 'accountCredit';
-                    $swithlog['user_id']        =  $user->id;
-                    $xml_data = SwitchHelper::switch_account_bal_xml($method,$i_account,$sim_data->credit,$country->currency);
-                    $temp =  SwitchHelper::call_switch_api($xml_data);
-                    // $temp = [];
-                    if (array_key_exists("fault", $temp)) {
-                        $payment['status'] = '2';
-                        $swithlog['status'] = 2;
-                    } else {
-                        $payment['status'] = '1';
-                        $swithlog['status'] = 1;
-                        DB::table('account_balance')->where('user_id', $user->id)
-                            ->increment('balance_amount', $sim_data->credit);
-                    }
-                                SwitchLog::insertGetId($swithlog);
-                    DB::table('user_payments')->insert($payment);
-                    SimList::where('id',$sim_data->id)->update(['credit' => 0]);
+                    // $method = 'accountCredit'; //accountAddFunds
+                    // $swithlog['description']    = 'accountCredit';
+                    // $swithlog['user_id']        =  $user->id;
+                    // $xml_data = SwitchHelper::switch_account_bal_xml($method,$i_account,$sim_data->credit,$country->currency);
+                    // $temp =  SwitchHelper::call_switch_api($xml_data);
+                    // // $temp = [];
+                    // if (array_key_exists("fault", $temp)) {
+                    //     $payment['status'] = '2';
+                    //     $swithlog['status'] = 2;
+                    // } else {
+                    //     $payment['status'] = '1';
+                    //     $swithlog['status'] = 1;
+                    //     DB::table('account_balance')->where('user_id', $user->id)
+                    //         ->increment('balance_amount', $sim_data->credit);
+                    // }
+                    //             SwitchLog::insertGetId($swithlog);
+                    // DB::table('user_payments')->insert($payment);
+                    // SimList::where('id',$sim_data->id)->update(['credit' => 0]);
                     $process_flag = 1;
                 // } else {
                 //  $status[$sim_data->stock_id] = '';

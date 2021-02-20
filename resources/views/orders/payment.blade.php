@@ -195,8 +195,18 @@
                                 <table id="datatable" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
                                     <tbody>
                                         <tr>
-                                            <td class="text-right" colspan="3">Sub Total</td>
+                                            <td class="text-right" colspan="3">Plan</td>
                                             <td class="text-right"><b>{{ $purchase->currency_symbol.''.number_format($purchase->net_amount,2) }}</b></td>
+                                        </tr>
+                                        @if($purchase->credit != 0)
+                                        <tr>
+                                            <td class="text-right" colspan="3">Credit</td>
+                                            <td class="text-right"><b>{{ $purchase->currency_symbol.''.number_format($purchase->credit,2) }}</b></td>
+                                        </tr>
+                                        @endif
+                                        <tr>
+                                            <td class="text-right" colspan="3">Sub Total</td>
+                                            <td class="text-right"><b>{{ $purchase->currency_symbol.''.number_format($purchase->net_amount+$purchase->credit,2) }}</b></td>
                                         </tr>
                                         <tr>
                                             <td class="text-right" colspan="3">VAT</td>

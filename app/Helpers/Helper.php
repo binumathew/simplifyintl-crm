@@ -655,6 +655,7 @@ class Helper
         $obj->net_amount = $net_amount;
         $obj->vat_amount = $vat_amount;
         $obj->total_amount = $total_amount;
+        $obj->credit = $extra_credit;
         $obj->currency     = $currency;
         $obj->currency_symbol     = $currency_symbol;
         return $obj;
