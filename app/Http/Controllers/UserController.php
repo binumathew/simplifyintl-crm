@@ -70,7 +70,7 @@ class UserController extends Controller
     */
     public function users(Request $request)
     {   
-        if (!Helper::has_permission('users') || !Helper::has_permission('users','view_own')) {
+        if (!Helper::has_permission('users') && !Helper::has_permission('users','view_own')) {
             abort(403,'Access denied');
         }
         
