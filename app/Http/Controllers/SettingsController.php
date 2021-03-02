@@ -705,7 +705,7 @@ class SettingsController extends Controller
 
             $message = 'Added successfully';
 
-        return redirect('settings.scheduled-tasks')->with('message',$message); 
+        return redirect('scheduled-tasks')->with('message',$message); 
 
     }
 

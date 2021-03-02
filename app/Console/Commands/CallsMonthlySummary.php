@@ -94,11 +94,11 @@ class CallsMonthlySummary extends Command
 
             $start_month = Carbon::now()->subMonth()->format('Y-m-01'); //Carbon::parse('2020-09-01')->subMonth(1)->format('Y-m-02');
             $end_month   = Carbon::parse($start_month)->endOfMonth()->format('Y-m-d');
-            //$end_month = Carbon::parse('2020-09-01')->format('Y-m-d');
-            // DB::table('usage_history')->whereIn('provider', ['O2','VF'])->whereDate('date', '>=',$start_month)
-            //         ->whereDate('date', '<=',$end_month)->delete();
-            // DB::table('user_calls')->whereIn('provider', ['O2','VF'])->whereDate('connect_date', '>=',$start_month)
-            //         ->whereDate('connect_date', '<=',$end_month)->delete();
+            $end_month = Carbon::parse('2020-09-01')->format('Y-m-d');
+            DB::table('usage_history')->whereIn('provider', ['O2','VF'])->whereDate('date', '>=',$start_month)
+                    ->whereDate('date', '<=',$end_month)->delete();
+            DB::table('user_calls')->whereIn('provider', ['O2','VF'])->whereDate('connect_date', '>=',$start_month)
+                    ->whereDate('connect_date', '<=',$end_month)->delete();
             $i_cdr =  Carbon::now()->subMonth()->format('ym').str_pad(1, 9, '0', STR_PAD_LEFT);
             if(DB::table('user_calls')->where('i_cdr', $i_cdr)->exists()){
                 return true;
