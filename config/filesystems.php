@@ -48,6 +48,11 @@ return [
             'root' => storage_path('app'),
         ],
 
+        'calllogs' => [ // used for Backpack/CRUD (in elFinder)
+            'driver' => 'local',
+            'root'   => storage_path('app/calllogs'),
+        ],        
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -71,7 +76,32 @@ return [
             'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', null),
             'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', null),
             'visibility' => 'private'
-        ]
+        ],
+
+        'ftp' => [
+            'driver' => 'ftp',
+            'host' => env('SIMFTP_HOST'),
+            'username' => env('SIMFTP_USERNAME') ,
+            'password' => env('SIMFTP_PASSWORD'),
+
+            // Optional FTP Settings...
+            'port' => env('SIMFTP_PORT'),
+            'root' => '',
+            'passive' => true,
+            'ssl' => true,
+            'timeout' => 300,
+            'ignorePassiveAddress' => true,
+        ],
+
+        'sftp' => [
+            'driver' => 'sftp',
+            'host' =>  env('SIMFTP_HOST'),
+            'username' => env('SIMFTP_USERNAME'),
+            'password' => env('SIMFTP_PASSWORD'),
+            'port' => 2222,
+            'ssl' => true,
+            'timeout' => 300,
+        ],
     ],
 
 ];

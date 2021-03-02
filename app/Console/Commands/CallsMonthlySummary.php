@@ -46,13 +46,13 @@ class CallsMonthlySummary extends Command
      */
     public function handle()
     {
-      $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
-      if($task){
-            $currday = Carbon::now()->subMonth(); //Carbon::parse('2020-09-01')->subMonth();//
+        $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
+        if($task){
+            $currday = Carbon::now()->subMonth(5); //Carbon::parse('2020-09-01')->subMonth();//
             $year = $currday->year;
             $month = $currday->month;
             $now = $currday->format('Mpy');
-            $ftpusername = config('app.simftp_username');
+            $ftpusername = config('services.dwp.simftp_username');
             $remotefile = '/Monthly/'.$year.'/Mobile_'.strtoupper($now).'_'.$ftpusername.'_Calls.CSV';
 
             $localfile  = strtoupper($now).'.csv';
@@ -65,114 +65,133 @@ class CallsMonthlySummary extends Command
                 if($getfile){
                     $upcall = $this->updateCalllogs($localfile);
                 }
-            }                    
+            }
         }
     }
     //Fetched call logs from FTP to db
     private function updateCalllogs($localfile){
-        $start_time = microtime(true);
-        $cdr_list = $call_data = $data_history = [];
-        $getfile = storage_path('/app/calllogs/'.$localfile);
-        $readfile = fopen($getfile, "r");
-        $skipheader = true;
-        while ($csvLine = fgetcsv($readfile, 1000, ",")) {
-            if($skipheader){ $skipheader = false; continue;}
-            else{
-              array_push($cdr_list, $csvLine);
+        try{
+            $start_time = microtime(true);
+            $cdr_list = $call_data = $data_history = [];
+            $seller_margin   = Helper::get_option('seller_percent');
+            $reseller_margin = Helper::get_option('reseller_percent');
+            $getfile = storage_path('/app/calllogs/'.$localfile);
+            $readfile = fopen($getfile, "r");
+            $skipheader = true;
+            while ($csvLine = fgetcsv($readfile, 1000, ",")) {
+                if($skipheader){ $skipheader = false; continue;}
+                else{
+                array_push($cdr_list, $csvLine);
+                }
             }
-        }
-        array_multisort(array_column($cdr_list, 0), SORT_ASC, $cdr_list);        
-       
-        $prevcheck = null;
-        $country_list = DB::table('country')->select('country_code','dial_code','country_name')->get();
-        foreach ($country_list as $c_list) {
-            $country[$c_list->country_code] = $c_list;
-        }
+            array_multisort(array_column($cdr_list, 0), SORT_ASC, $cdr_list);
 
-        $start_month = Carbon::now()->subMonth(1)->format('Y-m-02'); //Carbon::parse('2020-09-01')->subMonth(1)->format('Y-m-02');
-        $end_month = Carbon::now()->startOfMonth()->format('Y-m-d');
-        //$end_month = Carbon::parse('2020-09-01')->format('Y-m-d');
-        DB::table('usage_history')->whereIn('provider', ['O2','VF'])->where('created_at', '>=',$start_month)
-                ->where('created_at', '<=',$end_month)->delete();                   
-        DB::table('user_calls')->whereIn('provider', ['O2','VF'])->where('created_at', '>=',$start_month)
-                ->where('created_at', '<=',$end_month)->delete();
-        $i_cdr =  Carbon::now()->subMonth(1)->format('ym').str_pad(1, 5, '0', STR_PAD_LEFT); 
-        if(DB::table('user_calls')->where('i_cdr', $i_cdr)->exists()){
-            return true;
-        }
-        foreach ($cdr_list as $lkey => $cdr) {           
-            $from = strval(ltrim(trim($cdr[0]),0));
-            $country_code = trim($cdr[9]);
-            if($from != $prevcheck) {
-                $user = DB::table('trusted_numbers')
-                           ->where('trusted_number', 'like','%'.$from. '%')->first();
-                if(!empty($user)){
+            $prevcheck = null;
+            $country_list = DB::table('country')->select('country_code','dial_code','country_name')->get();
+            foreach ($country_list as $c_list) {
+                $country[$c_list->country_code] = $c_list;
+            }
+
+            $start_month = Carbon::now()->subMonth(5)->format('Y-m-01'); //Carbon::parse('2020-09-01')->subMonth(1)->format('Y-m-02');
+            $end_month   = Carbon::parse($start_month)->endOfMonth()->format('Y-m-d');
+            //$end_month = Carbon::parse('2020-09-01')->format('Y-m-d');
+            DB::table('usage_history')->whereIn('provider', ['O2','VF'])->whereDate('date', '>=',$start_month)
+                    ->whereDate('date', '<=',$end_month)->delete();
+            DB::table('user_calls')->whereIn('provider', ['O2','VF'])->whereDate('connect_date', '>=',$start_month)
+                    ->whereDate('connect_date', '<=',$end_month)->delete();
+            $i_cdr =  Carbon::now()->subMonth(5)->format('ym').str_pad(1, 9, '0', STR_PAD_LEFT);
+            if(DB::table('user_calls')->where('i_cdr', $i_cdr)->exists()){
+                return true;
+            }
+
+            $users = DB::table('trusted_numbers')->select('user_id','trusted_number')->get()->keyBy('trusted_number');
+
+            foreach ($cdr_list as $lkey => $cdr) {
+                $from = strval(ltrim(trim($cdr[0]),0));
+                $country_code = trim($cdr[9]);
+                $dial_code = isset($country[$country_code]) ? $country[$country_code]->dial_code : '';
+                //$dial_code = $country[$country_code]->dial_code;
+                $user = $users->get($dial_code.$from);
+                if(!is_null($user)){
                     $user_id = $user->user_id;
-                    // $data_max = DB::table('usage_history')->where('user_id', $user_id)->max('date'); 
-                    // $call_max = DB::table('user_calls')->where('user_id', $user_id)->where('history_from', 2)->max('connect_date');
                     $from_number = str_replace("+","", $user->trusted_number);
                 }else{ continue;}
-            }
-            $cost = trim($cdr[8]);
-            $prevcheck = $from;
-            $provider = strval(trim($cdr[10]));
-            $provider = ($provider == 'O2')? 'O2':'VF';
-            $dial_code = $country[$country_code]->dial_code;
-            $country_name = $country[$country_code]->country_name;
-            $connect = date("Y-m-d H:i:s",strtotime($cdr[1].' '.$cdr[2]));            
-            if(strval(trim($cdr[4])) == "D"){
-                // if($data_max >= $connect){                                   
-                //     continue;
-                // }
-                $duration = (double)trim($cdr[7]);
-                $duration = $duration*1024;
-                $data = ['user_id' => $user_id, 'from_number' => $from_number, 'to_number'=> "", 'date' => $connect, 'duration' => $duration, 'amount' => $cost, 'service_type' => 'DATA','provider' => $provider];
-                $data_history[] = $data; 
-                continue;
-            }
-            $service = strval(trim($cdr[18]));
-            $duration = (trim($cdr[6]) != "") ? trim($cdr[6]): 0;
-            $to_number = strval(ltrim(trim($cdr[5]),0));            
-            if(strval(trim($cdr[4])) == "G"){
-                // if($data_max >= $connect){                                   
-                //     continue;
-                // }
-                if(preg_match('/SMS/', $service) || preg_match('/MMS/', $service)){
-                    $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $duration, 'amount' => $cost, 'service_type' => 'SMS_MO', 'provider' => $provider];
-                    $data_history[] = $smsdata; 
+
+                $basecost = (float)trim($cdr[8]);
+                $resellercost  = $endusercost = 0;
+                if($basecost != 0){
+                    $resellercost = round(($basecost + ($basecost*($seller_margin/100))),4);
+                    $endusercost  = round(($resellercost + ($resellercost*($reseller_margin/100))),4);
+                }
+                $provider = strval(trim($cdr[10]));
+                $provider = ($provider == 'O2')? 'O2':'VF';
+                $country_name = isset($country[$country_code]) ? $country[$country_code]->country_name : '';
+                $connect = date("Y-m-d H:i:s",strtotime($cdr[1].' '.$cdr[2]));
+                if(strval(trim($cdr[4])) == "D"){
+                    // if($data_max >= $connect){
+                    //     continue;
+                    // }
+                    $duration = (double)trim($cdr[7]);
+                    $duration = $duration*1024;
+                    $data = ['user_id' => $user_id, 'from_number' => $from_number, 'to_number'=> "", 'date' => $connect, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'DATA', 'provider' => $provider];
+                    $data_history[] = $data;
                     continue;
                 }
-            }            
-            // if($call_max >= $connect){                                   
-            //     continue;
-            // }
-            $disconnect = date("Y-m-d H:i:s", (strtotime(date($connect)) + $duration));
-            $to_number  = str_replace("+","", $dial_code.$to_number);            
-            $service_type = 1;
-            if(preg_match('/VML/', $service)){
-                $service_type = 3;
+                $service = strval(trim($cdr[18]));
+                $duration = (trim($cdr[6]) != "") ? trim($cdr[6]): 0;
+                $to_number = strval(ltrim(trim($cdr[5]),0));
+                if(strval(trim($cdr[4])) == "G"){
+                    // if($data_max >= $connect){
+                    //     continue;
+                    // }
+                    if(preg_match('/SMS/', $service) || preg_match('/MMS/', $service)){
+                        $sms_duration   = (trim($cdr[6]) != "") ? trim($cdr[6]): 1;
+
+                        $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $sms_duration,  'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO', 'provider' => $provider];
+                        $data_history[] = $smsdata;
+                        continue;
+                    }
+                }
+                // if($call_max >= $connect){
+                //     continue;
+                // }
+                $disconnect = date("Y-m-d H:i:s", (strtotime(date($connect)) + $duration));
+                if(strlen($to_number) <= 10){
+                    $to_number  = str_replace("+","", $dial_code.$to_number);
+                }else{
+                    $to_number  = str_replace("+","", $to_number);
+                }
+                $service_type = 1;
+                if(preg_match('/VML/', $service)){
+                    $service_type = 3;
+                }
+
+                $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $from_number, 'cli_in' => $from_number, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $endusercost,'base_cost'=>$basecost,'reseller_cost'=>$resellercost,'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name,'provider' => $provider];
+                $call_data[] = $simhis_data;
+                $i_cdr++;
             }
-            
-            $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $from_number, 'cli_in' => $from_number, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $cost, 'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name, 'provider' => $provider];
-            $call_data[] = $simhis_data;
-            $i_cdr++;
+
+            if(!empty($data_history)){
+                foreach (array_chunk($data_history,1000) as $history){
+                DB::table('usage_history')->insert($history);
+                }
+            }
+            if(!empty($call_data)){
+                foreach (array_chunk($call_data,1000) as $calls){
+                    DB::table('user_calls')->insert($calls);
+                }
+            }
+        } catch (\Exception $e) {
+            $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
+            $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
+            Mail::to('arun.raj610@gmail.com')
+                ->send(new CronFailure($obj));
         }
 
-        if(!empty($data_history)){
-            foreach (array_chunk($data_history,1000) as $history){
-               DB::table('usage_history')->insert($history);
-            }                    
-        } 
-        if(!empty($call_data)){ 
-            foreach (array_chunk($call_data,1000) as $calls){                   
-                DB::table('user_calls')->insert($calls);
-            }
-        }
-
-        $exists    = Storage::disk('calllogs')->exists($localfile);
-        if($exists){
-        //    $delete = Storage::disk('calllogs')->delete($localfile); 
-        }
+        // $exists    = Storage::disk('calllogs')->exists($localfile);
+        // if($exists){
+        //    $delete = Storage::disk('calllogs')->delete($localfile);
+        // }
 
         $end_time = microtime(true);
         $exec_time = round(($end_time - $start_time), 5);
@@ -193,13 +212,13 @@ class CallsMonthlySummary extends Command
         try {
             $file = $ftp->get($remotefile);
             Storage::disk('calllogs')->put($localfile, $file);
-            $ftp->getDriver()->getAdapter()->disconnect();            
+            $ftp->getDriver()->getAdapter()->disconnect();
         } catch (\Exception $e) {
             $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
             $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
-            Mail::to('jijo.joseph@gencomtel.com')
+            Mail::to('arun.raj610@gmail.com')
                 ->send(new CronFailure($obj));
-            $ftp->getDriver()->getAdapter()->disconnect(); 
+            $ftp->getDriver()->getAdapter()->disconnect();
             return false;
         }
         return true;

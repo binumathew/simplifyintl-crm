@@ -86,6 +86,14 @@ return [
         'api'   =>  env('GLOBAL_SIM_API'),
         'username'  =>  env('GLOBAL_SIM_USERNAME'),
         'password'  =>  env('GLOBAL_SIM_PASSWORD'),
-    ]
-
+    ],
+    /*
+    |--------------------------------------------------------------------------
+    | DWT CDR FTP Username
+    |--------------------------------------------------------------------------
+    */
+    'dwp' => [
+        'simftp_username'=> env('SIMFTP_USERNAME'),
+    ],
+    
 ];
