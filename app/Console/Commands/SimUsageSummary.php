@@ -50,14 +50,25 @@ class SimUsageSummary extends Command
         $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
         if($task){
             $start_time = microtime(true);
+            // $userlist   = DB::table('users as u')->select('u.id','up.id as user_plan_id','plan_id','up.created_at','prorata')
+            //                 ->join('user_plans as up','up.user_id','=','u.id')->where('plan_type', 'sim')
+            //                 ->where('u.status', 1)->where('up.status', 1)->orderBy('plan_id')->get();
+                            
+            $start_date = '2020-10-01';//Carbon::now()->startOfMonth()->format('Y-m-d');
+            $end_date   = '2020-10-31';//Carbon::now()->endOfMonth()->format('Y-m-d').' 23:59:59';
             $userlist = DB::table('users as u')->select('u.id','up.id as user_plan_id','plan_id','up.created_at','prorata')
                             ->join('user_plans as up','up.user_id','=','u.id')->where('plan_type', 'sim')
-                            ->where('u.status', 1)->where('up.status', 1)->orderBy('plan_id')->get();
-        
+                            // ->where('u.status', 1)
+                            // ->where('up.status', 1)
+                            ->whereDate('up.created_at', '>=',$start_date)
+                            ->whereDate('up.created_at', '<=',$end_date)
+                            ->orderBy('plan_id')->get();
+                            
+
             if($userlist->isNotEmpty()){
                 $prevplan = $serviceType = 0;
                 foreach ($userlist as $user) {
-                    $user_id = $ulist->id;
+                    $user_id = $user->id;
                     $activeplanid   = $user->user_plan_id;
                     $planid         = $user->plan_id;                    
                     if($prevplan != $planid){
@@ -75,20 +86,19 @@ class SimUsageSummary extends Command
                             break;
                         case 2:
                             $prorata    = $user->prorata;
-                            $startdate  = Carbon::parse($plandate)->format('Y-m-d');
+                            $startdate  = Carbon::parse($plandate)->startOfMonth()->format('Y-m-d');
                             $enddate    = Carbon::parse($startdate)->endOfMonth()->format('Y-m-d');
                             break;
                         default:
                             break;
                     }
-
                     $calllogs   = DB::table('user_calls')
                             ->select(DB::raw("SUM(duration) as duration"),DB::raw("SUM(cost) as cost"),DB::raw("SUM(base_cost) as base_cost"),DB::raw("SUM(reseller_cost) as reseller_cost"),DB::raw("COUNT(user_id) as totalcalls"))                                
                             ->whereDate('connect_date', '>=', $startdate)
                             ->whereDate('connect_date', '<=', $enddate)
                             ->where('user_id',$user_id)  
                             ->where('history_from', 2)
-                            ->where('service_type',1)                                                              
+                            ->whereIn('service_type',[1,3])                                                              
                             ->groupBy('user_id')->get();
 
                     $datalogs   = DB::table('usage_history')
@@ -138,9 +148,9 @@ class SimUsageSummary extends Command
                         $base_sms_cost          = ($base_sms_cost != 0) ? $base_sms_cost : 0;
                         $reseller_sms_cost      = ($reseller_sms_cost != 0) ? $reseller_sms_cost : 0;
                     }
-                    $service_cost   = round($call_cost+ $data_cost + $sms_cost,4);
-                    $base_cost      = round($base_call_cost+ $base_data_cost + $base_sms_cost,4);
-                    $reseller_cost  = round($reseller_call_cost+ $reseller_data_cost + $reseller_sms_cost,4);
+                    $service_cost   = round($call_cost+ $data_cost + $sms_cost,2);
+                    $base_cost      = round($base_call_cost+ $base_data_cost + $base_sms_cost,2);
+                    $reseller_cost  = round($reseller_call_cost+ $reseller_data_cost + $reseller_sms_cost,2);
                     $usageupdate    = DB::table('user_plans')
                                         ->whereId($activeplanid)
                                         ->update(['data_usage'=>$data_usage,'call_usage'=>$call_usage,'sms_count'=>$sms_count,'service_total'=>$service_cost,'data_cost'=>$data_cost,'call_cost'=>$call_cost,'total_calls'=>$totalcalls,'sms_cost'=>$sms_cost,'base_call_cost'=>$base_call_cost,'base_data_cost'=>$base_data_cost,'base_sms_cost'=>$base_sms_cost,'base_total'=>$base_cost,'reseller_call_cost'=>$reseller_call_cost,'reseller_data_cost'=>$reseller_data_cost,'reseller_sms_cost'=>$reseller_sms_cost,'reseller_total'=>$reseller_cost]);
