@@ -54,8 +54,8 @@ class SimUsageSummary extends Command
             //                 ->join('user_plans as up','up.user_id','=','u.id')->where('plan_type', 'sim')
             //                 ->where('u.status', 1)->where('up.status', 1)->orderBy('plan_id')->get();
                             
-            $start_date = '2020-11-01';//Carbon::now()->startOfMonth()->format('Y-m-d');
-            $end_date   = '2020-11-30';//Carbon::now()->endOfMonth()->format('Y-m-d').' 23:59:59';
+            $start_date = '2020-12-01';//Carbon::now()->startOfMonth()->format('Y-m-d');
+            $end_date   = '2020-12-31';//Carbon::now()->endOfMonth()->format('Y-m-d').' 23:59:59';
             $userlist = DB::table('users as u')->select('u.id','up.id as user_plan_id','plan_id','up.created_at','prorata')
                             ->join('user_plans as up','up.user_id','=','u.id')->where('plan_type', 'sim')
                             // ->where('u.status', 1)
