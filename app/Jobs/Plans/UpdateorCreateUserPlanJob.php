@@ -42,11 +42,11 @@ class UpdateorCreateUserPlanJob implements ShouldQueue
         $curr_end   = '2020-10-31';//Carbon::now()->endofMonth()->format('Y-m-d');
 
         DB::beginTransaction();
-            UserPlan::where('user_id',$this->user_id)
-                        ->where('plan_type','sim')
-                        ->whereDate('created_at','>=',$prev_start)
-                        ->whereDate('created_at','<=',$prev_end)
-                        ->update(['status'=>0]);
+            // UserPlan::where('user_id',$this->user_id)
+            //             ->where('plan_type','sim')
+            //             ->whereDate('created_at','>=',$prev_start)
+            //             ->whereDate('created_at','<=',$prev_end)
+            //             ->update(['status'=>0]);
                         
             $plan = UserPlan::where('user_id',$this->user_id)->whereDate('created_at','>=',$curr_start)->whereDate('created_at','<=',$curr_end)->first();
             if($plan){

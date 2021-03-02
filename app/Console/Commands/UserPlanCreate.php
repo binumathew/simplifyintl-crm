@@ -58,7 +58,6 @@ class UserPlanCreate extends Command
                                     ->whereNotNull('user_list')
                                     ->whereIn('id',[100007])
                                     ->get();
-                dd($getsubscription);
                 $getsubscription->each(function ($item, $key){
                     try {
                        UpdateorCreateUserPlanJob::dispatch($item->user_list,$item->plan_id);

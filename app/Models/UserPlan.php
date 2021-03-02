@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserPlan extends Model
 {
-    protected $fillable = ['plan_id', 'user_id', 'status','created_at'];
+    protected $fillable = ['plan_id', 'user_id', 'status','created_at','payment_id','plan_type'];
 
     protected $table = 'user_plans';
 
