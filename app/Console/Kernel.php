@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\AdvPaidSubscription::class,
         \App\Console\Commands\AddonUsage::class,
         \App\Console\Commands\ActivationNotify::class,
+	\App\Console\Commands\HourlyCDR::class,
         \App\Console\Commands\FetchCDR::class,
 	\App\Console\Commands\UserPlanCreate::class,
     ];
@@ -74,6 +75,8 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('switch:totalusage')
         //        ->dailyAt('09:30');
+        $schedule->command('hourly:cdr')
+                 ->hourly();
         $schedule->command('userplan:create')
                  ->monthlyOn(1, '1:30');	
     }
