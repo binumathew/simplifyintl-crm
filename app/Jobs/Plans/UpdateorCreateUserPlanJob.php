@@ -36,10 +36,10 @@ class UpdateorCreateUserPlanJob //implements ShouldQueue
      */
     public function handle()
     {
-        $prev_start = '2020-12-01';//Carbon::now()->subMonth()->startofMonth()->format('Y-m-d');
-        $prev_end   = '2020-12-31';//Carbon::now()->subMonth()->endofMonth()->format('Y-m-d');
-        $curr_start = '2021-01-01';//Carbon::now()->startofMonth()->format('Y-m-d');
-        $curr_end   = '2021-01-31';//Carbon::now()->endofMonth()->format('Y-m-d');
+        $prev_start = '2021-01-01';//Carbon::now()->subMonth()->startofMonth()->format('Y-m-d');
+        $prev_end   = '2021-01-31';//Carbon::now()->subMonth()->endofMonth()->format('Y-m-d');
+        $curr_start = '2021-02-01';//Carbon::now()->startofMonth()->format('Y-m-d');
+        $curr_end   = '2021-02-28';//Carbon::now()->endofMonth()->format('Y-m-d');
 
         DB::beginTransaction();
             UserPlan::where('user_id',$this->user_id)
@@ -60,7 +60,7 @@ class UpdateorCreateUserPlanJob //implements ShouldQueue
                     'payment_id'=>0,
                     'plan_type'=>'sim',
                     'status'=>1,
-                    'created_at'=>'2020-12-01 15:04:44'
+                    'created_at'=>'2021-02-01 15:04:44'
                 ]);
                 
             }
