@@ -36,17 +36,17 @@ class UpdateorCreateUserPlanJob //implements ShouldQueue
      */
     public function handle()
     {
-        $prev_start = '2020-11-01';//Carbon::now()->subMonth()->startofMonth()->format('Y-m-d');
-        $prev_end   = '2020-11-30';//Carbon::now()->subMonth()->endofMonth()->format('Y-m-d');
-        $curr_start = '2020-12-01';//Carbon::now()->startofMonth()->format('Y-m-d');
-        $curr_end   = '2020-12-31';//Carbon::now()->endofMonth()->format('Y-m-d');
+        $prev_start = '2020-12-01';//Carbon::now()->subMonth()->startofMonth()->format('Y-m-d');
+        $prev_end   = '2020-12-31';//Carbon::now()->subMonth()->endofMonth()->format('Y-m-d');
+        $curr_start = '2021-01-01';//Carbon::now()->startofMonth()->format('Y-m-d');
+        $curr_end   = '2021-01-31';//Carbon::now()->endofMonth()->format('Y-m-d');
 
         DB::beginTransaction();
-            // UserPlan::where('user_id',$this->user_id)
-            //             ->where('plan_type','sim')
-            //             ->whereDate('created_at','>=',$prev_start)
-            //             ->whereDate('created_at','<=',$prev_end)
-            //             ->update(['status'=>0]);
+            UserPlan::where('user_id',$this->user_id)
+                        ->where('plan_type','sim')
+                        ->whereDate('created_at','>=',$prev_start)
+                        ->whereDate('created_at','<=',$prev_end)
+                        ->update(['status'=>0]);
                         
             $plan = UserPlan::where('user_id',$this->user_id)->whereDate('created_at','>=',$curr_start)->whereDate('created_at','<=',$curr_end)->first();
             if($plan){
