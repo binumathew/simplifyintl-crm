@@ -48,7 +48,7 @@ class CallsMonthlySummary extends Command
     {
         $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
         if($task){
-            $currday = Carbon::now()->subMonth(5); //Carbon::parse('2020-09-01')->subMonth();//
+            $currday = Carbon::now()->subMonth(4); //Carbon::parse('2020-09-01')->subMonth();//
             $year = $currday->year;
             $month = $currday->month;
             $now = $currday->format('Mpy');
@@ -92,14 +92,14 @@ class CallsMonthlySummary extends Command
                 $country[$c_list->country_code] = $c_list;
             }
 
-            $start_month = Carbon::now()->subMonth(5)->format('Y-m-01'); //Carbon::parse('2020-09-01')->subMonth(1)->format('Y-m-02');
+            $start_month = Carbon::now()->subMonth(4)->format('Y-m-01'); //Carbon::parse('2020-09-01')->subMonth(1)->format('Y-m-02');
             $end_month   = Carbon::parse($start_month)->endOfMonth()->format('Y-m-d');
             //$end_month = Carbon::parse('2020-09-01')->format('Y-m-d');
-            DB::table('usage_history')->whereIn('provider', ['O2','VF'])->whereDate('date', '>=',$start_month)
-                    ->whereDate('date', '<=',$end_month)->delete();
-            DB::table('user_calls')->whereIn('provider', ['O2','VF'])->whereDate('connect_date', '>=',$start_month)
-                    ->whereDate('connect_date', '<=',$end_month)->delete();
-            $i_cdr =  Carbon::now()->subMonth(5)->format('ym').str_pad(1, 9, '0', STR_PAD_LEFT);
+            // DB::table('usage_history')->whereIn('provider', ['O2','VF'])->whereDate('date', '>=',$start_month)
+            //         ->whereDate('date', '<=',$end_month)->delete();
+            // DB::table('user_calls')->whereIn('provider', ['O2','VF'])->whereDate('connect_date', '>=',$start_month)
+            //         ->whereDate('connect_date', '<=',$end_month)->delete();
+            $i_cdr =  Carbon::now()->subMonth(4)->format('ym').str_pad(1, 9, '0', STR_PAD_LEFT);
             if(DB::table('user_calls')->where('i_cdr', $i_cdr)->exists()){
                 return true;
             }
