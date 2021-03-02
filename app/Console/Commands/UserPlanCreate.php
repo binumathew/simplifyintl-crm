@@ -56,7 +56,7 @@ class UserPlanCreate extends Command
                                     })
                                     ->whereDate('start_date', '<', $currDay)
                                     ->whereNotNull('user_list')
-                                    ->whereIn('id',[100007])
+                                    ->whereIn('id',[100007,100008])
                                     ->get();
                 $getsubscription->each(function ($item, $key){
                     try {

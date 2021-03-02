@@ -36,10 +36,10 @@ class UpdateorCreateUserPlanJob //implements ShouldQueue
      */
     public function handle()
     {
-        $prev_start = '2020-09-01';//Carbon::now()->subMonth()->startofMonth()->format('Y-m-d');
-        $prev_end   = '2020-09-30';//Carbon::now()->subMonth()->endofMonth()->format('Y-m-d');
-        $curr_start = '2020-10-01';//Carbon::now()->startofMonth()->format('Y-m-d');
-        $curr_end   = '2020-10-31';//Carbon::now()->endofMonth()->format('Y-m-d');
+        $prev_start = '2020-10-01';//Carbon::now()->subMonth()->startofMonth()->format('Y-m-d');
+        $prev_end   = '2020-10-31';//Carbon::now()->subMonth()->endofMonth()->format('Y-m-d');
+        $curr_start = '2020-11-01';//Carbon::now()->startofMonth()->format('Y-m-d');
+        $curr_end   = '2020-11-30';//Carbon::now()->endofMonth()->format('Y-m-d');
 
         DB::beginTransaction();
             // UserPlan::where('user_id',$this->user_id)
