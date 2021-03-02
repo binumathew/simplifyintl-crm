@@ -359,11 +359,11 @@ class ReportController extends Controller
     public function list_usage(Request $request)
     { 
         $querydatas = UserPlan::query()
-                    ->select('us.name','us.phone','us.email','user_plans.*','ct.currency_symbol')
+                    ->select('us.name','us.phone','us.email','user_plans.*','ct.currency_symbol','us.country_id','us.id as user_id')
                     ->join('users as us', 'us.id', '=', 'user_plans.user_id')
                     ->join('country as ct', 'ct.id', '=', 'us.country_id')
-                    ->where('user_plans.plan_type','sim')
-                    ->where('user_plans.status',1);
+                    ->where('user_plans.plan_type','sim');
+                    //->where('user_plans.status',1);
 
         if ($request->has('number') && $request->get('number') != "") {
 
@@ -372,23 +372,32 @@ class ReportController extends Controller
         if ($request->has('usage_month') && $request->get('usage_month') != "") {
             $month = $request->usage_month;
 
-            if($request->year != ""){
+            if($request->usage_year != ""){
                 $year   = $request->usage_year;
             }else{
                 $year   = Carbon::now()->format('Y');
             }
             $fromdate = '01-'.$month.'-'.$year;
-            $from     = Carbon::parse($fromdate)->subMonth(1)->format('Y-m-d');
+            $from     = Carbon::parse($fromdate)->format('Y-m-d');
             $to       = Carbon::parse($from)->endOfMonth()->format('Y-m-d');
 
             $querydatas->whereDate('user_plans.created_at', '>=', $from)
                           ->whereDate('user_plans.created_at', '<=', $to);
         }
-        if ($request->has('usage_status') && $request->get('usage_status') != "") {
+        // if ($request->has('usage_status') && $request->get('usage_status') != "") {
 
-            $querydatas->where('user_plans.status',$request->get('usage_status'));
-        }
+        //     $querydatas->where('user_plans.status',$request->get('usage_status'));
+        // }
         $result = Datatables::eloquent($querydatas)
+                    ->addColumn('voice', function ($data) {
+                        return $data->call_cost;
+                    })
+                    ->addColumn('sms', function ($data) {
+                        return $data->sms_cost;
+                    })
+                    ->addColumn('data', function ($data) {
+                        return $data->data_cost;
+                    })
                     ->addColumn('plan', function (UserPlan $user) {
                         return $user->plan->plan_name;
                     })
@@ -396,10 +405,15 @@ class ReportController extends Controller
                         return Helper::secToHR($data->call_usage);
                     })
                     ->editColumn('data_usage', function ($data) {
-                        return Helper::bytesToGB($data->data_usage).' GB';
+                        return Helper::bytesToGB($data->data_usage);
                     })
                     ->editColumn('service_total', function ($user) {
-                        return $user->currency_symbol.' '.$user->service_total;
+                        return $user->currency_symbol.$user->service_total;
+                    })
+                    ->addColumn('total', function ($data) {
+                        $country        = Helper::getCountry($data->country_id)[0];
+                        $getoutof       = Helper::vataddCalculation($data->service_total,$country->tax);
+                        return $data->currency_symbol.$getoutof->total_amount;
                     })
                     ->editColumn('status', function ($user) {
                         $stat = "";
@@ -412,6 +426,12 @@ class ReportController extends Controller
                                 break;
                         }
                         return $stat;
+                    })
+                    ->addColumn('from', function () use($from){
+                        return $from;
+                    })
+                    ->addColumn('to', function () use($to){
+                        return $to;
                     })
                     ->editColumn('created_at', function ($date) {
                      return $date->created_at ? with(new Carbon($date->created_at))->format('d-m-Y') : '';
@@ -427,6 +447,42 @@ class ReportController extends Controller
         }else{
             return $result;
         }
+    }
+    /**
+    * Show the usage report details pagination.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function get_cdr_records(Request $request)
+    { 
+        $user = User::find($request->user);
+        if($request->param == 'voice'){
+            $getcdr = DB::table('user_calls')
+                      ->where('user_id',$request->user)
+                      ->whereDate('connect_date', '>=', $request->from)
+                      ->whereDate('connect_date', '<=', $request->to)
+                      ->orderBy('connect_date','DESC')
+                      ->get();
+        }
+        if($request->param == 'sms'){
+            $getcdr = DB::table('usage_history')
+                      ->where('user_id',$request->user)
+                      ->where('service_type','SMS_MO')
+                      ->whereDate('date', '>=', $request->from)
+                      ->whereDate('date', '<=', $request->to)
+                      ->orderBy('date','DESC')
+                      ->get();
+        }
+        if($request->param == 'data'){
+            $getcdr = DB::table('usage_history')
+                      ->where('user_id',$request->user)
+                      ->where('service_type','DATA')
+                      ->whereDate('date', '>=', $request->from)
+                      ->whereDate('date', '<=', $request->to)
+                      ->orderBy('date','DESC')
+                      ->get();
+        }
+        return response()->json(['status'=>200,'response' => json_encode($getcdr),'currency_symbol'=>$user->country->currency_symbol]);
     }
 
         /*

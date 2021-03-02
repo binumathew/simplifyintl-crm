@@ -135,6 +135,7 @@ Route::post('/save-staff', 'StaffController@save_staff');
 /* Delivery */
 Route::get('/delivery', 'DeliveryController@order_delivery');
 Route::get('/delivery-list', 'DeliveryController@delivery_list');
+Route::post('/delivery-list', 'DeliveryController@delivery_list');
 Route::post('/order-status', 'DeliveryController@order_status');
 Route::post('/order-update', 'DeliveryController@update_order');
 Route::post('/re-order', 'DeliveryController@process_reorder');
@@ -238,11 +239,19 @@ Route::get('/list-order','ReportController@list_order');
 Route::post('/list-order','ReportController@list_order');
 Route::get('/report-dashboard','ReportController@report_dashboard');
 Route::post('/report-dashboard','ReportController@report_dashboard');
-
-
-
-
-
+Route::get('/report-activation','ReportController@report_activation');
+Route::get('/list-activation','ReportController@list_activation');
+Route::post('/list-activation','ReportController@list_activation');
+Route::post('/get-cdr-records','ReportController@get_cdr_records');
+Route::get('/report-dispute','ReportController@report_dispute');
+Route::get('/list-dispute','ReportController@list_dispute');
+Route::post('/list-dispute','ReportController@list_dispute');
+Route::get('/report-invoice','ReportController@report_invoice');
+Route::get('/list-invoice','ReportController@list_invoice');
+Route::post('/list-invoice','ReportController@list_invoice');
+Route::get('/report-invoice-txn','ReportController@report_invoice_txn');
+Route::get('/list-invoice-txn','ReportController@list_invoice_txn');
+Route::post('/list-invoice-txn','ReportController@list_invoice_txn');
 
 /* Billing */
 // Route::get('/api-login','BillingController@api_login');
@@ -572,4 +581,5 @@ Route::get('/dwp', 'DwpController@dwp_sim_check');
 //     return Response::download('https://149.36.7.16:81/24-1-2020/0-91-1922-2157-2157-447766742689-o-2340-240120-124207.wav','sheet.wav');
 // });
 //Route::get('/affinity-user','AffinityController@index');
-//Route::get('/update-cli','AffinityController@update_cli');
+Route::get('/ts','AffinityController@ts');
+
