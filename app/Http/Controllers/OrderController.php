@@ -70,7 +70,7 @@ class OrderController extends Controller
     {
         $admins     = Admins::find(Auth::id());
         $role       = $admins->roles->short_code;
-        $dealerid   = ($role == 'DEALER') ? Auth::id() : 0;
+        $dealerid   = ($role == 'DEALER') ? Auth::id() : 1;
 
         $providers = Provider::where('status',1)->get();
         $plans = [];

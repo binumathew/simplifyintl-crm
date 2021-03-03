@@ -92,6 +92,18 @@ class PlanController extends Controller
                         }
                         return $stat;
                     })
+                    ->editColumn('show_in_web', function ($user) {
+                        $inweb = "";
+                        switch ($user->show_in_web) {
+                            case 0:
+                                $inweb = "No";
+                                break;
+                            case 1:
+                                $inweb = "Yes";
+                                break;
+                        }
+                        return $inweb;
+                    })
                     ->addColumn('actions', function ($data) {
                     $edit = $delete = "";
                     if (Helper::has_permission('plan_management','edit')) {
@@ -145,7 +157,7 @@ class PlanController extends Controller
     public function sim_plans_actions(Request $request)
     { 
         
-    $rules = array('plan_name' => 'required|max:50','switch_billing_plan' => 'required|max:10','sim_billing_plan' => 'required|max:10','description' => 'required|max:150','buy_price'=>'required|max:8','sell_price'=>'required|max:8','data_limit'=>'required|max:25','call_limit'=>'required|max:25','in_call_limit'=>'required|max:25','msg_limit'=>'required|max:25','status'=>'required','period' => 'required|max:8','provider' => 'required');
+    $rules = array('plan_name' => 'required|max:50','switch_billing_plan' => 'required|max:10','sim_billing_plan' => 'required|max:500','description' => 'required|max:150','buy_price'=>'required|max:8','sell_price'=>'required|max:8','data_limit'=>'required|max:25','call_limit'=>'required|max:25','in_call_limit'=>'required|max:25','msg_limit'=>'required|max:25','status'=>'required','period' => 'required|max:8','provider' => 'required','show_in_web'=>'required');
       $messages = array(
         'plan_name.required' => 'Please provide plan name',
         'plan_name.max' => 'Plan name maximum character exceeded',
@@ -171,6 +183,7 @@ class PlanController extends Controller
         'period.required' => 'Please provide period',
         'period.max' => 'Period limit maximum character exceeded',
         'provider.required' => 'Please provide provider',
+        'show_in_web.required' => 'Please select show in web portal',
         );
         $validator = Validator::make($request->all(), $rules,$messages);
 
@@ -179,14 +192,14 @@ class PlanController extends Controller
           return response()->json(['status'=>422,'msg'=>$validator->errors()->all()]);
         }else{
             $edit_id    = $request->edit_id;
-            $data       = $request->except(['_token','edit_id']);
+            $data       = $request->except(['_token','edit_id','buy_price']);
             $dealer_id  = Crypt::decrypt($request->dealer_id);
             $admins     = Admins::find($dealer_id);
             if(!$admins){
                 return response()->json(['status'=>422,'msg'=>['Dealer not exists']]);  
             }
             $role       = $admins->roles->short_code;
-            $data['dealer_id'] = ($role == 'DEALER') ? $dealer_id : 0;
+            $data['dealer_id'] = ($role == 'DEALER') ? $dealer_id : $dealer_id;
 
             if($edit_id != ""){
                 if (!Helper::has_permission('plan_management','edit')) {

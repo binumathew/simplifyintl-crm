@@ -28,7 +28,7 @@
                                     <li><a href="{{ url('/sim-plans') }}" class="selected">Sim Plans</a></li>                                    
                                     @endif
                                     @if(Helper::has_permission('conference_plan') || Helper::has_permission('conference_plan', 'view_own'))
-                                    <li><a href="{{ url('/conf-plans') }}">Conference Plans</a></li>
+                                    <!-- <li><a href="{{ url('/conf-plans') }}">Conference Plans</a></li> -->
                                     @endif
                                 </ul>                            
 
@@ -224,6 +224,17 @@
                                                     @endphp
                                                     <option {{$sel}} value="{{ Crypt::encrypt($slist->id) }}">{{ $slist->first_name.''.$slist->last_name.' - '.$slist->promocode }}</option> 
                                                     @endforeach
+                                                </select>
+                                            </div>
+                                            <span></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Show In Web Portal</label>
+                                                <select name="show_in_web" class="form-control custom-select" required>
+                                                    <option value="">Choose</option>
+                                                    <option  value="0" {{ (!empty($plan) && $plan->show_in_web == 0 ) ? 'selected' : '' }}>No</option> 
+                                                    <option  value="1" {{ (!empty($plan) && $plan->show_in_web == 1 ) ? 'selected' : '' }}>Yes</option> 
                                                 </select>
                                             </div>
                                             <span></span>
