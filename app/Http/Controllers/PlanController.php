@@ -199,7 +199,7 @@ class PlanController extends Controller
                 return response()->json(['status'=>422,'msg'=>['Dealer not exists']]);  
             }
             $role       = $admins->roles->short_code;
-            $data['dealer_id'] = ($role == 'DEALER') ? $dealer_id : $dealer_id;
+            $data['dealer_id'] = ($role == 'DEALER') ? $dealer_id : 0;
 
             if($edit_id != ""){
                 if (!Helper::has_permission('plan_management','edit')) {
