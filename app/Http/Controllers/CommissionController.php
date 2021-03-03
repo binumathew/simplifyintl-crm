@@ -123,15 +123,15 @@ class CommissionController extends Controller
         $type     = $request->type;
         switch ($type) {
             case 1:
-                $dealerid = isset($request->dealer) ? Crypt::decrypt($request->dealer) : 0;
-                $plans = DB::table('tbl_plans')->select(['id','plan_name'])->where('dealer_id',$dealerid)->get();
+                //$dealerid = isset($request->dealer) ? Crypt::decrypt($request->dealer) : 1001;
+                $plans = DB::table('tbl_plans')->select(['id','plan_name'])->get();
                 break;
             case 2:
                 $plans = DB::table('tbl_bundles')->select(['id','plan_name','sim_count'])->get();
                 break;
             default:
-                $dealerid = isset($request->dealer) ? Crypt::decrypt($request->dealer) : 0;
-                $plans = DB::table('tbl_plans')->select(['id','plan_name'])->where('dealer_id',$dealerid)->get();
+                //$dealerid = isset($request->dealer) ? Crypt::decrypt($request->dealer) : 1001;
+                $plans = DB::table('tbl_plans')->select(['id','plan_name'])->get();
                 break;
         }
         return json_encode($plans);

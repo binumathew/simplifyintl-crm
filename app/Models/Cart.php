@@ -30,7 +30,11 @@ class Cart extends Model
         $expire_at = Carbon::now()->addMinutes(20)->format('Y-m-d H:i:s');
         
         $provider = $this->product->provider;
-        $dealer = (Auth::user()->role == 5)?Auth::id():1001;
+
+        $admins     = Admins::find(Auth::id());
+        $role       = $admins->roles->short_code;
+        $dealer   = ($role == 'DEALER') ? Auth::id() : 1001;
+
         $box_category = json_decode(Helper::get_option('sim_stock_box_category'), true);
         $box_no = $box_category[$provider];
         foreach ($selected as $list) {            

@@ -108,11 +108,8 @@
                                       @if($simDetail['provision'] < 3)
                                       <button class="btn btn-info btn-xs sim_provisioning" data-stock_id="{{ $simDetail['stockId'] }}">Provision</button>
                                       @elseif($simDetail['provision'] == 3)
-                                      <button class="btn btn-info btn-xs check_provision_status" data-id="{{ $simDetail['idetifier'] }}">Check</button>
-                                      @elseif($simDetail['status']=='Not Active' && $simDetail['provision']== 4)
-                                      <!-- <button class="btn btn-warning btn-xs activate_sim" data-id="{{ $simDetail['idetifier'] }}">Activate</button> -->
-                                      @endif
-                                      @if($simDetail['status']=='Not Active')
+                                      <button class="btn btn-info btn-xs check_provision_status" data-id="{{ $simDetail['idetifier'] }}">Check</button>                                      
+                                      @elseif($simDetail['status']=='Not Active' && $simDetail['provision'] == 4)
                                       <button class="btn btn-warning btn-xs activate_sim" data-id="{{ $simDetail['idetifier'] }}">Activate</button>
                                       @endif
                                     @else
@@ -229,6 +226,11 @@
                             if(res.error){
                               $('.drag-target').html('<div class="alert alert-danger alert-colored" role="alert"><strong>Notification</strong> '+res.message+'</div>');
                             }else{
+                              if(res.complete){
+                                $('.drag-target').html('<div class="alert alert-success alert-colored" role="alert"><strong>Notification</strong> '+res.message+'</div>');
+                                $(".sw-btn-next").hide(); 
+                                setInterval(function(){ window.location.href = base_url+'/orders'; }, 3000);
+                              }
                               resolve(res.html);
                             }
                             $('#smartwizard').smartWizard("loader", "hide");

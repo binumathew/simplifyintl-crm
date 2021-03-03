@@ -96,10 +96,10 @@ class OrderController extends Controller
     {    
         $error = true; $user_id = 0;
         $promo = Auth::user()->promocode;
-        $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];   
-        $is_esim = $request->is_esim ?? 1;    
+        $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];     
         $credit  = 0; 
         foreach($request->product as $key => $quantity){
+            $is_esim = 0;
             $plan = TblPlan::where('id', $key)->first();
 
             if(in_array( $plan->sim_provider->short_code,['E_SIM'])){
@@ -107,6 +107,7 @@ class OrderController extends Controller
                             return ($ar['default'] == '1');
                         });
                 $credit = (!empty($credit)) ? $credit[array_key_first($credit)]['amount']/100 : 0;
+                $is_esim = $request->is_esim ?? 1; 
             }
             if($quantity){ 
                 $credit = $credit * $quantity;               
@@ -217,7 +218,7 @@ class OrderController extends Controller
             $list['porting_to'] = $provision['porting_to'][$key];
             $list['pac_no'] = $provision['pac_code'][$key];
             $list['provision_date'] = $provision['transfer'][$key];
-            $list['credit'] = $provision['credit'][$key];
+            $list['credit'] = isset($provision['credit'][$key]) ? $provision['credit'][$key] : 0;
             CartList::where('id', $key)->update($list);
         }
 

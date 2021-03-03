@@ -5,7 +5,7 @@
    <li><a class="nav-link" href="#step-3" data-content-url="{{ url('/activate') }}">Activate</a></li>
    <li><a class="nav-link" href="#step-4" data-content-url="{{ url('/subscribe') }}">Subscription</a></li>
    @if(Helper::get_option('enable_switch_support'))
-   <li><a class="nav-link" href="#step-5" data-content-url="{{ url('/create-sippy-account') }}">APP Registration</a></li>
+   <li><a class="nav-link" href="#step-5" data-content-url="{{ url('/create-sippy-account') }}">Mobile App Registration</a></li>
    @endif
 </ul>
 
@@ -296,7 +296,7 @@
 @endif
 @if($step == 5)
 <form id="wizard-form-5">
-	Sippy account
+	Mobile App Registration Completed
 	<input type="hidden" id="wizard-error_5" name="wizard_error" value="0">
 </form>
 @endif

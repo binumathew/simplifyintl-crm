@@ -45,7 +45,7 @@ class DeliveryController extends Controller
         $admin_id = Auth::id();
         $promocode =  Auth::user()->promocode;     
         $where = DB::table('admins')->where('parent_id', $admin_id)->pluck('promocode')->toArray();        
-        array_push($where, $admin_id);
+        array_push($where, $promocode);
 
         $delivery_list = DB::table('tbl_sim_request as rq')->select('rq.id', 'order_id', 'name', 'shipping_address', 'delivery_status', 'rq.created_at', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"), 'print_status', DB::raw("(SELECT short_code FROM tbl_roles as rl join admins as ad on ad.role = rl.id WHERE rq.promocode = ad.promocode) as short_code"))->join('users as usr', 'usr.id', '=', 'rq.user_id');
 
@@ -59,7 +59,7 @@ class DeliveryController extends Controller
         
         if(Helper::has_permission('delivery')){
         }elseif(Helper::has_permission('delivery','view_own')){
-            $delivery_list = $delivery_list->whereIn('promocode', $where);
+            $delivery_list = $delivery_list->whereIn('rq.promocode', $where);
         }
         
         return DataTables::queryBuilder($delivery_list)->toJson();

@@ -47,11 +47,11 @@
                                         </a>
                                     </li>
                                     @endforeach
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a class="nav-link gateway {{ ($gateways->isEmpty()) ? 'active' : '' }}" data-toggle="tab" href="#cash" role="tab">
                                             <span class="d-none d-md-block">Cash Payment</span><span class="d-block d-md-none"><i class="mdi mdi-account h5"></i></span>
                                         </a>
-                                    </li>
+                                    </li> -->
                                 </ul>
 
                                 <div class="tab-content">

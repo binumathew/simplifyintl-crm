@@ -243,7 +243,7 @@ class ActivationController extends Controller
             return response()->json(['error' => true, 'message' => 'Access denied!']);
         }
         if($request->wizard_error){
-            return response()->json(['error' => true, 'message' => 'Invalid data']);
+            return response()->json(['error' => true, 'message' => 'Update Phone Number OR Invalid data ']);
         }
 
         $step = $request->step;
@@ -442,7 +442,7 @@ class ActivationController extends Controller
                         'user_id' => $user->id,
                         'error' =>   $e->getMessage()
                     ]);
-                    return response()->json(['error' => true, 'message' => 'failed to activate account']);
+                    return response()->json(['error' => true, 'message' => 'failed to activate account','error' =>   $e->getMessage()]);
                 }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $sim_account_id = $user->userDetail->site_id;
@@ -626,7 +626,7 @@ class ActivationController extends Controller
                 }
                 DB::table('user_plans')->insert($user_plan);
 
-                if(!Helper::get_option('enable_switch_support')){
+                if($provider == 'E_SIM'){
                     $request_id = json_decode($request->request_id);
                     $user_ids = array_column($sim_list->toArray(), 'user_id');
                     $user_list = implode(',', $user_ids);
@@ -706,7 +706,14 @@ class ActivationController extends Controller
         }
 
         $view = view('activation.list_wizard', compact('sim_list','status','step'))->render();
-        return response()->json(['error' => false, 'html' => $view]);
+
+        if($provider == 'E_SIM'){
+            $complete = ['error' => false, 'html' => $view,'complete'=>true,'message' => 'Activation process completed'];
+        }else{
+            $complete = ['error' => false, 'html' => $view];
+        }
+        
+        return response()->json($complete);
     }
 
     /**
