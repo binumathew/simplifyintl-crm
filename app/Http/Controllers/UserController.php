@@ -122,7 +122,7 @@ class UserController extends Controller
                     $parameter= Crypt::encrypt($user->id);
                     $html = '';
                     if (Helper::has_permission('users','edit')) {
-                    $html .='<a data-toggle="tooltip" title="Login" href="'.config('app.liveurl').'admin-authenticate/'.$parameter.'" target="_blank"><i class="mdi mdi-login mdi-24px"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a title="View Details" class="show_user_data text-muted" user-id="'.$user->id.'"><i class="mdi mdi-eye mdi-24px"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;';
+                    $html .='<a data-toggle="tooltip" title="Login" href="https://geokallmobile.co.uk/admin-authenticate/'.$parameter.'" target="_blank"><i class="mdi mdi-login mdi-24px"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;<a title="View Details" class="show_user_data text-muted" user-id="'.$user->id.'"><i class="mdi mdi-eye mdi-24px"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;';
                     }
                     if(Helper::has_permission('users','delete')) {   
                     $html .='<a href="javascript:void(0);" class="text-danger delete_user"  user-id="'.$user->id.'" data-toggle="tooltip" data-placement="top" data-original-title="Delete"><i class="mdi mdi-delete mdi-24px"></i></a><form id="delete_user_'.$user->id.'" method="post" action="'.url('/delete-user').'">'.csrf_field().'<input type="hidden" name="user_key" value="'.$parameter.'"></form>';
