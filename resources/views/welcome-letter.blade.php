@@ -105,9 +105,15 @@ $simList = $request->list()->get();
                     <b>David Quirk</b><br />
                     Manager – Customer Services<br />
                     {{ config('settings.app_name') }}</p> -->
-                    <p>@php $comp = json_decode(config('settings.company_details')); @endphp
-            									{{ ucwords($comp->company_name).'<br>'.$comp->company_street.'<br>'.$comp->company_city.'<br>'.$comp->company_country.'<br>'.$comp->company_postcode }}
+                    @php $comp = json_decode(config('settings.company_details')); @endphp
                     <p>
+                    {{ ucwords($comp->company_name) }} <br>
+                    {{ $comp->company_street }} <br>
+                    {{ $comp->company_city }} <br>
+                    {{ $comp->company_country }}<br>
+                    {{ $comp->company_postcode }}
+                    </p>
+            			
                     <p style="font-size: 12px; line-height: 16px; text-align: center; margin: 0;">
 												<span style="font-size: 14px;">
 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
