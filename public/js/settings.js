@@ -96,7 +96,7 @@ $(document).ready(function (){
                 required: true,
                 minlength:8,
                 maxlength:15,
-                phoneNumber:true,
+                // phoneNumber:true,
             },
             company_email: {
                 required: true,
