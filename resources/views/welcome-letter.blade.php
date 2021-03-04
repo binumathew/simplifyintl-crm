@@ -101,10 +101,23 @@ $simList = $request->list()->get();
                 <div class="main-content-1">
 
                     <p>Please note that it may take a while for a phone to attach to the network for the first time and that this process can only be done while in the UK (you cannot activate the SIM card abroad). Once activated, the SIM card can be used for roaming. Once your {{ config('settings.app_name') }} SIM is active and fully functional, then we recommend you to visit Google Play or App Store and download {{ config('settings.app_name') }} App for using the FREE International minutes that is part of your package. Should you need to make calls outside the Free Countries, you can do so by topping up online at {{ json_decode(config('settings.company_details'))->company_website }} Once again welcome to {{ config('settings.app_name') }} community.</p>
-                    <p class="signature"><img src="{{ asset('/images/signature.png')}}" /><br />
+                    <!-- <p class="signature"><img src="{{ asset('/images/signature.png')}}" /><br />
                     <b>David Quirk</b><br />
                     Manager – Customer Services<br />
-                    {{ config('settings.app_name') }}</p>
+                    {{ config('settings.app_name') }}</p> -->
+                    <p>@php $comp = json_decode(config('settings.company_details')); @endphp
+            									{{ ucwords($comp->company_name).','.$comp->company_street.','.$comp->company_city.','.$comp->company_country.','.$comp->company_postcode }}
+                    <p>
+                    <p style="font-size: 12px; line-height: 16px; text-align: center; margin: 0;">
+												<span style="font-size: 14px;">
+													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
+														<strong>{{ config('settings.support_email') }}</strong>
+													</span> | 
+													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
+														<strong>{{ $comp->company_phone }}</strong>
+													</span>  
+                                                    </span>
+                                                </p>
                 </div>
             </div>
         </div>
