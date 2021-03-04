@@ -94,8 +94,8 @@ $(document).ready(function (){
             },
             company_phone: {
                 required: true,
-                minlength:8,
-                maxlength:15,
+                // minlength:8,
+                // maxlength:15,
                 // phoneNumber:true,
             },
             company_email: {
