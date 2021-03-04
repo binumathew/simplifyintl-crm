@@ -106,7 +106,7 @@ $simList = $request->list()->get();
                     Manager – Customer Services<br />
                     {{ config('settings.app_name') }}</p> -->
                     <p>@php $comp = json_decode(config('settings.company_details')); @endphp
-            									{{ ucwords($comp->company_name).','.$comp->company_street.','.$comp->company_city.','.$comp->company_country.','.$comp->company_postcode }}
+            									{{ ucwords($comp->company_name).'<br>'.$comp->company_street.'<br>'.$comp->company_city.'<br>'.$comp->company_country.'<br>'.$comp->company_postcode }}
                     <p>
                     <p style="font-size: 12px; line-height: 16px; text-align: center; margin: 0;">
 												<span style="font-size: 14px;">
