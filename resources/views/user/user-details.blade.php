@@ -118,7 +118,7 @@
                                     <li><a href="#" class="user-details" data-view="transaction"><i class="mdi mdi-credit-card"></i> Transaction </a></li>
                                     <li><a href="#" class="user-details d-none" data-view="settings"><i class="mdi mdi-settings"></i> Settings </a></li>
                                     @if($user->stock_id)
-                                    <li><a href="#" class="user-details sim-services" data-view="services"><i class="mdi mdi-wrench"></i> Sim/Services </a></li>
+                                    <!-- <li><a href="#" class="user-details sim-services" data-view="services"><i class="mdi mdi-wrench"></i> Sim/Services </a></li> -->
                                     <!-- <li><a href="#" class="user-details sim-info" data-view="sim_info"><i class="mdi mdi-sim"></i> Sim Info </a></li> -->
                                     @endif
                                     <li><a href="#" class="user-details invoice" data-view="invoice"><i class="mdi mdi-receipt"></i> Invoice </a></li>
