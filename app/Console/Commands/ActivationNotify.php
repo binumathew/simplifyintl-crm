@@ -8,9 +8,12 @@ use Carbon;
 use DwpHelper;
 use DB;
 use Helper;
+use Cache;
+use Log;
 
 use App\Models\ScheduledTask;
 use App\Models\SimList;
+use App\Models\SimStock;
 use App\Models\NotificationLog;
 use App\Jobs\NotifyActivation;
 use Cron\CronExpression;
@@ -55,37 +58,62 @@ class ActivationNotify extends Command
             ->whereDate('tbl_sim_list.provision_date','<=',Carbon::now()->format('Y-m-d'))
             ->get();
             if($simlist->isNotEmpty()){
+            try {
                 $notifyusers = [];
                 $notifylog = [];
                 foreach($simlist as $key => $list){
 
                     if(in_array($list->stock->provider,['O2','EE_O2','VUK'])){
-
+                        
                         $data['order_id'] =  $list->provision_id;                 
                         $search_xml = DwpHelper::dwp_order_search($data);
                         $response  = DwpHelper::dwp_process_api($search_xml);
                         $response  = json_decode(DwpHelper::dwp_response_handler($response));
+                        // Log::info('activation-notify',[
+                        //     'request'=> $search_xml,
+                        //     'response' => $response
+                        // ]);
                         if($response->children[0]->no == 0){
-                            $result = DwpHelper::dwp_response($response->children);
+                            $result = DwpHelper::dwp_response($response->children);                                                       
                             $status['state'] =  ucfirst($result['orders']['block']['components']['block']['state']);
                             $status['request_status'] = $result['orders']['block']['request-stage'];         
                             if($status['state'] == 'Completed' && $status['request_status'] == 'Complete'){
-                                DB::table('tbl_sim_list')->whereId($list->id)->update(['provision' => 4]);
                                 $user = $list->sim_request->user;
-                                $msisdn = Helper::phoneInter_format($list->stock->phone_number,$user->country->dial_code);
-                                $obj = (object)['order_id'=>$list->sim_request->order_id,'user_id'=>$user->id,'name' => $user->first_name.' '.$user->last_name, 'msisdn' => $msisdn];
-                                array_push($notifylog,['user_id'=>$user->id,'message' => 'Activation completed for the user '.$msisdn,'description'=>'Order:'.$list->sim_request->order_id.', name '.$user->name,'status'=>'0']);
+                                DB::table('tbl_sim_list')->whereId($list->id)->update(['provision' => 4]);
+                                $sim_number = $result['orders']['block']['components']['block']['sim-serial'];
+                                $mobile_number = $result['orders']['block']['components']['block']['mobile-number'];
+                                $phone_number = '44'.ltrim($mobile_number,'0');
+                                if($sim_number != $list->stock->sim_number){
+                                    $payload = json_encode(['type'=>'msisdn_update','order_id'=>$list->sim_request->order_id]);
+                                    NotificationLog::create(['user_id'=>$user->id,'message' => 'Mobile number update to stock Failed order '.$list->sim_request->order_id,'payload'=>$payload]); 
+                                // $search_xml = DwpHelper::dwp_change_simnumber($data);
+                                // $response = DwpHelper::dwp_process_api($search_xml);
+                                }
+                                try{
+                                    SimStock::where('id',$list->stock_id)->update(['phone_number' => $phone_number, 'verified' => 1]);
+                                }catch(\Exceptions $e){
+
+                                }
+                               
+                                $obj = (object)['order_id'=>$list->sim_request->order_id,'user_id'=>$user->id,'name' => $user->first_name.' '.$user->last_name];
+                                $payload = json_encode(['type'=>'order_activation','order_id'=>$list->sim_request->order_id]);
+                                array_push($notifylog,['user_id'=>$user->id,'message' => 'Activation completed for the user order -'.$list->sim_request->order_id,'payload'=>$payload,'description'=>'Order:'.$list->sim_request->order_id.', name '.$user->name,'status'=>'0']);
                                 $notifyusers[$list->stock->dealer_id][] = $obj;
                             }               
                         }
                     }
                 }
-
                 if(!empty($notifyusers)){
-                    NotificationLog::insert($notifylog); 
+                    NotificationLog::insert($notifylog);
+                    Cache::forget('notifications');
                     NotifyActivation::dispatch($notifyusers)
                     ->delay(Carbon::now()->addSeconds(10));  
                 }
+            } catch (\Exception $e) {
+                Log::error('activation-notify',[
+                    'error' => $e->getMessage()
+                ]);  
+            }
             }
             $end_time = microtime(true);
             $exec_time = round(($end_time - $start_time), 5);

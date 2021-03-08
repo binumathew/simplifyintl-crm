@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use DB;
 use Str;
 use Mail;
@@ -210,6 +211,13 @@ class ActivationController extends Controller
             $response = Helper::braintree_payment_process($data);
         }elseif($card->gateway == 3){
             $response = Helper::stripe_payment_process($data);
+        }elseif($card->gateway == 'cash'){            
+            $payment = ['user_id' => $user->id, 'transaction_id' => '', 'buy_price' => $data['buy_price'], 'amount' => $data['net_amount'], 'tax_amount' => $data['vat_amount'], 'currency' => $data['currency'], 'total_amount' => $data['total_amount'], 'card_type' => '-', 'payment_method' => 'Cash', 'discount_amount' => $data['discount_amount'], 'discount_coupon' => $data['discount_coupon'], 'payment_for' => $data['payment_for'], 'description' => $data['description'], 'status' => '1', 'category' => $data['category']];
+            $payment_id = UserPayment::insertGetId($payment);
+            $response['message'] = 'Payment successfully received';
+            $response['status'] = 1;
+            $response['payment_id'] = $payment_id;
+            $response['transaction_id'] =  '';
         }else{
             return response()->json(['error' => true, 'message' => 'Invalid Card, please add new card..']);
         }
@@ -447,20 +455,20 @@ class ActivationController extends Controller
                 }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $sim_account_id = $user->userDetail->site_id;
-                if(is_null($sim_account_id) || $sim_account_id == ''){
-                    $client       = DwpHelper::initiate_soap_client();
-                    if($client){
-                        $createuser   = DwpHelper::create_new_site($client,$user);
-                        if($createuser->status == 200){
-                            $sim_account_id = $createuser->siteId;
-                            DB::table('user_data')->where('user_id',$user->id)->update(['site_id'=>$sim_account_id]);
-                        }else{
-                           return response()->json(['error' => true, 'message' => $createuser->error]);
-                        }
-                    }else{
-                        return response()->json(['error' => true, 'message' => 'SoapClient error']);
-                    }
-                }
+                // if(is_null($sim_account_id) || $sim_account_id == ''){
+                //     $client       = DwpHelper::initiate_soap_client();
+                //     if($client){
+                //         $createuser   = DwpHelper::create_new_site($client,$user);
+                //         if($createuser->status == 200){
+                //             $sim_account_id = $createuser->siteId;
+                //             DB::table('user_data')->where('user_id',$user->id)->update(['site_id'=>$sim_account_id]);
+                //         }else{
+                //            return response()->json(['error' => true, 'message' => $createuser->error]);
+                //         }
+                //     }else{
+                //         return response()->json(['error' => true, 'message' => 'SoapClient error']);
+                //     }
+                // }
                 $accounts[$sim_data->stock_id] = $sim_account_id;
                 $account_id = config('settings.app_prefix').$provider.$user->id;
                 DB::table('user_data')->where('user_id', $user->id)
@@ -639,24 +647,27 @@ class ActivationController extends Controller
                     if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
 
                         $trusted = DB::table('trusted_numbers')->where('trusted_number',$trust_number)->first();
-                        if($trusted && (is_null($trusted->cli_id) || $trusted->cli_id == 0)){
-                            $siteId = $user->userDetail->site_id;
-                            $client     = DwpHelper::initiate_soap_client();
-                            if($client){
-                                $phoneNumber = '0'.ltrim($cli_number,'+44');
-                                $addcli     = DwpHelper::add_cli($client,$siteId,$phoneNumber);
-                                if($addcli->status == 200){
-                                    DB::table('trusted_numbers')->where('trusted_number',$trust_number)->update(['cli_id'=>$addcli->newCli]);
-                                }else{
-                                  NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
-                                }
-                            }else{
-                                NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
-                            }
-                        }
+                        // if($trusted && (is_null($trusted->cli_id) || $trusted->cli_id == 0)){
+                        //     $siteId = $user->userDetail->site_id;
+                        //     $client     = DwpHelper::initiate_soap_client();
+                        //     if($client){
+                        //         $phoneNumber = '0'.ltrim($cli_number,'+44');
+                        //         $addcli     = DwpHelper::add_cli($client,$siteId,$phoneNumber);
+                        //         if($addcli->status == 200){
+                        //             DB::table('trusted_numbers')->where('trusted_number',$trust_number)->update(['cli_id'=>$addcli->newCli]);
+                        //         }else{
+                        //           NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                        //         }
+                        //     }else{
+                        //         NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                        //     }
+                        // }
                     }
-
-                    SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
+                    SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);  
+                    NotificationLog::where('payload', 'like', '%"order_activation"%')
+                                    ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
+                                    // ->where('user_id',$user->id)
+                                    ->update(['status' => 1]);
 
                     $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
@@ -843,7 +854,11 @@ class ActivationController extends Controller
                     DB::table('user_data')->where('user_id', $user->id)->update(['i_account' => $i_account, 'register_status' => 1 ]);
 
                     SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
-
+                    NotificationLog::where('payload', 'like', '%"order_activation"%')
+                                    ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
+                                    // ->where('user_id',$user->id)
+                                    ->update(['status' => 1]);
+                    
                     $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
                     $auto_plan_data['user_list'] = $user_list;
@@ -938,7 +953,11 @@ class ActivationController extends Controller
                                 ->update(['balance_minutes' => $in_call_limit]);
                 }
                 SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
-
+                NotificationLog::where('payload', 'like', '%"order_activation"%')
+                                    ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
+                                    // ->where('user_id',$user->id)
+                                    ->update(['status' => 1]);
+                
                 $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
                 $auto_plan_data['user_list'] = $user_list;
@@ -958,21 +977,21 @@ class ActivationController extends Controller
 
             if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $trusted = DB::table('trusted_numbers')->where('trusted_number',$trust_number)->first();
-                if($trusted && (is_null($trusted->cli_id) || $trusted->cli_id == 0)){
-                    $siteId = $user->userDetail->site_id;
-                    $client     = DwpHelper::initiate_soap_client();
-                    if($client){
-                        $phoneNumber = '0'.ltrim($cli_number,'+44');
-                        $addcli     = DwpHelper::add_cli($client,$siteId,$phoneNumber);
-                        if($addcli->status == 200){
-                            DB::table('trusted_numbers')->where('trusted_number',$trust_number)->update(['cli_id'=>$addcli->newCli]);
-                        }else{
-                          NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
-                        }
-                    }else{
-                        NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
-                    }
-                }
+                // if($trusted && (is_null($trusted->cli_id) || $trusted->cli_id == 0)){
+                //     $siteId = $user->userDetail->site_id;
+                //     $client     = DwpHelper::initiate_soap_client();
+                //     if($client){
+                //         $phoneNumber = '0'.ltrim($cli_number,'+44');
+                //         $addcli     = DwpHelper::add_cli($client,$siteId,$phoneNumber);
+                //         if($addcli->status == 200){
+                //             DB::table('trusted_numbers')->where('trusted_number',$trust_number)->update(['cli_id'=>$addcli->newCli]);
+                //         }else{
+                //           NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                //         }
+                //     }else{
+                //         NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                //     }
+                // }
             }
 
             $status[$sim_data->stock_id] = $i_account;
