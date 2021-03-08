@@ -182,11 +182,12 @@ class Utils {
         try{
             $options = new QROptions([
                 'version'    => 5,
-                'outputType' => QRCode::OUTPUT_MARKUP_SVG,
+                'outputType'   => QRCode::OUTPUT_IMAGE_PNG,
                 'eccLevel'   => QRCode::ECC_L,
             ]);
             $qrcode = (new QRCode($options))->render($txt);
-            return $qrcode;
+            Storage::disk('gcs')->put('esim/'.$txt.'.png', base64_decode($qrcode));
+            return Storage::disk('gcs')->temporaryUrl('esim/'.$txt.'.png', now()->addMinutes(30));
         }catch(\Exception $e){
             return false;
         }
