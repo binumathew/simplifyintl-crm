@@ -4,7 +4,7 @@
 						<div class="col num12" style="min-width: 320px; max-width: 650px; display: table-cell; vertical-align: top; width: 650px;">
 							<div style="width:100% !important;">
 								<div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:20px; padding-bottom:60px; padding-right: 0px; padding-left: 0px;">
-									<table cellpadding="0" cellspacing="0" class="social_icons" role="presentation" style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;" valign="top" width="100%">
+									<!-- <table cellpadding="0" cellspacing="0" class="social_icons" role="presentation" style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;" valign="top" width="100%">
 										<tbody>
 											<tr style="vertical-align: top;" valign="top">
 												<td style="word-break: break-word; vertical-align: top; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;" valign="top">
@@ -22,7 +22,7 @@
 												</td>
 											</tr>
 										</tbody>
-									</table>
+									</table> -->
 									<div style="color:#555555;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:150%;padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
 										<div style="font-size: 12px; line-height: 18px; font-family: 'Lato', Tahoma, Verdana, Segoe, sans-serif; color: #555555;">
 											<p style="font-size: 14px; line-height: 21px; text-align: center; margin: 0;">{{ config('settings.app_name') }}</p>
@@ -59,7 +59,7 @@
 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
 														<strong>{{ $comp->company_phone }}</strong>
 													</span>  
-<!-- 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
+													<!-- <span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
 														<strong>(718) 509-3006 (USA)</strong>
 													</span> | 
 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
@@ -67,7 +67,7 @@
 													</span> | 
 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
 														<strong>+447599706300 (WhatsApp)</strong>
-													</span> -->  
+													</span>   
 
 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
 														<strong>
@@ -75,7 +75,7 @@
 														</strong> </span> |
 													<span href="#" rel="noopener" style="text-decoration: none; color: #2190E3;" target="_blank">
 														<strong> 24/7 Chat support </strong>
-													</span>
+													</span> -->
 												</span>
 											</p>
 										</div>
