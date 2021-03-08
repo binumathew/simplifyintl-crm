@@ -126,11 +126,15 @@ class DeliveryController extends Controller
                             }
                             
                         }else{
-                            Log::error('SOFTDELIVERY',[
-                                'order_id' =>   $request->order_id,
-                                'message'=>'Contains physical sim not possible to send as soft delivery'
-                            ]);
-                            return response()->json(['error' => true, 'message' => $request->order_id .' contains physical sim. Not possible to send as soft delivery!.']);
+                            DB::beginTransaction();
+                            DB::table('tbl_sim_request')->where('id', $request->id)->update(['delivery_status' => 1]);
+                            DB::table('delivery_history')->insert(['sim_request_id'=>$request->id, 'type'=>1, 'proceed_by'=>$admin->id, 'note'=>$note]);
+                            DB::commit(); 
+                            // Log::error('SOFTDELIVERY',[
+                            //     'order_id' =>   $request->order_id,
+                            //     'message'=>'Contains physical sim not possible to send as soft delivery'
+                            // ]);
+                            // return response()->json(['error' => true, 'message' => $request->order_id .' contains physical sim. Not possible to send as soft delivery!.']);
                         }
                     }
                     DB::beginTransaction();
@@ -392,13 +396,20 @@ class DeliveryController extends Controller
         if ($sim_request->isEmpty()) {
             return response()->json(['error' => true, 'message' => 'Order details doesn\'t exist']);
         }
-        $qrcode   = '';
-        $sim_list = SimList::where('request_id',$request_id)->first();
-        if($sim_list->stock->is_esim){
-            $qrdata = $sim_list->stock->stockcode->qr_code;
-            $qrcode =  Utils::qrcode($qrdata);
+        foreach($sim_request as $key => $sim_req){
+            $sim_list   = SimList::where('request_id',$sim_req->id)->get();
+            $qrcode_val = [];
+            foreach($sim_list as $skey => $list){
+                if($list->stock->is_esim){
+                    $qrdata = $list->stock->stockcode->qr_code;
+                    $qrcode = Utils::qrcode($qrdata);
+                    $qrcode_val[] = $qrcode;
+                }
+            }
+            $sim_req->qrcode  = $qrcode_val;
+            $sim_req->simlist = $sim_list;
         }
-        $view = view('welcome-letter', compact('sim_request','qrcode'))->render();
+        $view = view('welcome-letter', compact('sim_request'))->render();
         return response()->json(['error' => false, 'html' => $view]);
     }
 

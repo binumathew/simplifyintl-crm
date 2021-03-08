@@ -31,14 +31,13 @@
         margin-top: -19px;
     }
 </style>
-@foreach ($sim_request as $request)
+@foreach ($sim_request as $simreq)
 @php
-$address= json_decode($request->shipping_address);
-$simList = $request->list()->get();
+$address = json_decode($simreq->shipping_address);
+$simList = $simreq->simlist;
+$comp = json_decode(config('settings.company_details'));
 @endphp
-
-<!-- <div id="welcome-letter" class=" premium-number"> -->
-    <div class="modal-dialog welcome-letter">
+<div class="modal-dialog welcome-letter">
         <div class="modal-content">
             <div class="top-right-table">
                 <table align="right" cellpadding="0" cellspacing="0" border="0">
@@ -46,29 +45,28 @@ $simList = $request->list()->get();
                         <th nowrap="nowrap" class="right-border">Mobile Number</th>
                         <th nowrap="nowrap">Sim Number</th>
                     </tr>
-                    @foreach ($simList as $list)
+                    @foreach ($simList as $listData)
                     <tr>
                         <td nowrap="nowrap" class="right-border">
-                            @if($list->stock->verified)
-                                {{ '0'.ltrim($list->stock->phone_number, '44') }}
+                            @if($listData->stock->verified)
+                                {{ '0'.ltrim($listData->stock->phone_number, '44') }}
                             @else
                                 0759xxxxxxx
                             @endif
                         </td>
-                        <td>{{ $list->stock->box_no.'-'.$list->stock->sim_number }}</td>
+                        <td>{{ $listData->stock->box_no.'-'.$listData->stock->sim_number }}</td>
                     </tr>
                     @endforeach
                     <tr>
                         <td nowrap="nowrap" class="right-border">Order id</td>
-                        <td nowrap="nowrap">{{ $request->order_id}}</td>
+                        <td nowrap="nowrap">{{ $simreq->order_id}}</td>
                     </tr>
                     <tr>
                         <td nowrap="nowrap" class="right-border">Date</td>
-                        <td nowrap="nowrap">{{ date('Y-m-d', strtotime($request->created_at)) }}</td>
+                        <td nowrap="nowrap">{{ date('Y-m-d', strtotime($simreq->created_at)) }}</td>
                     </tr>
                 </table>
             </div>
-
             <div class="name-table">
                 To<br />
                 <b>{{ (isset($address->first_name))? ucfirst($address->first_name).' '.ucfirst($address->last_name): $request->user->name }}</b><br />
@@ -76,26 +74,23 @@ $simList = $request->list()->get();
                 {{ $address->city }}<br />
                 {{ $address->country.', '. strtoupper($address->postal_code) }}<br />
             </div>
-
             <div class="main-content">
                 <p><b>Hello {{ (isset($address->first_name))? ucfirst($address->first_name).' '.ucfirst($address->last_name): $request->user->name }},</b></p>
                 <p>Welcome to {{ config('settings.app_name') }}!</p>
                 <p>Thank you for choosing <b>{{ config('settings.app_name') }}</b> as your service provider.</p>
                 <p><b>To activate your SIM</b></p>
-                @if($list->stock->provider =='EE')
-                <p ><ul class="active_step"> <li>Insert SIM into your handset.</li><li>Check if your phone is showing a valid network. It should show 3G or 4G based on your handset and the network name will be \'WELCOME\'</li><li>Please make a call to 1244. Then will receive a Welcome SMS with your phone number</li><li>After welcome message, you may also receive a network message asking to restart handset.</li><li>Please restart your handset. Now the network name will be changed to <b>‘{{ config('settings.app_name') }}’</b></li>
-                </ul>
-                </p>
-                @endif
                 <ol>
-                    <li><strong>Call your friendly {{ config('settings.app_name') }} Customer Service team on 0333 9989 900</strong></li>
-                    @if($list->stock->provider =='E_SIM' && $list->stock->is_esim)
+                    <li><strong>Call your friendly {{ config('settings.app_name') }} Customer Service team on {{ $comp->company_phone }}</strong></li>
+                    @if(!empty($simreq->qrcode))
                     <li><strong>Scan the Qrcode</strong></li>
                     @endif
-                    
                 </ol>
-                @if($list->stock->provider =='E_SIM' && $list->stock->is_esim)
-                <img src="{{$qrcode}}" alt="QR Code" width="200" height="200" style="display: block;margin-left: auto;margin-right: auto;"/>
+                @if(!empty($simreq->qrcode))
+                @foreach($simreq->qrcode as $key => $qr)
+                    @if($qr != "")
+                    <img src="{{$qr}}" alt="QR Code" width="200" height="200" style="display: block;margin-left: auto;margin-right: auto;"/>
+                    @endif
+                @endforeach
                 @endif
                 <div class="line">&nbsp;</div>
                 <div class="main-content-1">
@@ -105,7 +100,6 @@ $simList = $request->list()->get();
                     <b>David Quirk</b><br />
                     Manager – Customer Services<br />
                     {{ config('settings.app_name') }}</p> -->
-                    @php $comp = json_decode(config('settings.company_details')); @endphp
                     <p>
                     {{ ucwords($comp->company_name) }} <br>
                     {{ $comp->company_street }} <br>
