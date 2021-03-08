@@ -80,18 +80,41 @@
                                     <a class="dropdown-item" href="#"><span> Dollar ($)</span></a>
                                 </div>
                             </li> -->
+                            @php $notifyLog = Helper::notifications();  
+                            $logcount = ($notifyLog->isNotEmpty()) ? count($notifyLog) : 0 ;
+                            @endphp
                             <li class="list-inline-item dropdown notification-list">
                                 <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown" href="#" role="button"
                                    aria-haspopup="false" aria-expanded="false">
                                     <i class="ion-ios7-bell noti-icon"></i>
-                                    <span class="badge badge-danger noti-icon-badge">0</span>
+                                    <span class="badge badge-danger noti-icon-badge">{{$logcount}}</span>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg">
+                                <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" style="overflow-y: scroll;height: 410px;">
                                     <!-- item-->
                                     <div class="dropdown-item noti-title">
-                                        <h5>Notification (0)</h5>
+                                        <h5>Notification ({{$logcount}})</h5>
                                     </div>
-
+                                    @if($notifyLog->isNotEmpty())
+                                    @foreach($notifyLog as $key => $list)
+                                    @if(!is_null($list->payload))
+                                    @php
+                                        $payload = json_decode($list->payload);
+                                    @endphp
+                                    @if($payload->type == 'order_activation')
+                                    <a href="javascript:void(0);" class="dropdown-item notify-item notify_log" data-type="{{ $payload->type }}" data-id="{{ $list->id }}" data-param="{{ $payload->order_id }}">
+                                        <div class="notify-icon bg-success"><i class="mdi mdi-cart-outline" ></i></div>
+                                        <p class="notify-details"><small class="text-muted">{{ $list->message }}</small></p>
+                                    </a>
+                                    @elseif($payload->type == 'msisdn_update')
+                                    <a href="javascript:void(0);" class="dropdown-item notify-item notify_log" data-type="{{ $payload->type }}" data-id="{{ $list->id }}" data-param="{{ $payload->order_id }}">
+                                        <div class="notify-icon bg-warning" ><i class="mdi mdi-message"></i></div>
+                                        <p class="notify-details"><small class="text-muted">{{ $list->message }}</small></p>
+                                    </a>
+                                    @endif
+                                    @endif
+                                    @endforeach
+                                    <div class="notify_form"></div>
+                                    @endif
                                     <!-- <a href="javascript:void(0);" class="dropdown-item notify-item active">
                                         <div class="notify-icon bg-success"><i class="mdi mdi-cart-outline"></i></div>
                                         <p class="notify-details"><b>Your order is placed</b><small class="text-muted">Dummy text of the printing and typesetting industry.</small></p>
@@ -106,9 +129,9 @@
                                     </a> -->
 
                                     <!-- All-->
-                                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                    <!-- <a href="javascript:void(0);" class="dropdown-item notify-item">
                                         View All
-                                    </a>
+                                    </a> -->
 
                                 </div>
                             </li>
