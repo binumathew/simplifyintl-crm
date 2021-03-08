@@ -14,67 +14,28 @@ class DwpHelper
 
 	{
 
-	    // $end_point = Helper::get_option('dwp_api_endpoint'); //'https://onramp-api.daisywholesale.com'; 
+	    $end_point = Helper::get_option('dwp_api_endpoint'); //'https://onramp-api.daisywholesale.com'; 
 
-	    // $end_point = 'https://api.daisywholesale.com';
+	    $ch        = curl_init($end_point);
 
-	  
+	    // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
-	    // $ch = curl_init($end_point);
+	    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
-	    // // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	    curl_setopt($ch, CURLOPT_POST, 1);
 
-	    // // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+	    // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
 
-	    // curl_setopt($ch, CURLOPT_POST, 1);
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
 
-	    // // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-	    // curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
+	    $output = curl_exec($ch);
 
-	    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	    curl_close($ch);
 
-	    // $output = curl_exec($ch);
+	    return $output;
 
-	    // curl_close($ch);
-
-	    // return $output;
-
-	    return DwpHelper::testresponse();
-
-  }
-  public static function dwp_process_api1($xml_data)
-
-	{
-    return DwpHelper::testresponse1();
-  }
-  public static function testresponse1()
-  {
-    return $xml_data ='<?xml version="1.0"?>
-    <Response id="c105a1f597582600729d2300e969e7f2">
-      <status no="0"/>
-      <block name="services">
-        <block>
-          <a name="label" format="text">4G Allowed</a>
-          <a name="name" format="text">4GBOLTON</a>
-          <a name="type" format="text">boolean</a>
-          <a name="value" format="text">1</a>
-        </block>
-        <block>
-          <a name="description" format="text">5G compatible sim is required, 4G services must also be enabled</a>
-          <a name="label" format="text">5G Service</a>
-          <a name="name" format="text">5GBOLTON</a>
-          <a name="type" format="text">boolean</a>
-          <a name="value" format="text">1</a>
-        </block>
-        <block>
-          <a name="label" format="text">Conference calling enabled</a>
-          <a name="name" format="text">CONFERENCE</a>
-          <a name="type" format="text">boolean</a>
-          <a name="value" format="text">0</a>
-        </block>
-      </block>
-    </Response>';
   }
 
 	public static function dwp_response_handler($xml_data)

@@ -344,7 +344,7 @@ class UserController extends Controller
                             }
 
                             $services_xml   = DwpHelper::dwp_check_mobile_service_xml($data);
-                            $response       = DwpHelper::dwp_process_api1($services_xml);
+                            $response       = DwpHelper::dwp_process_api($services_xml);
                             $response       = json_decode(DwpHelper::dwp_response_handler($response));
                             
                             if($response->children[0]->no == 0){
