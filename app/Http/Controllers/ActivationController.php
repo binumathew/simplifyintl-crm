@@ -61,10 +61,10 @@ class ActivationController extends Controller
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function show_sim_list(Request $request)
     {
     	if (!Helper::has_permission('orders','edit')) {
@@ -130,7 +130,7 @@ class ActivationController extends Controller
         //     $gateways = ['Paypal'=>1,'Braintree'=>2];
         //     $gateway = $gateways[$sim_list[0]->auto_plan->gateway];
         //     $credit_cards = DB::table('user_credit_cards')
-        //                         ->where(['user_id' => $user->id, 'gateway' => $gateway])->get();
+        //                         ->where(['user_id' => $user->id, 'gateway' => $gateway])->get(); 
         //     $view = view('activation.custom_list_wizard', compact('sim_list', 'currency','user','credit_cards','step'))->render();
         // }
 
@@ -141,7 +141,7 @@ class ActivationController extends Controller
     * Order Prorata Details
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function prorata_billing(Request $request)
     {
         if (!Helper::has_permission('orders','edit')) {
@@ -153,10 +153,11 @@ class ActivationController extends Controller
         $simList = SimList::where('autoplan_id', $request->autoplan)->get();
         $user_id = $simList[0]->sim_request->user->id;
         $currency = $simList[0]->sim_request->user->country->currency_symbol;
+        $cards = [];
         $cards = UserCreditCard::where('user_id', $user_id)->get();
-        if($cards->isEmpty()){
-            return response()->json(['error' => true, 'message' => 'Card not exist!']);
-        }
+        // if($cards->isEmpty()){
+        //     return response()->json(['error' => true, 'message' => 'Card not exist!']);
+        // }
 
         $html = view('modal-popup', compact('simList','cards','prorata_billing','date_from','date_to','currency'))->render();
 
@@ -164,27 +165,33 @@ class ActivationController extends Controller
     }
 
     /**
-    * Prorata Collectionn Process
+    * Prorata Collectionn Process 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function prorata_billing_process(Request $request)
-    {
+    {   
         $date_from = $request->date_from;
         $autoplan_id = $request->autoplan;
-        $card_id = Crypt::decrypt($request->credit_card);
+        $card_id = Crypt::decrypt($request->credit_card); 
         $plan = AutoPlan::where('id', $autoplan_id)->first();
         $simList = SimList::where('autoplan_id', $autoplan_id)->get();
         $user = User::find($simList[0]->sim_request->user->id);
-        $card = UserCreditCard::where('id', $card_id)->first();
-        $bill_amount = $buy_amount = 0; $endofday = date('t'); $cur_day = date('d',strtotime($date_from));
+        if($card_id != 'cash'){
+            $card = UserCreditCard::where('id', $card_id)->first();
+        }else{
+            $card = new \stdClass();
+            $card->gateway = 'cash';            
+        }
+
+        $bill_amount = $buy_amount = 0; $endofday = date('t'); $cur_day = date('d',strtotime($date_from)); 
         foreach($simList as $sim){
             $sell_price = $sim->auto_plan->plan->sell_price;
             $buy_price = $sim->auto_plan->plan->buy_price;
             $remain_days = $endofday - $cur_day + 1;
             $pro_rata_bill = ($sell_price/$endofday) * $remain_days;
             $pro_rata_buy = ($buy_price/$endofday) * $remain_days;
-            $bill_amount += $pro_rata_bill;
+            $bill_amount += $pro_rata_bill; 
             $buy_amount += $pro_rata_buy;
         }
 
@@ -193,7 +200,7 @@ class ActivationController extends Controller
         $data['i_account'] = $user->i_account;
         $data['currency'] = $user->country->currency;
         $net_amount = 100/(100+$user->country->tax) * $bill_amount;
-        $vat_amount = $bill_amount - $net_amount;
+        $vat_amount = $bill_amount - $net_amount;                
         $data['net_amount'] = Helper::number_format($net_amount);
         $data['vat_amount'] = Helper::number_format($vat_amount);
         $data['total_amount'] = Helper::number_format($bill_amount);
@@ -201,10 +208,10 @@ class ActivationController extends Controller
         $data['discount_amount'] = 0;
         $data['discount_coupon'] = '';
         $data['payment_for'] = 'Plan Subscription Pro-rata Payment';
-        $data['description'] = 'Plan Subscription Pro-rata Payment - processed by '. Auth::user()->first_name.' '.Auth::user()->last_name;
+        $data['description'] = 'Plan Subscription Pro-rata Payment ('.Carbon::parse($date_from)->format('M d - M t') .') -  processed by '. Auth::user()->first_name.' '.Auth::user()->last_name;
         $data['category'] = 'sim';
 
-        if($card->gateway == 1){
+        if($card->gateway == 1){            
             $response = Helper::paypal_payment_process($data);
         }elseif($card->gateway == 2){
             $response = Helper::braintree_payment_process($data);
@@ -220,38 +227,40 @@ class ActivationController extends Controller
         }else{
             return response()->json(['error' => true, 'message' => 'Invalid Card, please add new card..']);
         }
-
+        
         if($response['status']){
             $txn_id = $response['transaction_id'];
-            $payment_id = $response['payment_id'];
+            $payment_id = $response['payment_id'];      
             $renew_on = date('Y-m-01',strtotime('next month'));
-            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $now = Carbon::now()->format('Y-m-d H:i:s'); 
+            $i_billplan = $plan->plan->switch_billing_plan; 
+            
             if($card->gateway == 'Paypal'){
                 $auto_plan_data['transaction_id'] = $txn_id;
                 DB::table('user_credit_cards')->where('id', $card_id)->update(['transaction_id' => $txn_id]);
             }
             $auto_plan_data['next_renewal'] = $renew_on;
             $auto_plan_data['switch_billing_plan'] = $plan->plan->switch_billing_plan;
-            $auto_plan_data['adv_pay'] = $plan->adv_pay+1;
-            DB::table('auto_plan')->where('id', $autoplan_id)->update($auto_plan_data);
-            return response()->json(['error' => false, 'message' => $response['message'], 'next_renewal' => $auto_plan_data['next_renewal']]);
+            $auto_plan_data['adv_pay'] = $plan->adv_pay+1;            
+            DB::table('auto_plan')->where('id', $autoplan_id)->update($auto_plan_data);    
+            return response()->json(['error' => false, 'message' => $response['message'], 'next_renewal' => $auto_plan_data['next_renewal']]);     
         }else{
             return response()->json(['error' => true, 'message' => 'Payment Failed. Please try again..']);
         }
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function terms_and_condition(Request $request)
     {
         if (!Helper::has_permission('orders','edit')) {
             return response()->json(['error' => true, 'message' => 'Access denied!']);
-        }
+        }        
         if($request->wizard_error){
-            return response()->json(['error' => true, 'message' => 'Update Phone Number OR Invalid data ']);
+            return response()->json(['error' => true, 'message' => 'Invalid data']);
         }
 
         $step = $request->step;
@@ -262,33 +271,33 @@ class ActivationController extends Controller
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function activate(Request $request)
-    {
+    {        
         if (!Helper::has_permission('orders','edit')) {
             return response()->json(['error' => true, 'message' => 'Access denied!']);
         }
         if($request->wizard_error != 0){
             return response()->json(['error' => true, 'message' => 'Invalid data']);
-        }
+        } 
 
         $step = $request->step;
-        $stock_id = unserialize($request->stock_id);
+        $stock_id = unserialize($request->stock_id);  
         $mvno_key = Helper::get_option('bundle_mvno_key');
         $customer_id = Helper::get_option('mvno_customer_id');
         $sim_list = SimList::whereIn('stock_id', $stock_id)->get();
         foreach($sim_list as $sim_data){
             $address = json_decode($sim_data->sim_request->billing_address);
-            $parent_id = $sim_data->sim_request->user_id;
+            $parent_id = $sim_data->sim_request->user_id;           
             $cli_number = $sim_data->stock->phone_number;
             $phone_number = '+'.$cli_number;
             $user = User::where('stock_id', $sim_data->stock_id)->first();
             $admin = Admins::where('promocode',$sim_data->sim_request->promocode)->first();
             $dealer_id = ($admin)?$admin->id:1;
-
+                            
             if(!$user){
                 $user = User::where('id', $parent_id)->first();
                 $ip_address = $user->userDetail->ip_address;
@@ -307,26 +316,26 @@ class ActivationController extends Controller
                             if (array_key_exists("fault", $temp)) {
                                 return response()->json(['error' => true, 'message' => 'Trusted number already exist!']);
                             } else {
-                                DB::table('trusted_numbers')->where('id', $trust->id)->delete();
+                                DB::table('trusted_numbers')->where('id', $trust->id)->delete();                                
                             }
                         }
                     }
-
+                    
                     if(!$user || !is_null($user->stock_id)){
-                        $password = Helper::unique_code(8);
-                        $user = User::create([
-                            'username' => $cli_number,
+                        $password = Helper::unique_code(8);                 
+                        $user = User::create([                        
+                            'username' => $cli_number,           
                             'phone' => $phone_number,
-                            'password' => Hash::make($password),
+                            'password' => Hash::make($password),                        
                             'country_id' => 238,
                             'parent_id' => $parent_id,
                             'stock_id' => $sim_data->stock_id,
                             'status' => 0
-                        ]);
+                        ]); 
                         $country  = Country::whereId(238)->first();
                         $username = Helper::unique_code(16);
                         $username = config('settings.app_prefix').'-'.$country->short_code.'-'.$username;
-
+                        
                         $vm_password = Helper::random(10, implode(range('0','9')));
                         $vp_password = Helper::unique_code(10);
 
@@ -337,18 +346,18 @@ class ActivationController extends Controller
                         DB::table('user_data')->insert($user_data);
                         DB::table('account_balance')->insert(['user_id' => $user->id,'balance_amount' => 0, 'balance_minutes'=> 0]);
                     }else{
-                        User::where('id', $user->id)->update(['username' => $cli_number, 'phone' => $phone_number,'stock_id' => $sim_data->stock_id, 'parent_id' => $parent_id]);
+                        User::where('id', $user->id)->update(['username' => $cli_number, 'phone' => $phone_number,'stock_id' => $sim_data->stock_id, 'parent_id' => $parent_id]); 
                     }
                 }else{
                     User::where('id', $parent_id)->update(['username' => $cli_number, 'phone' => $phone_number, 'alt_phone' => $user->phone, 'stock_id' => $sim_data->stock_id]);
-                }
+                }                
             }else{
                 User::where('id', $user->id)->update(['username' => $cli_number, 'phone' => $phone_number]);
             }
 
             $provider = $sim_data->stock->provider;
             if($provider == 'EE'){
-                $sim_account_id = $user->userDetail->sim_account_id;
+                $sim_account_id = $user->userDetail->sim_account_id;            
                 if(is_null($sim_account_id) || $sim_account_id == ''){
                     $end_point = '/core/accounts?MVNO='.$mvno_key;
                     $data = new \stdClass();
@@ -356,7 +365,7 @@ class ActivationController extends Controller
                         'AccountType' => 'Prepaid',
                         'CustomerId' => (string)$customer_id,
                         'ExternalAccountId' => config('settings.app_prefix').$user->id,
-                        'AccountStatus' => 'Active',
+                        'AccountStatus' => 'Active',            
                         'Names' => [ (object)[ 'LanguageCode' => 'eng', 'Text' => 'Account' ] ],
                         'Descriptions' => [ (object)[ 'LanguageCode' => 'eng', 'Text' => 'Account' ] ],
                         'AccountCurrency' => 'GBP',
@@ -381,10 +390,10 @@ class ActivationController extends Controller
                         ->update(['sim_account_id' => $account_id]);
                         SimList::where('id', $sim_data->id)->update(['user_id' => $user->id]);
                     }else{
-                        $accounts[$sim_data->stock_id] = '';
+                        $accounts[$sim_data->stock_id] = '';                    
                     }
                 }else{
-                    $accounts[$sim_data->stock_id] = $sim_account_id;
+                    $accounts[$sim_data->stock_id] = $sim_account_id;               
                 }
             }else if( $provider == 'E_SIM'){
                 
@@ -453,7 +462,7 @@ class ActivationController extends Controller
                     return response()->json(['error' => true, 'message' => 'failed to activate account','error' =>   $e->getMessage()]);
                 }
             }else if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
-                $sim_account_id = $user->userDetail->site_id;
+                $sim_account_id = $user->userDetail->site_id;            
                 // if(is_null($sim_account_id) || $sim_account_id == ''){
                 //     $client       = DwpHelper::initiate_soap_client();
                 //     if($client){
@@ -462,14 +471,15 @@ class ActivationController extends Controller
                 //             $sim_account_id = $createuser->siteId;
                 //             DB::table('user_data')->where('user_id',$user->id)->update(['site_id'=>$sim_account_id]);
                 //         }else{
-                //            return response()->json(['error' => true, 'message' => $createuser->error]);
+                //            return response()->json(['error' => true, 'message' => $createuser->error]);  
                 //         }
                 //     }else{
-                //         return response()->json(['error' => true, 'message' => 'SoapClient error']);
+                //         return response()->json(['error' => true, 'message' => 'SoapClient error']); 
                 //     }
                 // }
-                $accounts[$sim_data->stock_id] = $sim_account_id;
+                // $accounts[$sim_data->stock_id] = $sim_account_id;
                 $account_id = config('settings.app_prefix').$provider.$user->id;
+                $accounts[$sim_data->stock_id] = $account_id;
                 DB::table('user_data')->where('user_id', $user->id)
                         ->update(['sim_account_id' => $account_id]);
             }else{
@@ -478,7 +488,7 @@ class ActivationController extends Controller
                         ->update(['sim_account_id' => $account_id]);
                 $accounts[$sim_data->stock_id] = $account_id;
             }
-            AutoPlan::whereId($sim_data->autoplan_id)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
+            AutoPlan::whereId($sim_data->autoplan_id)->where('act_check',0)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
             SimList::where('id', $sim_data->id)->update(['user_id' => $user->id]);
             User::where('id', $user->id)->update(['dealer_id' => $dealer_id]);
         }
@@ -488,17 +498,17 @@ class ActivationController extends Controller
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function subscribe(Request $request)
-    {
+    {        
         if (!Helper::has_permission('orders','edit')) {
             return response()->json(['error' => true, 'message' => 'Access denied!']);
         }
 
-        $step = $request->step;
+        $step = $request->step;        
         $stock_id = unserialize($request->stock_id);
         $mvno_key = Helper::get_option('bundle_mvno_key');
         $customer_id = Helper::get_option('mvno_customer_id');
@@ -515,7 +525,7 @@ class ActivationController extends Controller
             $promocode = $sim_data->sim_request->promocode;
             $provider = $sim_data->stock->provider;
             $user = User::where('id', $sim_data->user_id)->first();
-            $user_data = $user->userDetail;
+            $user_data = $user->userDetail; 
 
             if(!is_null($user_data->sim_subscription_id)){
                 $status[$sim_data->stock_id] = $user_data->sim_subscription_id;
@@ -543,7 +553,7 @@ class ActivationController extends Controller
                                 ]
                             ]
                         ],
-                        'ServiceAddress' => (object)[
+                        'ServiceAddress' => (object)[            
                             'Address' => 'unknown',
                             'HouseNo' => 'unknown',
                             'City' => 'unknown',
@@ -625,14 +635,14 @@ class ActivationController extends Controller
                 );
                 DB::table('avoo_sim_log')->insert($log_data);
 
-                $sim_subscription_id = $response->Subscription->SubscriptionId;
+                $sim_subscription_id = $response->Subscription->SubscriptionId;                 
                 DB::table('user_data')->where('user_id', $user->id)
-                        ->update(['sim_subscription_id' => $sim_subscription_id]);
+                        ->update(['sim_subscription_id' => $sim_subscription_id]); 
                 $user_plan = ['user_id' => $user->id, 'plan_id' => $plan->plan_id, 'status' => 1, 'plan_type' => 'sim'];
                 if($sim_data->stock->network->service_type == 2){
                     $user_plan['prorata'] = 1;
                 }
-                DB::table('user_plans')->insert($user_plan);
+                DB::table('user_plans')->insert($user_plan); 
 
                 if($provider == 'E_SIM'){
                     $request_id = json_decode($request->request_id);
@@ -640,9 +650,9 @@ class ActivationController extends Controller
                     $user_list = implode(',', $user_ids);
 
                     if(!DB::table('trusted_numbers')->where('trusted_number',$trust_number)->exists()) {
-
-                    DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => 1]);
+                    DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => 1]);                     
                     }
+
                     if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
 
                         $trusted = DB::table('trusted_numbers')->where('trusted_number',$trust_number)->first();
@@ -655,10 +665,10 @@ class ActivationController extends Controller
                         //         if($addcli->status == 200){
                         //             DB::table('trusted_numbers')->where('trusted_number',$trust_number)->update(['cli_id'=>$addcli->newCli]);
                         //         }else{
-                        //           NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                        //           NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);   
                         //         }
                         //     }else{
-                        //         NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                        //         NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']); 
                         //     }
                         // }
                     }
@@ -678,7 +688,7 @@ class ActivationController extends Controller
                             if($sim_data->stock->network->service_type == 2){
                                 $auto_plan_data['next_renewal'] = date('Y-m-t', strtotime(Carbon::now()));
                             }else{
-                                $auto_plan_data['next_renewal'] = Carbon::now()->addDays(30)->format('Y-m-d');
+                                $auto_plan_data['next_renewal'] = Carbon::now()->addMonthNoOverflow()->startOfMonth()->format('Y-m-d');
                             }
                         }
                     }
@@ -690,15 +700,15 @@ class ActivationController extends Controller
                             $note = 'Activated by '.Auth::user()->first_name.' '.Auth::user()->last_name.' on';
                             DB::table('delivery_history')->insert(['sim_request_id' => $rqst_id ,'proceed_by' => Auth::id(),  'type' => 2, 'note' => $note]);
                             DB::table('tbl_sim_request')->where('id', $rqst_id)->update(['delivery_status' => 2]);
-                        }
+                        }               
                     }
 
                     $welcome_msg = "Greetings! from ".config('settings.app_name')." Mobile. Now you can download ".config('settings.app_name')." Mobile App for making FREE and affordable international calls. https://bit.ly/2C1SyOw\n\nThankyou.";
 
                     $account_sid = Helper::get_option('twilio_account_sid');
                     $auth_token =  Helper::get_option('twilio_auth_token');
-                    $twilio_number = Helper::get_option('twilio_number');
-                    try {
+                    $twilio_number = Helper::get_option('twilio_number');                            
+                    try {             
                         $client = new Client($account_sid, $auth_token);
                         $client->messages->create(
                             $trust_number,
@@ -707,13 +717,14 @@ class ActivationController extends Controller
                                 'body' => $welcome_msg
                             )
                         );
-                    } catch (RestException $exception) {
+                    } catch (RestException $exception) {                  
+                        
                     }
-                }
+                }              
             }else{
-                NotificationLog::create(['user_id'=>$user->id,'message' => 'Plan Subscription Failed','description'=>json_encode($response).', admin:'.Auth::id(),'status'=>'0']);
-            }
-            $status[$sim_data->stock_id] = $sim_subscription_id;
+                NotificationLog::create(['user_id'=>$user->id,'message' => 'Plan Subscription Failed','description'=>json_encode($response).', admin:'.Auth::id(),'status'=>'0']); 
+            }            
+            $status[$sim_data->stock_id] = $sim_subscription_id;        
         }
 
         $view = view('activation.list_wizard', compact('sim_list','status','step'))->render();
@@ -728,12 +739,12 @@ class ActivationController extends Controller
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function create_sippy_account(Request $request)
-    {
+    {        
         if (!Helper::has_permission('orders','edit')) {
             return response()->json(['error' => true, 'message' => 'Access denied!']);
         }
@@ -741,12 +752,12 @@ class ActivationController extends Controller
         $step = $request->step;
         $process_flag = $register_notify = 0;
         $stock_id = unserialize($request->stock_id);
-        $request_id = json_decode($request->request_id);
+        $request_id = json_decode($request->request_id);        
         $sim_list = SimList::whereIn('stock_id', $stock_id)->get();
         $user_ids = array_column($sim_list->toArray(), 'user_id');
         $user_list = implode(',', $user_ids);
         foreach($sim_list as $sim_data){
-            $promocode = $sim_data->sim_request->promocode;
+            $promocode = $sim_data->sim_request->promocode;             
             if(is_null($sim_data->user_id)){
                 $status[$sim_data->stock_id] = '';
                 continue;
@@ -757,15 +768,15 @@ class ActivationController extends Controller
             $trust_number = '+'.$cli_number;
             $auto_plan_id = $sim_data->autoplan_id;
             $txn_id = $sim_data->auto_plan->transaction_id;
-            $payment_method = $sim_data->sim_request->payment->payment_method;
+            $payment_method = $sim_data->sim_request->payment->payment_method; 
             $card_type = $sim_data->auto_plan->card_type;
             $switch_billing = $sim_data->auto_plan->plan->switch_billing_plan;
             $in_call_limit = $sim_data->auto_plan->plan->in_call_limit;
-            $parent_id = $sim_data->sim_request->user_id;
+            $parent_id = $sim_data->sim_request->user_id; 
             $plan = DB::table('auto_plan')->select('next_renewal','status')
                     ->where('auto_plan.id', $auto_plan_id)->first();
-            $user = User::where('id', $sim_data->user_id)->first();
-            $user_data = $user->userDetail;
+            $user = User::where('id', $sim_data->user_id)->first();     
+            $user_data = $user->userDetail; 
             if($provider == 'EE'){
                 if(is_null($user_data->sim_account_id) || is_null($user_data->sim_subscription_id)){
                     $status[$sim_data->stock_id] = '';
@@ -781,25 +792,23 @@ class ActivationController extends Controller
                 $data = [ 'username' => $user_data->auth_name, 'a_class' => $country->a_class,
                 'tariff' => $country->tariff, 'timezone_value' => $country->timezone_value,
                 'balance' => $country->default_balance, 'phone' => $cli_number,
-                'translation_rule' => $country->translation_rule,
-                'export_type' => $country->export_type, 'currency' => $country->currency,
+                'translation_rule' => $country->translation_rule, 'cli_number' => $trust_number,
+                'export_type' => $country->export_type, 'currency' => $country->currency, 
                 'vp_password' => $user_data->vp_password, 'vm_password' => $user_data->vm_password,
                 'notify_email' => ($user->email)?:'', 'first_name'=> ($user->first_name)?:'',
                 'last_name'=> ($user->last_name)?:'', 'company_name' => $user_data->username,
-                'billing_plan' => $switch_billing, 'routing_group' => $country->routing_group];
-
-                //'cli_number' => $trust_number,
-
+                'billing_plan' => $switch_billing, 'routing_group' => $country->routing_group]; 
+                              
                 $xml_data = SwitchHelper::switch_create_account_xml($data);
                 $temp =  SwitchHelper::call_switch_api($xml_data);
-                    // $temp = [];
+                    // $temp = []; 
                 $switch_status = 'F';
                 if (array_key_exists("fault", $temp)) {
-                    $i_account = NULL;
-                    $swithlog['description']    = 'Activation Failed-'.json_encode($temp);
-                    $swithlog['user_id']        =  $user->id;
+                    $i_account = NULL;  
+                    $swithlog['description']    = 'Activation Failed-'.json_encode($temp);  
+                    $swithlog['user_id']        =  $user->id; 
                     $swithlog['status']         = 2;
-                    SwitchLog::insertGetId($swithlog);
+                    SwitchLog::insertGetId($swithlog);            
                 } else {
                     $array = $temp['params']['param']['value']['struct']['member'];
                     $response = [];
@@ -810,19 +819,19 @@ class ActivationController extends Controller
                         } else {
                             $response[$array[$i]['name']] = $array[$i]['value'][$array_key];
                         }
-                    }
+                    }                    
                     if ($response['result'] == 'OK') {
                         $i_account = $response['i_account'];
                         $switch_status = "S";
-                        $switch_log['description'] = 'Activation success '.$i_account;
+                        $switch_log['description'] = 'Activation success '.$i_account; 
                     }
                 }
 
-                // $switch_log['user_id'] = $user->id;
+                // $switch_log['user_id'] = $user->id;                
                 // DB::table('switch_log')->insert($switch_log);
                 if($switch_status == 'S'){
                     $default_number = 1;
-
+                    
                     DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => $default_number]);
                     $xml_data = SwitchHelper::switch_add_cli_xml($i_account,$trust_number);
                     $temp = SwitchHelper::call_switch_api($xml_data);
@@ -842,15 +851,15 @@ class ActivationController extends Controller
                             $xml_data = SwitchHelper::switch_add_auth_rule_xml($auth_rule);
                             $temp = SwitchHelper::call_switch_api($xml_data);
                         }
-                    }
+                    }                   
 
                     User::where('id', $user->id)
                         ->update(['i_account' => $i_account, 'switch_id' => $country->switch_id, 'time_zone' => $country->time_zone, 'status' => 1]);
-
+                    
                     DB::table('account_balance')->where('user_id', $user->id)
                         ->update(['balance_minutes' => $in_call_limit]);
 
-                    DB::table('user_data')->where('user_id', $user->id)->update(['i_account' => $i_account, 'register_status' => 1 ]);
+                    DB::table('user_data')->where('user_id', $user->id)->update(['i_account' => $i_account, 'register_status' => 1 ]);  
 
                     SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
                     NotificationLog::where('payload', 'like', '%"order_activation"%')
@@ -859,13 +868,13 @@ class ActivationController extends Controller
                                     ->update(['status' => 1]);
                     
                     $this->calculate_dealer_commision($auto_plan_id, $promocode);
-
+                    
                     $auto_plan_data['user_list'] = $user_list;
                     if(is_null($plan->next_renewal) || $plan->status == 0){
                         $auto_plan_data['status'] = 1;
                         if(is_null($plan->next_renewal)){
                             $auto_plan_data['switch_billing_plan'] = $sim_data->auto_plan->plan->switch_billing_plan;
-                            $auto_plan_data['next_renewal'] = Carbon::now()->addDays(30)->format('Y-m-d');
+                            $auto_plan_data['next_renewal'] = Carbon::now()->addMonthNoOverflow()->startOfMonth()->format('Y-m-d');
                         }
                         if($user->id == $parent_id){
                             $register_notify = 1;
@@ -877,8 +886,8 @@ class ActivationController extends Controller
 
                     $account_sid = Helper::get_option('twilio_account_sid');
                     $auth_token =  Helper::get_option('twilio_auth_token');
-                    $twilio_number = Helper::get_option('twilio_number');
-                    try {
+                    $twilio_number = Helper::get_option('twilio_number');                            
+                    try {             
                         $client = new Client($account_sid, $auth_token);
                         $client->messages->create(
                             $trust_number,
@@ -887,8 +896,8 @@ class ActivationController extends Controller
                                 'body' => $welcome_msg
                             )
                         );
-                    } catch (RestException $exception) {
-
+                    } catch (RestException $exception) {                  
+                        
                     }
                 }
                 $process_flag = 1;
@@ -896,7 +905,7 @@ class ActivationController extends Controller
                 $i_account = $user->i_account;
                 $default_number = 0;
                 if(!DB::table('trusted_numbers')->where('trusted_number',$trust_number)->exists()) {
-                    DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => $default_number]);
+                    DB::table('trusted_numbers')->insert(['user_id' => $user->id, 'trusted_number' => $trust_number, 'verified' => 1, 'api_token' => Str::random(90),'default_number' => $default_number]);                     
                     $xml_data = SwitchHelper::switch_add_cli_xml($i_account,$trust_number);
                     $temp = SwitchHelper::call_switch_api($xml_data);
 
@@ -921,8 +930,8 @@ class ActivationController extends Controller
 
                     $account_sid = Helper::get_option('twilio_account_sid');
                     $auth_token =  Helper::get_option('twilio_auth_token');
-                    $twilio_number = Helper::get_option('twilio_number');
-                    try {
+                    $twilio_number = Helper::get_option('twilio_number');                            
+                    try {             
                         $client = new Client($account_sid, $auth_token);
                         $client->messages->create(
                             $trust_number,
@@ -931,22 +940,22 @@ class ActivationController extends Controller
                                 'body' => $welcome_msg
                             )
                         );
-                    } catch (RestException $exception) {
-
+                    } catch (RestException $exception) {                  
+                
                     }
                 }
 
-                $method = 'accountCredit';
+                $method = 'accountCredit';        
                 $credit_xml = SwitchHelper::switch_account_bal_xml($method, $i_account, '0.01', $country->currency,'');
                 $temp =  SwitchHelper::call_switch_api($credit_xml);
                 if (array_key_exists("fault", $temp)) {
-                    NotificationLog::create(['user_id'=>$user->id,'message' => 'Switch Balance Update Failed','description'=>'sub id:'.$plans->id.', msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']);
+                    NotificationLog::create(['user_id'=>$user->id,'message' => 'Switch Balance Update Failed','description'=>'sub id:'.$plans->id.', msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']); 
                 }
 
                 $xml_data = SwitchHelper::switch_update_plan_xml($i_account, $switch_billing);
                 $temp     = SwitchHelper::call_switch_api($xml_data);
                 if (array_key_exists("fault", $temp)) {
-                    NotificationLog::create(['user_id'=>$user->id,'message' => 'Subscription Switch Plan Update Failed','description'=>'sub id:'.$plans->id.', msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']);
+                    NotificationLog::create(['user_id'=>$user->id,'message' => 'Subscription Switch Plan Update Failed','description'=>'sub id:'.$plans->id.', msg:'.json_encode($temp).', admin:'.Auth::id(),'status'=>'0']); 
                 }else{
                     DB::table('account_balance')->where('user_id', $user->id)
                                 ->update(['balance_minutes' => $in_call_limit]);
@@ -963,7 +972,7 @@ class ActivationController extends Controller
                 if(is_null($plan->next_renewal) || $plan->status == 0){
                     $auto_plan_data['status'] = 1;
                     if(is_null($plan->next_renewal)){
-                       $auto_plan_data['next_renewal'] = Carbon::now()->addDays(30)->format('Y-m-d');
+                       $auto_plan_data['next_renewal'] = Carbon::now()->addMonthNoOverflow()->startOfMonth()->format('Y-m-d');
                     }
                     if($user->id == $parent_id){
                         $register_notify = 1;
@@ -971,9 +980,9 @@ class ActivationController extends Controller
                 }
 
                 DB::table('auto_plan')->where('id', $auto_plan_id)->update($auto_plan_data);
-                $process_flag = 1;
+                $process_flag = 1;              
             }
-
+            
             if( $provider == 'O2' || $provider == 'EE_O2' || $provider == 'VUK'){
                 $trusted = DB::table('trusted_numbers')->where('trusted_number',$trust_number)->first();
                 // if($trusted && (is_null($trusted->cli_id) || $trusted->cli_id == 0)){
@@ -985,10 +994,10 @@ class ActivationController extends Controller
                 //         if($addcli->status == 200){
                 //             DB::table('trusted_numbers')->where('trusted_number',$trust_number)->update(['cli_id'=>$addcli->newCli]);
                 //         }else{
-                //           NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                //           NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);   
                 //         }
                 //     }else{
-                //         NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']);
+                //         NotificationLog::create(['user_id'=>$user->id,'message' => 'Add CLI failed SoapClient error','description'=>'site id:'.$siteId.', msg: cli'.$cli_number.', admin:'.Auth::id(),'status'=>'0']); 
                 //     }
                 // }
             }
@@ -1010,33 +1019,33 @@ class ActivationController extends Controller
                     //  'user_id' => $user->id,
                     //  'msisdn' => $cli_number,
                     //  'category' => 'EXTERNAL_TOPUP',
-                    //  'value' => $sim_data->credit
+                    //  'value' => $sim_data->credit                        
                     // );
                     // DB::table('avoo_sim_log')->insert($log_data);
 
-                    // $payment = ['user_id' => $parent_id, 'pay_to' => $user->id, 'transaction_id' => $txn_id, 'buy_price' => '0',
-                    //     'amount' => $sim_data->credit, 'tax_amount' => 0, 'total_amount' => $sim_data->credit, 'currency' => $country->currency, 'category' => 'switch', 'card_type' => $card_type,  'payment_method' => $payment_method, 'payment_for' => 'Credit Added','description' => 'credit added to app'];
+                    $payment = ['user_id' => $parent_id, 'pay_to' => $user->id, 'transaction_id' => $txn_id, 'buy_price' => '0', 
+                        'amount' => $sim_data->credit, 'tax_amount' => 0, 'total_amount' => $sim_data->credit, 'currency' => $country->currency, 'category' => 'switch', 'card_type' => $card_type,  'payment_method' => $payment_method, 'payment_for' => 'Credit Added','description' => 'credit added to app'];                  
 
-                    // $method = 'accountCredit'; //accountAddFunds
-                    // $swithlog['description']    = 'accountCredit';
-                    // $swithlog['user_id']        =  $user->id;
-                    // $xml_data = SwitchHelper::switch_account_bal_xml($method,$i_account,$sim_data->credit,$country->currency);
-                    // $temp =  SwitchHelper::call_switch_api($xml_data);
-                    // // $temp = [];
-                    // if (array_key_exists("fault", $temp)) {
-                    //     $payment['status'] = '2';
-                    //     $swithlog['status'] = 2;
-                    // } else {
-                    //     $payment['status'] = '1';
-                    //     $swithlog['status'] = 1;
-                    //     DB::table('account_balance')->where('user_id', $user->id)
-                    //         ->increment('balance_amount', $sim_data->credit);
-                    // }
-                    //             SwitchLog::insertGetId($swithlog);
-                    // DB::table('user_payments')->insert($payment);
-                    // SimList::where('id',$sim_data->id)->update(['credit' => 0]);
+                    $method = 'accountCredit'; //accountAddFunds
+                    $swithlog['description']    = 'accountCredit';  
+                    $swithlog['user_id']        =  $user->id;  
+                    $xml_data = SwitchHelper::switch_account_bal_xml($method,$i_account,$sim_data->credit,$country->currency);
+                    $temp =  SwitchHelper::call_switch_api($xml_data);
+                    // $temp = [];
+                    if (array_key_exists("fault", $temp)) {
+                        $payment['status'] = '2';
+                        $swithlog['status'] = 2;
+                    } else {  
+                        $payment['status'] = '1';
+                        $swithlog['status'] = 1;                        
+                        DB::table('account_balance')->where('user_id', $user->id)
+                            ->increment('balance_amount', $sim_data->credit);               
+                    }
+                                SwitchLog::insertGetId($swithlog); 
+                    DB::table('user_payments')->insert($payment);
+                    SimList::where('id',$sim_data->id)->update(['credit' => 0]);
                     $process_flag = 1;
-                // } else {
+                // } else { 
                 //  $status[$sim_data->stock_id] = '';
                 // }
             }
@@ -1048,7 +1057,7 @@ class ActivationController extends Controller
                 $note = 'Activated by '.Auth::user()->first_name.' '.Auth::user()->last_name.' on';
                 DB::table('delivery_history')->insert(['sim_request_id' => $rqst_id ,'proceed_by' => Auth::id(),  'type' => 2, 'note' => $note]);
                 DB::table('tbl_sim_request')->where('id', $rqst_id)->update(['delivery_status' => 2]);
-            }
+            }               
         }
 
         if($register_notify){
@@ -1056,7 +1065,7 @@ class ActivationController extends Controller
             VerifyUser::updateOrCreate(
                 ['email' => $user->email],
                 ['token' => $verify_token]
-            );
+            ); 
             $password = Helper::unique_code(8);
             $hash = Hash::make($password);
             User::where('id', $parent_id)->update(['password'=> $hash]);
@@ -1068,7 +1077,7 @@ class ActivationController extends Controller
             $obj->username = $user->username;
             $obj->password = $password;
             $obj->token = $verify_token;
-
+            
             $bcc_emails = Helper::get_option('bcc_emails');
             $bcc_emails = explode(',', $bcc_emails);
             Mail::to($user->email)
@@ -1082,22 +1091,23 @@ class ActivationController extends Controller
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function calculate_dealer_commision($auto_plan_id, $promocode)
-    {
+    { 
         $list_pending = SimList::where('autoplan_id', $auto_plan_id)->where('reg_status', '0')->count();
         if($list_pending == 0) {
-            if(!is_null($promocode) && ($promocode != 'web')) {
+            $dealer = DB::table('admins')->where('promocode',$promocode)->first();
+            if($dealer) {              
                 $idata =  DB::table('tbl_sim_request as sr')->select('ap.plan_id','ap.bundle_id','ap.total_amount','ad.id as commuser', 'ad.role as commuserrole')
                         ->join('tbl_sim_list as sl', 'sl.request_id', '=', 'sr.id')
                         ->join('auto_plan as ap', 'ap.id', '=', 'sl.autoplan_id')
                         ->leftJoin('admins as ad', 'ad.promocode', '=', 'sr.promocode')
                         ->where('ap.id', $auto_plan_id)->first(); //get plan to provide commission
 
-                $planType = ($idata->bundle_id === 0) ? 1 : 2;
+                $planType = ($idata->bundle_id === 0) ? 1 : 2;  
                 $planId   = $idata->plan_id;
                 if( $planType === 2){
                     $planId = $idata->bundle_id;
@@ -1153,8 +1163,8 @@ class ActivationController extends Controller
                                          ->get();          //To take the default commission rates
                                 }
                             }
-
-                            foreach ($commStud as $key => $comm) {
+                            
+                            foreach ($commStud as $key => $comm) { 
                                 $commAmount = $planAmount = $commAmount = 0;
                                 $commArray    = [];
                                 $planAmount   = $idata->total_amount;
@@ -1183,10 +1193,10 @@ class ActivationController extends Controller
     }
 
     /**
-    * Order Sim Detail View
+    * Order Sim Detail View 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function order_provision(Request $request)
     {
         if (!Helper::has_permission('orders','edit')) {
@@ -1202,10 +1212,10 @@ class ActivationController extends Controller
     }
 
     /**
-    * Update Porting Request
+    * Update Porting Request 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function port_request(Request $request)
     {
         if (!Helper::has_permission('orders','edit')) {
@@ -1217,10 +1227,10 @@ class ActivationController extends Controller
     }
 
     /**
-    * Update Porting Request
+    * Update Porting Request 
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function provision_request(Request $request)
     {
         if (!Helper::has_permission('orders','edit')) {
@@ -1246,7 +1256,7 @@ class ActivationController extends Controller
     * Verfiy Sim Number
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function verfiy_sim_number(Request $request)
     {
         // $api_user = Helper::get_option('dwp_auth_username');
@@ -1291,7 +1301,7 @@ class ActivationController extends Controller
     * Verfiy Sim Number
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function verfiy_pac_code(Request $request)
     {
         $data['pac_code'] = $request->pac_code;
@@ -1300,7 +1310,7 @@ class ActivationController extends Controller
         if (preg_match('/^(07)[0-9]{9}$/', $request->cli)) {
             $data['cli'] = $request->cli;
         } else {
-            return response()->json(['error' => true, 'message' => 'Enter a valid mobile number to keep']);
+            return response()->json(['error' => true, 'message' => 'Enter a valid mobile number to keep']);  
         }
         $check_pac_xml = DwpHelper::dwp_check_pac($data);
         $response = DwpHelper::dwp_process_api($check_pac_xml);
@@ -1316,7 +1326,7 @@ class ActivationController extends Controller
     * Verfiy Sim Number
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function provision_process(Request $request)
     {
         //dd($request->all());
@@ -1353,20 +1363,19 @@ class ActivationController extends Controller
 
         SimList::where('id', $provision['list_id'])
             ->update(['porting_to' => $provision['porting_to'], 'pac_no' => $provision['pac_code']]);
-
+        $sim_list = SimList::where('id', $provision['list_id'])->first();
         $sim_number = $sim_list->stock->sim_number;
         $note = 'Provisioned ( '.$sim_number.' ) by '.Auth::user()->first_name.' '.Auth::user()->last_name.' on';
         DB::table('delivery_history')->insert(['sim_request_id' => $sim_list->request_id ,'proceed_by' => Auth::id(),  'type' => 1, 'note' => $note]);
-
         if($sim_list->port){
             $data['pac_code'] = $sim_list->pac_no;
             $data['cli'] = $sim_list->porting_to;
             $check_pac_xml = DwpHelper::dwp_check_pac($data);
             $response = DwpHelper::dwp_process_api($check_pac_xml);
             $response = json_decode(DwpHelper::dwp_response_handler($response));
-            if($response->children[0]->no != 0){
+            if($response->children[0]->no != 0){                
                 return response()->json(['error' => true, 'message' => $response->children[0]->text]);
-            }
+            } 
         }
 
         $data['sim_number'] = $sim_number;
@@ -1382,7 +1391,12 @@ class ActivationController extends Controller
         $order_id = $sim_list->provision_id;
         if($provision_status == 0){
             $data['assign'] = $sim_list->sim_request->user->name;
-            $data['order_id'] = $sim_list->sim_request->order_id;
+            $data['order_id'] = $sim_list->sim_request->order_id; 
+            if($data['network'] == 'O2'){
+                $data['account_id'] = 'FIN08329';
+            }else{
+                $data['account_id'] = 'GZR38415';
+            }
             $order_xml = DwpHelper::dwp_order_new($data);
             $response = DwpHelper::dwp_process_api($order_xml);
             $response = json_decode(DwpHelper::dwp_response_handler($response));
@@ -1407,7 +1421,7 @@ class ActivationController extends Controller
             $data['user_name'] = $sim_list->sim_request->order_id;
             if($sim_list->port){
                 $data['port_cli'] = $sim_list->porting_to;
-                $data['pac_code'] = $sim_list->pac_no;
+                $data['pac_code'] = $sim_list->pac_no; 
                 $data['port_date'] = $provision['transfer'];
                 $provision_date = $provision['transfer'];
             }else{
@@ -1435,13 +1449,17 @@ class ActivationController extends Controller
             $data['order_id'] = $order_id;
             $provision_xml = DwpHelper::dwp_order_provision($data);
             $response = DwpHelper::dwp_process_api($provision_xml);
+            Log::info('OrderProvision',[
+                'request'=>$provision_xml,
+                'result'=>json_encode($response)
+            ]);
             $response = json_decode(DwpHelper::dwp_response_handler($response));
 
             if($response->children[0]->no == 0){
                 $provision_status = 3;
                 $order_id = $response->children[1]->html;
                 SimList::where('id', $provision['list_id'])
-                    ->update(['provision_id' => $order_id, 'provision' => $provision_status]);
+                    ->update(['provision_id' => $order_id, 'provision' => $provision_status]);                
                 return response()->json(['error' => false]);
             }else{
                 return response()->json(['error' => true, 'message' => $response->children[0]->text]);
@@ -1453,7 +1471,7 @@ class ActivationController extends Controller
             //     <a name="username" format="text">'. $api_user .'</a>
             //     <a name="password" format="password">'. $api_pwd .'</a>
             //     <a name="client-id" format="text">1</a>
-            //   </block>
+            //   </block>          
             //   <a name="mobile-number" format="phone">07766742689</a>
             // </Request>';
 
@@ -1469,11 +1487,11 @@ class ActivationController extends Controller
     * Verfiy Sim Number
     *
     * @return \Illuminate\Contracts\Support\Renderable
-    */
+    */ 
     public function provision_check(Request $request)
     {
-        $provision_id = SimList::where('id', $request->sim_id)->value('provision_id');
-        $data['order_id'] = /*'3277455';*/ $provision_id;
+        $provision_id = SimList::where('id', $request->sim_id)->value('provision_id'); 
+        $data['order_id'] = /*'3277455';*/ $provision_id;                 
         $search_xml = DwpHelper::dwp_order_search($data);
         $response  = DwpHelper::dwp_process_api($search_xml);
         $response  = json_decode(DwpHelper::dwp_response_handler($response));
@@ -1484,11 +1502,23 @@ class ActivationController extends Controller
             $status['request_id'] = $result['orders']['block']['id'];
             $status['state'] =  ucfirst($result['orders']['block']['components']['block']['state']);
             $status['updated_at'] = $result['orders']['block']['components']['block']['last-update'];
-            $status['request_status'] = $result['orders']['block']['request-stage'];
+            $status['request_status'] = $result['orders']['block']['request-stage'];           
             $html = view('modal-popup', compact('status','provision_check'))->render();
             if($status['state'] == 'Completed' && $status['request_status'] == 'Complete'){
+                $sim_number = $result['orders']['block']['components']['block']['sim-serial'];
+                $mobile_number = $result['orders']['block']['components']['block']['mobile-number'];
+                $phone_number = '44'.ltrim($mobile_number,'0');
+                // if($sim_number != $list->stock->sim_number){
+                // $search_xml = DwpHelper::dwp_change_simnumber($data);
+                // $response = DwpHelper::dwp_process_api($search_xml);
+                // }
+                try{
+                    SimStock::where('id',$list->stock_id)->update(['phone_number' => $phone_number, 'verified' => 1]);
+                }catch(\Exceptions $e){
+
+                }
                 SimList::where('id', $request->sim_id)->update(['provision' => 4]);
-            }
+            }               
             return response()->json(['error' => false,'html' => $html]);
         }else{
             return response()->json(['error' => true, 'message' => $response->children[0]->text]);
@@ -1508,5 +1538,5 @@ class ActivationController extends Controller
         }
         return $dwp;
     }
-
+    
 }
