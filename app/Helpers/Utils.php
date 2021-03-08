@@ -176,6 +176,7 @@ class Utils {
             return false;
         }
     }
+    
 
     public static function qrcode($txt,$store = false){
 

@@ -57,6 +57,7 @@ class SoftDelivery //implements ShouldQueue
                     Mail::to($user->email)
                         ->bcc(['arun@gencomtel.com'])
                         ->send(new SimSoftDelivery($obj));
+                        
                 }
             }
         } catch (\Exception $e) {
