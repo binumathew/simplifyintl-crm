@@ -69,10 +69,10 @@ class ActivationNotify extends Command
                         $search_xml = DwpHelper::dwp_order_search($data);
                         $response  = DwpHelper::dwp_process_api($search_xml);
                         $response  = json_decode(DwpHelper::dwp_response_handler($response));
-                        // Log::info('activation-notify',[
-                        //     'request'=> $search_xml,
-                        //     'response' => $response
-                        // ]);
+                        Log::info('activation-notify',[
+                            'request'=> $search_xml,
+                            'response' => $response
+                        ]);
                         if($response->children[0]->no == 0){
                             $result = DwpHelper::dwp_response($response->children);                                                       
                             $status['state'] =  ucfirst($result['orders']['block']['components']['block']['state']);
