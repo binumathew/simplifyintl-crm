@@ -1400,10 +1400,6 @@ class ActivationController extends Controller
             $product_xml = DwpHelper::dwp_order_add_product($data);
             $response = DwpHelper::dwp_process_api($product_xml);
             $response = json_decode(DwpHelper::dwp_response_handler($response));
-            Log::error('PROVISIONPROCESS',[
-                'response' => $response,
-                'request' => $product_xml
-            ]);
             if($response->children[0]->no == 0 && $response->children[1]->html == 1){
                 $provision_status = 2;
                 SimList::where('id', $provision['list_id'])->update(['provision' => $provision_status, 'provision_date' => $provision_date]);
