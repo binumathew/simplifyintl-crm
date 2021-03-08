@@ -574,9 +574,9 @@ Route::get('/dwp', 'DwpController@dwp_sim_check');
 
 
 
-// Route::get('/cron', function () {
-//     Artisan::call('schedule:run');
-// });
+Route::get('/cron', function () {
+    Artisan::call('schedule:run');
+});
 
 // Route::get('/record',function(){ 
 //     return Response::download('https://149.36.7.16:81/24-1-2020/0-91-1922-2157-2157-447766742689-o-2340-240120-124207.wav','sheet.wav');
