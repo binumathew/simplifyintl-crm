@@ -55,7 +55,7 @@ class SoftDelivery //implements ShouldQueue
                     $obj->date      = Carbon::now()->format('d M Y');
 
                     Mail::to($user->email)
-                        ->bcc(['jijo.joseph@gencomtel.com','arun@gencomtel.com'])
+                        ->bcc(['arun@gencomtel.com'])
                         ->send(new SimSoftDelivery($obj));
                 }
             }
