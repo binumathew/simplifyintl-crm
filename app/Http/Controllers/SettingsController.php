@@ -44,7 +44,7 @@ use App\Models\Admins;
 
 use App\Models\Options;
 
-
+use App\Models\NotificationLog;
 
 
 
@@ -1848,7 +1848,13 @@ class SettingsController extends Controller
     //         return redirect('my-account')->with('message','Updated successfully');
 
     // }
-
+    public function notify_process(Request $request)
+    {
+        NotificationLog::whereId($request->notify_id)
+                        ->where('payload', 'like', '%"msisdn_update"%')
+                        ->update(['status' => 1]);
+        return response()->json(['error' => false, 'message' => 'Notifications status changed']);
+    }
 
 
 

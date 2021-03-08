@@ -75,7 +75,40 @@
                 // setTimeout(function(){
                 //     alertify.error('<div class="alert alert-danger alert-colored mb-0" role="alert"><strong>Update Failure.</strong> Please Try Again After Sometime.</div>');
                 // }, 5000);
-
+                $(document).on('click', '.notify_log', function(e) {
+                    e.preventDefault();
+                    $(this).attr('disabled','true');
+                    var notify_id  = $(this).attr('data-id');
+                    var notify_type = $(this).attr('data-type');
+                    var param       = $(this).attr('data-param');
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST',
+                        url: base_url+'/notify-process',
+                        data: {notify_id:notify_id},
+                        beforeSend: function(){
+                            $("#preloader,#status").show();
+                        },
+                        complete: function(){
+                            $("#preloader,#status").hide();
+                        },
+                        success:function(data){
+                            if (data.error) {
+                               alertify.error('Error in fetching notifications');
+                            } else {
+                                if(notify_type == 'order_activation'){
+                                    var route = "{{URL::to('/order-details')}}";
+                                    var html = '<form method="post" id="notify_get_order" action="'+route+'">@csrf<input type="hidden" name="order_id" value="'+param+'"></form>';
+                                    $('.notify_form').html('').html(html);
+                                    $("#notify_get_order").submit();
+                                }
+                                // location.href = base_url+data.redirect;  
+                            }
+                        }
+                    });
+                });
             });
 
         </script>

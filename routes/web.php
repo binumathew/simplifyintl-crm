@@ -197,6 +197,7 @@ Route::post('email-template-delete','SettingsController@email_template_delete');
 Route::get('activity-log','SettingsController@activity_log');
 Route::get('list-activitylog','SettingsController@list_activitylog');
 Route::post('list-activitylog','SettingsController@list_activitylog');
+Route::post('/notify-process', 'SettingsController@notify_process');
 
 /* Porting Module */
 Route::get('/port-list', 'PortController@port_list');

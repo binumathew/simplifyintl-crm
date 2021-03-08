@@ -94,9 +94,9 @@ $(document).ready(function (){
             },
             company_phone: {
                 required: true,
-                // minlength:8,
-                // maxlength:15,
-                // phoneNumber:true,
+                minlength:8,
+                maxlength:15,
+                phoneNumber:true,
             },
             company_email: {
                 required: true,
