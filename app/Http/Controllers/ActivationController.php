@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use DB;
 use Str;
 use Mail;
@@ -210,6 +211,13 @@ class ActivationController extends Controller
             $response = Helper::braintree_payment_process($data);
         }elseif($card->gateway == 3){
             $response = Helper::stripe_payment_process($data);
+        }elseif($card->gateway == 'cash'){            
+            $payment = ['user_id' => $user->id, 'transaction_id' => '', 'buy_price' => $data['buy_price'], 'amount' => $data['net_amount'], 'tax_amount' => $data['vat_amount'], 'currency' => $data['currency'], 'total_amount' => $data['total_amount'], 'card_type' => '-', 'payment_method' => 'Cash', 'discount_amount' => $data['discount_amount'], 'discount_coupon' => $data['discount_coupon'], 'payment_for' => $data['payment_for'], 'description' => $data['description'], 'status' => '1', 'category' => $data['category']];
+            $payment_id = UserPayment::insertGetId($payment);
+            $response['message'] = 'Payment successfully received';
+            $response['status'] = 1;
+            $response['payment_id'] = $payment_id;
+            $response['transaction_id'] =  '';
         }else{
             return response()->json(['error' => true, 'message' => 'Invalid Card, please add new card..']);
         }
@@ -655,8 +663,11 @@ class ActivationController extends Controller
                         //     }
                         // }
                     }
-
-                    SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
+                    SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);  
+                    NotificationLog::where('payload', 'like', '%"order_activation"%')
+                                    ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
+                                    // ->where('user_id',$user->id)
+                                    ->update(['status' => 1]);
 
                     $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
@@ -843,7 +854,11 @@ class ActivationController extends Controller
                     DB::table('user_data')->where('user_id', $user->id)->update(['i_account' => $i_account, 'register_status' => 1 ]);
 
                     SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
-
+                    NotificationLog::where('payload', 'like', '%"order_activation"%')
+                                    ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
+                                    // ->where('user_id',$user->id)
+                                    ->update(['status' => 1]);
+                    
                     $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
                     $auto_plan_data['user_list'] = $user_list;
@@ -938,7 +953,11 @@ class ActivationController extends Controller
                                 ->update(['balance_minutes' => $in_call_limit]);
                 }
                 SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);
-
+                NotificationLog::where('payload', 'like', '%"order_activation"%')
+                                    ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
+                                    // ->where('user_id',$user->id)
+                                    ->update(['status' => 1]);
+                
                 $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
                 $auto_plan_data['user_list'] = $user_list;

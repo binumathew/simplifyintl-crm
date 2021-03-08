@@ -1086,5 +1086,15 @@ class Helper
         }
         
     }
+    
+    public static function notifications(){
+        try{
+            //return Cache::remember('notifications',600, function () {
+                return NotificationLog::select('id','message','payload')->where('status', 0)->whereNotNull('payload')->where('payload', 'like', '%"order_activation"%')->orderBy('created_at','DESC')->get();
+            //});
+        }catch(\Exception $e){
+            return false;
+        }
+    }
 }
 ?>

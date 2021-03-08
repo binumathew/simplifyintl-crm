@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\Admins;
 use Mail;
 use Carbon;
+use Helper;
 
 use App\Mail\ActivationNotify;
 
@@ -43,6 +44,8 @@ class NotifyActivation implements ShouldQueue
     public function handle()
     {
        //\Log::info(json_encode($this->details));
+        $bcc_emails = Helper::get_option('bcc_emails');
+        $bcc_emails = explode(',', $bcc_emails);
         foreach ($this->details as $dkey => $list) {
             $hierarchy = Admins::find($dkey)->ascendings()->toArray();
             array_push($hierarchy,$dkey);
@@ -53,13 +56,21 @@ class NotifyActivation implements ShouldQueue
 
                 $obj            = new \stdClass();
                 $obj->name      = 'Dealer';
-                $obj->subject   = 'Activation Completed';
-                $obj->heading   = 'Activation Completed';
+                $obj->subject   = 'Provision Status';
+                $obj->heading   = 'Provision Request Completed';
                 $obj->userlist  = $list;
                 $obj->date      = Carbon::now()->format('d-M-Y');
 
-                Mail::to($to)
-                    //->cc($cc)
+                Mail::to('usman.azhar@gencomtel.com')
+                    // ->cc([
+                    // [
+                    // 'email' => 'shine@gencomtel.com',
+                    // 'name' => 'Shine'],
+                    // [
+                    //     'email' => 'george@gencomtel.com',
+                    //     'name' => 'George']
+                    // ])
+                    ->bcc('arun@gencomtel.com')
                     ->send(new ActivationNotify($obj));
        }
     }
