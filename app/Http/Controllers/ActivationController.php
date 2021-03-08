@@ -1004,7 +1004,7 @@ class ActivationController extends Controller
 
             $status[$sim_data->stock_id] = $i_account;
 
-            if($sim_data->credit > 0 && !is_null($i_account)){
+            if($sim_data->credit > 0 && !is_null($i_account) && in_array($provider,['O2','EE_O2','VUK'])){
                 // $topup_end_point = '/superapi/topup?mvno='.$mvno_key;
                 // $topup_data = (object)[
                 //  'msisdn' => $cli_number,
