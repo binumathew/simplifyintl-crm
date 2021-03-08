@@ -177,7 +177,7 @@ class Utils {
         }
     }
 
-    public static function qrcode($txt){
+    public static function qrcode($txt,$store = false){
 
         try{
             $options = new QROptions([
@@ -186,8 +186,16 @@ class Utils {
                 'eccLevel'   => QRCode::ECC_L,
             ]);
             $qrcode = (new QRCode($options))->render($txt);
-            Storage::disk('gcs')->put('esim/'.$txt.'.png', base64_decode($qrcode));
-            return Storage::disk('gcs')->temporaryUrl('esim/'.$txt.'.png', now()->addMinutes(30));
+            if($store) {
+                $img = str_replace('data:image/png;base64,', '', $qrcode);
+                $img = str_replace(' ', '+', $img);
+                $data = base64_decode($img);
+                Storage::disk('gcs')->put('esim/'.$txt.'.png',$data);
+                return Storage::disk('gcs')->temporaryUrl('esim/'.$txt.'.png', now()->addDays(7));
+            }else{
+                return $qrcode;
+            }
+
         }catch(\Exception $e){
             return false;
         }

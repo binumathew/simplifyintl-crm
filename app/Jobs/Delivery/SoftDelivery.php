@@ -51,12 +51,12 @@ class SoftDelivery //implements ShouldQueue
                     $obj->name      = ($user->name)?:'User';
                     $obj->subject   = config('settings.app_name').' Sim';
                     $obj->heading   = config('settings.app_name').' Sim';
-                    $obj->qrcode    = Utils::qrcode($qrdata);
+                    $obj->qrcode    = Utils::qrcode($qrdata,true);
                     $obj->date      = Carbon::now()->format('d M Y');
-    
+
                     Mail::to($user->email)
                         ->bcc(['jijo.joseph@gencomtel.com','arun@gencomtel.com'])
-                        ->send(new SimSoftDelivery($obj));                   
+                        ->send(new SimSoftDelivery($obj));
                 }
             }
         } catch (\Exception $e) {
