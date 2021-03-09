@@ -235,7 +235,7 @@
                             } else if (data.delivery_status == 1) {
                                 return 'Ready To Activate';
                             } else if (data.delivery_status == 2) {
-                                return 'CallBack Pending';
+                                return 'Processed';
                             } else if (data.delivery_status == 3) {
                                 return 'Activated';
                             }
