@@ -789,7 +789,7 @@ class ActivationController extends Controller
 
             //Switch Activation Process
             if(is_null($user->i_account)){
-                $data = [ 'username' => $user_data->auth_name,
+                $data = [ 'username' => $user_data->auth_name, 'a_class' => $country->a_class,
                 'tariff' => $country->tariff, 'timezone_value' => $country->timezone_value,
                 'balance' => $country->default_balance, 'phone' => $cli_number,
                 'translation_rule' => $country->translation_rule, 'cli_number' => $trust_number,

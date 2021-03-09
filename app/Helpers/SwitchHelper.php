@@ -66,7 +66,7 @@ class SwitchHelper
                 </member>
                 <member>
                   <name>web_password</name>
-                  <value><string>'. $data['username'] .'</string></value>
+                  <value><string>'. $data['vp_password'] .'</string></value>
                 </member>
                 <member>
                   <name>authname</name>
@@ -109,7 +109,7 @@ class SwitchHelper
                 </member>
                 <member>
                   <name>cli_translation_rule</name>
-                  <value><string></string></value>
+                  <value><string>'. $data['cli_number'] .'</string></value>
                 </member>
                 <member>
                   <name>cpe_number</name><value><string></string></value>
@@ -136,7 +136,7 @@ class SwitchHelper
                 </member>
                 <member>
                   <name>vm_notify_emails</name>
-                  <value><string>'.$data['notify_email'].'</string></value>
+                  <value><string></string></value>
                 </member>
                 <member>
                   <name>vm_forward_emails</name><value><string></string></value>
@@ -178,7 +178,7 @@ class SwitchHelper
                   <name>country</name><value><string></string></value>
                 </member>
                 <member>
-                  <name>contact</name><value><string></string></value>
+                  <name>contact</name><value><string>'.$data['notify_email'].'</string></value>
                 </member>
                 <member>
                   <name>phone</name>
@@ -237,16 +237,17 @@ class SwitchHelper
                 </member>
                 <member>
                   <name>i_password_policy</name><value><int>1</int></value>
-                </member>
-                <member>
-                  <name>i_routing_group</name>
-                  <value><int>'. $data['routing_group'] .'</int></value>
-                </member>
+                </member>                
               </struct>
             </value>
           </param>
         </params>
       </methodCall>';
+
+      // <member>
+      //   <name>i_routing_group</name>
+      //   <value><int>'. $data['routing_group'] .'</int></value>
+      // </member>
 
     return $xml_data;
   }
@@ -271,10 +272,6 @@ class SwitchHelper
               <member>
                 <name>last_name</name>
                 <value><string>'. $data['last_name'] .'</string></value>
-              </member>
-              <member>
-                <name>email</name>
-                <value><string></string></value>
               </member>
               <member>
                 <name>street_addr</name>
@@ -784,6 +781,36 @@ class SwitchHelper
           </param>
         </params>
       </methodCall>';
+
+    return $xml_data; 
+  }
+  public static function update_account_xml($i_account,$payment_action,$i_billing_plan = '')
+  {
+    $xml_data =  '<?xml version="1.0"?>
+    <methodCall>
+      <methodName>updateAccount</methodName>
+      <params>
+        <param>
+          <value>
+            <struct>
+              <member>
+                <name>i_account</name>
+                  <value><int>'. $i_account .'</int></value>
+              </member>';
+              if($i_billing_plan != ""){
+                $xml_data .= '<member>
+                    <name>i_billing_plan</name>
+                    <value><int>'. $i_billing_plan .'</int></value>
+                  </member>';
+              }
+              $xml_data .= '<member>
+                <name>on_payment_action</name><value><string>'.$payment_action.'</string></value>
+              </member>
+            </struct>
+          </value>
+        </param>
+      </params>
+    </methodCall>';
 
     return $xml_data; 
   }
