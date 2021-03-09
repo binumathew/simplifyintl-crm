@@ -68,7 +68,7 @@
                     <div class="card m-b-20">
                         <div class="card-body">
                             <div class="order-search">
-                                <form action="{{ url('orders-list') }}" id="order-search-form" method="POST">
+                                <form action="{{ url('orders-webreqlist') }}" id="order-search-form" method="POST">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-4">
@@ -85,10 +85,10 @@
                                             <div class="form-group">
                                                 <select name="delivery_status" id="delivery_status" class="form-control">
                                                     <option value="">Status</option>
-                                                    <option value="1">To Activate</option>
+                                                    <option value="1" selected>To Activate</option>
                                                     <option value="2">Welcome Call</option>
                                                     <option value="3">Not Packed</option>
-                                                    <option value="4" selected>All</option>
+                                                    <option value="4">All</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -143,7 +143,7 @@
                                         <th>Sim</th>
                                         <th>Sim Number</th>
                                         <th>Agent Name</th>
-                                        <!-- <th>Web Request</th> -->
+                                        <th>Web Request</th>
                                         <th>Status</th>
                                         <th>Action</th>
 
@@ -201,7 +201,7 @@
                         processing: true,
                         serverSide: true,
                         "ajax": {
-                            "url": "orders-list",
+                            "url": "orders-webreqlist",
                             "data": function ( d ) {
                                 d.order_id = $('#order_id').val();
                                 d.user_phone = $('#user_phone').val();
@@ -222,20 +222,20 @@
                         {"data" : "sim_count","name":"sim_count", "orderable": false, "searchable": false},
                         {"data" : "sim_number","name" : "sim_number", "orderable": true, "searchable": false},
                         {"data" : "promocode","name" : "rq.promocode"},
-                        // {"data" : function (data) {
-                        //     if (data.webrequest >= 1) {
-                        //         return 'Yes';
-                        //     }else if(data.webrequest == 0){
-                        //         return 'No';
-                        //     }
-                        // }, "name": "webrequest", "searchable": false},
+                        {"data" : function (data) {
+                            if (data.webrequest >= 1) {
+                                return 'Yes';
+                            }else if(data.webrequest == 0){
+                                return 'No';
+                            }
+                        }, "name": "webrequest", "searchable": false},
                         {"data" : function (data) {
                             if (data.delivery_status == 0) {
                                 return 'Order Received';
                             } else if (data.delivery_status == 1) {
                                 return 'Ready To Activate';
                             } else if (data.delivery_status == 2) {
-                                return 'Processed';
+                                return 'CallBack Pending';
                             } else if (data.delivery_status == 3) {
                                 return 'Activated';
                             }

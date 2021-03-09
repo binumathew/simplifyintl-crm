@@ -64,10 +64,14 @@ Route::get('/abandoned-list', 'OrderController@abandoned_orders_list');
 
 Route::get('/orders', 'OrderController@orders');
 Route::get('/orders-list', 'OrderController@orders_list');
+Route::post('/orders-list', 'OrderController@orders_list');
 Route::post('/update-promocode', 'OrderController@update_order_promocode');
 Route::get('/order-details', 'OrderController@order_details');
 Route::post('/order-details', 'OrderController@order_details');
 Route::post('/item-detail', 'OrderController@sim_list_details');
+Route::get('/orders-webreq', 'OrderController@orders_webreq');
+Route::get('/orders-webreqlist', 'OrderController@orders_webreqlist');
+Route::post('/orders-webreqlist', 'OrderController@orders_webreqlist');
 
 /* Activation Controller */
 Route::post('/sim-list', 'ActivationController@show_sim_list');

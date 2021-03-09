@@ -231,6 +231,7 @@
                             <li class="has-submenu"><a><i class="mdi mdi-history"></i>Activation</a>
                                 <ul class="submenu">
                                     @if(Helper::has_permission('orders') || Helper::has_permission('orders', 'view_own'))
+                                    <li><a href="{{ url('/orders-webreq') }}">Web Request</a></li>
                                     <li><a href="{{ url('/orders') }}">Orders</a></li>
                                     @endif
                                     @if(Helper::has_permission('porting'))

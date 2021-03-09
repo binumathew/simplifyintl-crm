@@ -6,6 +6,7 @@ use DB;
 use Auth;
 use Hash;
 use Crypt;
+use Excel;
 use Carbon;
 use Helper;
 use DataTables;
@@ -28,7 +29,10 @@ use App\Jobs\OrderRequestJob;
 use Illuminate\Http\Request;
 use App\Models\PaymentGateway;
 use App\Models\UserCreditCard;
+use App\Models\UserPayment;
+use App\Exports\CustomExport;
 use Illuminate\Support\Facades\Validator;
+use Log;
 
 class OrderController extends Controller
 {
@@ -760,11 +764,13 @@ class OrderController extends Controller
         $where = DB::table('admins')->where('parent_id', $admin_id)->pluck('promocode')->toArray();        
         array_push($where, $promocode);
 
-        $order_list = DB::table('tbl_sim_request as rq')->select('rq.id','rq.order_id','rq.promocode','usr.name','delivery_status','rq.created_at as date','usr.phone', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"), DB::raw("(SELECT time FROM delivery_history WHERE sim_request_id = rq.id AND type = 1 LIMIT 1) as ship_date"), DB::raw("(SELECT `sim_number` FROM `tbl_sim_stock` WHERE tbl_sim_stock.id =( SELECT `stock_id` FROM `tbl_sim_list` WHERE `request_id` = rq.id LIMIT 1)) as sim_number"))->join('users as usr','usr.id','=','rq.user_id');
+        $order_list = DB::table('tbl_sim_request as rq')->select('rq.id','rq.order_id','rq.promocode','usr.name','delivery_status','rq.created_at as date','usr.phone', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"),DB::raw("(SELECT COUNT(web_request) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id AND tbl_sim_list.web_request = 1) as webrequest"), DB::raw("(SELECT time FROM delivery_history WHERE sim_request_id = rq.id AND type = 1 LIMIT 1) as ship_date"), DB::raw("(SELECT `sim_number` FROM `tbl_sim_stock` WHERE tbl_sim_stock.id =( SELECT `stock_id` FROM `tbl_sim_list` WHERE `request_id` = rq.id LIMIT 1)) as sim_number"))->join('users as usr','usr.id','=','rq.user_id')->join('tbl_sim_list as sl','request_id','=','rq.id');
+        // ->where('sl.web_request',0);
 
         if($request->sim_number != ''){
-            $order_list =  $order_list->join('tbl_sim_list as sl','request_id','=','rq.id')
-                                 ->join('tbl_sim_stock as sk','sk.id','=','sl.stock_id');
+            $order_list =  $order_list
+                                // ->join('tbl_sim_list as sl','request_id','=','rq.id')
+                                ->join('tbl_sim_stock as sk','sk.id','=','sl.stock_id');
         }
 
         if(Helper::has_permission('orders')) {            
@@ -797,22 +803,153 @@ class OrderController extends Controller
         if($request->sim_number){
             $order_list =  $order_list->where('sk.sim_number', $request->sim_number);
         }
+        if($request->exportdata){
+            $orders = $order_list->get();
+
+            $orders = $orders->map(function ($item) {   
+                // $item->id = $item->id;             
+                switch ($item->delivery_status) {
+                    case 0:
+                        $item->delivery_status = 'Request Received';
+                    break;
+                    case 1:
+                        $item->delivery_status = 'Order Shipped';
+                    break; 
+                    case 2:
+                        $item->delivery_status = 'Activated';
+                    break; 
+                    case 4:
+                        $item->delivery_status = 'Cancelled';
+                    break;                                          
+                }
+                return collect($item)->except(['id','sim_count',]);
+            });
+            $orders->prepend([
+                'Order ID','Agent','Customer','Order Status','Created On','Phone','Web Activation','Shipping Date','Sim Number'
+            ]);
+            return Excel::download(new CustomExport($orders->toArray()), 'Order List.csv');
+        }else{
+            //return DataTables::queryBuilder($order_list)->toJson();
+            return Datatables::queryBuilder($order_list)
+                    ->editColumn('promocode', function ($order) { 
+                        return (($order->promocode)?$order->promocode:'SJ100');
+                    })->editColumn('date', function ($order) { 
+                        return Helper::date_format($order->date);
+                    })->editColumn('ship_date', function ($order) {
+                        if($order->ship_date)
+                            return Helper::date_format($order->ship_date);
+                    })
+                    
+                    // ->with(['total_sum' => number_format($total,2,'.',''), 'total_buy' => number_format($total_buy,2,'.',''), 'refund' => number_format($refund,2,'.',''), 'currency' => $request->currency])
+                    ->rawColumns(['promocode'])
+                    ->make(true);
+        }
+    } 
+    /*
+    * List all orders which are shipped 
+    * Items which are activated and non activated are listed
+    */
+    public function orders_webreq()
+    {
+        if (!Helper::has_permission('orders') && !Helper::has_permission('orders','view_own')) {
+            abort(403,'Access denied');
+        }
+
+        $dealers = DB::table('admins')->select(DB::raw('concat(first_name," ",last_name) as dealer'),'promocode')->where('status', 1)->get();
+        return view('orders.orders-webreq', compact('dealers'));
+    }
+
+    /*
+    * Pagination and filter
+    */
+    public function orders_webreqlist(Request $request)
+    {
+        $admin_id = Auth::user()->id;
+        $promocode  = Auth::user()->promocode;
+        $where = DB::table('admins')->where('parent_id', $admin_id)->pluck('promocode')->toArray();        
+        array_push($where, $promocode);
+
+        $order_list = DB::table('tbl_sim_request as rq')->select('rq.id','rq.order_id','rq.promocode','usr.name','delivery_status','rq.created_at as date','usr.phone', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"),DB::raw("(SELECT COUNT(web_request) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id AND tbl_sim_list.web_request = 1) as webrequest"), DB::raw("(SELECT time FROM delivery_history WHERE sim_request_id = rq.id AND type = 1 LIMIT 1) as ship_date"), DB::raw("(SELECT `sim_number` FROM `tbl_sim_stock` WHERE tbl_sim_stock.id =( SELECT `stock_id` FROM `tbl_sim_list` WHERE `request_id` = rq.id LIMIT 1)) as sim_number"))->join('users as usr','usr.id','=','rq.user_id')->join('tbl_sim_list as sl','request_id','=','rq.id')->where('sl.web_request',1);
+
+        if($request->sim_number != ''){
+            $order_list =  $order_list
+                                // ->join('tbl_sim_list as sl','request_id','=','rq.id')
+                                ->join('tbl_sim_stock as sk','sk.id','=','sl.stock_id');
+        }
+        $order_list =  $order_list->where('provision','<',3);
+        if(Helper::has_permission('orders')) {            
+        }elseif(Helper::has_permission('orders','view_own')) {
+            $order_list = $order_list->whereIn('rq.promocode', $where);
+        }else{
+            $order_list = $order_list->where('id', 0);
+        }
+
+        if ($request->delivery_status == 1) { 
+            $order_list =  $order_list->where('delivery_status','1');
+        } else if($request->delivery_status == 2) {             
+            $order_list =  $order_list->where('delivery_status','2');
+        } else if($request->delivery_status == 3) { 
+            $order_list =  $order_list->where('delivery_status','0');
+        }
+
+        if($request->order_id){
+            $order_list =  $order_list->where('rq.order_id', $request->order_id);
+        }
+        if($request->user_phone){
+            $order_list =  $order_list->where('usr.phone', $request->user_phone);
+        }
+        if($request->from_date){
+            $order_list =  $order_list->where('rq.created_at','>=', $request->from_date);
+        }
+        if($request->to_date){
+            $order_list =  $order_list->where('rq.created_at','<=', $request->to_date);
+        }
+        if($request->sim_number){
+            $order_list =  $order_list->where('sk.sim_number', $request->sim_number);
+        }
         
-        //return DataTables::queryBuilder($order_list)->toJson();
-        return Datatables::queryBuilder($order_list)
-                ->editColumn('promocode', function ($order) { 
-                    return (($order->promocode)?$order->promocode:'SJ100');
-                })->editColumn('date', function ($order) { 
-                    return Helper::date_format($order->date);
-                })->editColumn('ship_date', function ($order) {
-                    if($order->ship_date)
-                        return Helper::date_format($order->ship_date);
-                })
-                
-                // ->with(['total_sum' => number_format($total,2,'.',''), 'total_buy' => number_format($total_buy,2,'.',''), 'refund' => number_format($refund,2,'.',''), 'currency' => $request->currency])
-                ->rawColumns(['promocode'])
-                ->make(true);
-    }  
+        if($request->exportdata){
+            $orders = $order_list->get();
+
+            $orders = $orders->map(function ($item) {   
+                // $item->id = $item->id;             
+                switch ($item->delivery_status) {
+                    case 0:
+                        $item->delivery_status = 'Request Received';
+                    break;
+                    case 1:
+                        $item->delivery_status = 'Order Shipped';
+                    break; 
+                    case 2:
+                        $item->delivery_status = 'Activated';
+                    break; 
+                    case 4:
+                        $item->delivery_status = 'Cancelled';
+                    break;                                          
+                }
+                return collect($item)->except(['id','sim_count',]);
+            });
+            $orders->prepend([
+                'Order ID','Agent','Customer','Order Status','Created On','Phone','Web Activation','Shipping Date','Sim Number'
+            ]);
+            return Excel::download(new CustomExport($orders->toArray()), 'Order List.csv');
+        }else{
+            //return DataTables::queryBuilder($order_list)->toJson();
+            return Datatables::queryBuilder($order_list)
+                    ->editColumn('promocode', function ($order) { 
+                        return (($order->promocode)?$order->promocode:'SJ100');
+                    })->editColumn('date', function ($order) { 
+                        return Helper::date_format($order->date);
+                    })->editColumn('ship_date', function ($order) {
+                        if($order->ship_date)
+                            return Helper::date_format($order->ship_date);
+                    })
+                    
+                    // ->with(['total_sum' => number_format($total,2,'.',''), 'total_buy' => number_format($total_buy,2,'.',''), 'refund' => number_format($refund,2,'.',''), 'currency' => $request->currency])
+                    ->rawColumns(['promocode'])
+                    ->make(true);
+        }
+    }   
 
     /*
     * Incomplete Orders list Page
@@ -926,7 +1063,7 @@ class OrderController extends Controller
         if($data){
             $request_id = explode(',', $data->request_id);
             $sim_request = SimRequest::whereIn('id',$request_id)->get();
-            $sim_list = SimList::selectRaw('count(*) as sim_count,autoplan_id')->whereIn('request_id', $request_id)->groupBy('autoplan_id')->get();
+            $sim_list = SimList::selectRaw('count(*) as sim_count,autoplan_id,web_request')->whereIn('request_id', $request_id)->groupBy('autoplan_id')->get();
             $switch_id = $sim_request[0]->user->switch_id;
         }
             
