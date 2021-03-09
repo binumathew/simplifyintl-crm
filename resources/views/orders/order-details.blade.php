@@ -88,6 +88,7 @@
                                   <th>SIM in Pack</th>
                                   <th>Number</th>
                                   <th>Status</th>
+                                  <th>Web Request</th>
                                   <th>Action</th>
                                 </tr>
                             </thead>
@@ -102,6 +103,7 @@
                                   <td>{{ $sim->sim_count }}</td>
                                   <td>{{ $simDetail['phone_number'] }}</td>
                                   <td>{{ $simDetail['status'] }}</td>
+                                  <td>{{ ($sim->web_request) ? 'Yes':'No'  }}</td>
                                   <td>
                                     <input type="hidden" id="sim_stock_{{ $simDetail['idetifier'] }}" name="act_sim_stock" value="{{ $simDetail['stockId'] }}">
                                     @if($provider == 'O2' || $provider == 'VUK' || $provider == 'EE_O2' || $provider == 'E_SIM')
