@@ -233,6 +233,10 @@ class SwitchHelper
                   <value><int>'. $data['billing_plan'] .'</int></value>
                 </member>
                 <member>
+                  <name>i_routing_group</name>
+                  <value><int>'. $data['routing_group'] .'</int></value>
+                </member>
+                <member>
                   <name>i_media_relay_type</name><value><int>0</int></value>
                 </member>
                 <member>
@@ -244,10 +248,7 @@ class SwitchHelper
         </params>
       </methodCall>';
 
-      // <member>
-      //   <name>i_routing_group</name>
-      //   <value><int>'. $data['routing_group'] .'</int></value>
-      // </member>
+     
 
     return $xml_data;
   }
