@@ -1078,10 +1078,10 @@ class ActivationController extends Controller
             $obj->password = $password;
             $obj->token = $verify_token;
             
-            $bcc_emails = Helper::get_option('bcc_emails');
-            $bcc_emails = explode(',', $bcc_emails);
+            $email_bcc = json_decode(Helper::get_option('email_bcc'),TRUE);
+            $email_bcc = (!empty($email_bcc)) ? $email_bcc : [];
             Mail::to($user->email)
-                ->bcc($bcc_emails)
+                ->bcc($email_bcc)
                 ->send(new Registration($obj));
         }
 
