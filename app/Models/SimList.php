@@ -42,7 +42,7 @@ class SimList extends Model
                 if ($list->reg_status == 0) {
                     $flag = 'Not Active';
                 }else if($list->reg_status == 1) {
-                    $flag = 'Callback';
+                    $flag = 'Processed';
                 }
                 if($list->stock->verified == 0){                 
                     $phone_number .= '0759xxxxxxx'.' , ';
