@@ -14,10 +14,10 @@
 						</tr>
 					</thead>
 					<tbody>
-						@foreach ($sim_list as $sim)
+						@foreach ($sim_list as $sim) 
 						<tr class="odd">
-							<td>{{ $sim->auto_plan->plan->plan_name }}</td>
-							<td>{{ $sim->auto_plan->plan->provider }}</td>
+							<td>{{ ($sim->auto_plan->plan->plan_name)??'' }}</td>
+							<td>{{ ($sim->auto_plan->plan->provider)??'' }}</td>
 							<td>{{ $sim->stock->sim_number }}</td>
 							<td>
 								<select class="form-control connection_type" data-id="{{$sim->id}}">
