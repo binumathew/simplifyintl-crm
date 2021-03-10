@@ -527,7 +527,7 @@ class ActivationController extends Controller
             $user = User::where('id', $sim_data->user_id)->first();
             $user_data = $user->userDetail; 
 
-            if(!is_null($user_data->sim_subscription_id)){
+            if(!is_null($user_data->sim_subscription_id) && $provider != "E_SIM"){
                 $status[$sim_data->stock_id] = $user_data->sim_subscription_id;
                 continue;
             }
@@ -536,38 +536,7 @@ class ActivationController extends Controller
                     ->join('tbl_plans as tp', 'auto_plan.plan_id', '=' ,'tp.id')
                     ->where('auto_plan.id', $auto_plan_id)->first();
 
-            if(is_null($user_data->sim_subscription_id) && $provider == 'EE'){
-                $end_point = '/core/subscriptions?MVNO='.$mvno_key;
-                $data = (object)[
-                    'CustomerId' => (int)$customer_id,
-                    'Items' => [ (object)[
-                        'AccountId' => (string)$user_data->sim_account_id,
-                        'ProductOfferings' => [
-                            (object)[
-                                'ProductOfferingId' => (int)$plan->sim_billing_plan,
-                                'OrderedProductCharacteristics' => [
-                                    (object)[
-                                        'Name' => 'MSISDN',
-                                        'Value' => $cli_number
-                                    ]
-                                ]
-                            ]
-                        ],
-                        'ServiceAddress' => (object)[            
-                            'Address' => 'unknown',
-                            'HouseNo' => 'unknown',
-                            'City' => 'unknown',
-                            'ZipCode' => 'unknown',
-                            'State' => 'unknown',
-                            'CountryId' => '76'
-                        ]
-                    ] ],
-                    'channel' => 'Web',
-                ];
-
-                // $response = Helper::call_sim_process_api($end_point, json_encode($data));
-                $response = json_decode('{"orderCode":"ee_custom","Subscription":{"SubscriptionId":"ee_custom_id"},"resultType":"Ok","resultCode":"0"}');
-            }if($provider == 'E_SIM'){
+            if($provider == 'E_SIM'){
                 $subsrib_id = $user_data->sim_subscription_id;
                 if(is_null($subsrib_id)){
 
