@@ -10,6 +10,7 @@ use DB;
 use Helper;
 use Cache;
 use Log;
+use GlobalSim;
 
 use App\Models\ScheduledTask;
 use App\Models\SimList;
@@ -100,6 +101,37 @@ class ActivationNotify extends Command
                                 array_push($notifylog,['user_id'=>$user->id,'message' => 'Activation completed for the user order -'.$list->sim_request->order_id,'payload'=>$payload,'description'=>'Order:'.$list->sim_request->order_id.', name '.$user->name,'status'=>'0']);
                                 $notifyusers[$list->stock->dealer_id][] = $obj;
                             }               
+                        }
+                    }elseif(in_array($list->stock->provider,['E_SIM'])){
+
+                        try {
+                            $user           = $list->sim_request->user;
+                            $iccid          = $list->stock->sim_number;
+                            $getsiminfo     = GlobalSim::getSimInfo($iccid);
+                            if($getsiminfo != false){
+                                if($getsiminfo['@attributes']['status'] == 'success'){
+                                    if(gettype($getsiminfo['Sim']['ActiveProfileLastUsed']) == 'array'){
+                                        continue;  
+                                    }else{
+                                        $msisdn         = $getsiminfo['Sim']['PublicNumber'];
+                                        $esimuser       = $getsiminfo['Sim']['UserId'];
+                                        $esimcustomer   = $getsiminfo['Sim']['CustomerId'];
+                                    }
+                                    SimStock::whereId($list->stock->id)->limit(1)->update(['phone_number'=>$msisdn,'verified'=>1]);
+                                    SimList::whereId($list->id)->limit(1)->update(['esim_customer'=>$esimcustomer,'esim_user'=>$esimuser,'provision'=>4]);
+
+                                    $obj = (object)['order_id'=>$list->sim_request->order_id,'user_id'=>$user->id,'name' => $user->first_name.' '.$user->last_name];
+                                    $payload = json_encode(['type'=>'order_activation','order_id'=>$list->sim_request->order_id]);
+                                    array_push($notifylog,['user_id'=>$user->id,'message' => 'Activation completed for the user order -'.$list->sim_request->order_id,'payload'=>$payload,'description'=>'Order:'.$list->sim_request->order_id.', name '.$user->name,'status'=>'0']);
+                                    $notifyusers[$list->stock->dealer_id][] = $obj;
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('ASSIGNMSISDN',[
+                                'order' => $list->sim_request->order_id,
+                                'simnumber' => $list->stock->sim_number,
+                                'error' =>   $e->getMessage()
+                            ]);
                         }
                     }
                 }

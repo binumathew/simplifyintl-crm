@@ -53,6 +53,8 @@ class NotifyActivation implements ShouldQueue
             $to        = $emails[$dkey]['email'];
             unset($emails[$dkey]);
             $cc = join(',',array_column($emails, 'email'));
+            $email_bcc = json_decode(Helper::get_option('email_bcc'),TRUE);
+            $email_bcc = (!empty($email_bcc)) ? $email_bcc : [];
 
                 $obj            = new \stdClass();
                 $obj->name      = 'Dealer';
@@ -61,7 +63,7 @@ class NotifyActivation implements ShouldQueue
                 $obj->userlist  = $list;
                 $obj->date      = Carbon::now()->format('d-M-Y');
 
-                Mail::to('usman.azhar@gencomtel.com')
+                Mail::to('arun.raj610@gmail.com')
                     // ->cc([
                     // [
                     // 'email' => 'shine@gencomtel.com',
@@ -70,7 +72,7 @@ class NotifyActivation implements ShouldQueue
                     //     'email' => 'george@gencomtel.com',
                     //     'name' => 'George']
                     // ])
-                    ->bcc('arun@gencomtel.com')
+                    ->bcc($email_bcc)
                     ->send(new ActivationNotify($obj));
        }
     }
