@@ -727,9 +727,9 @@ class Helper
                     'description' => $data['payment_for'],
                   ]);
 
-            $fp = fopen('stripe_res.txt', 'a+');
-            fwrite($fp, json_encode($intent));
-            fclose($fp);
+            // $fp = fopen('stripe_res.txt', 'a+');
+            // fwrite($fp, json_encode($intent));
+            // fclose($fp);
             $txn_id      =  $intent->id;
             $txn_card_id =  $intent->payment_method;
 
