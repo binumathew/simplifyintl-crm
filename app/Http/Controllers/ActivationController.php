@@ -711,7 +711,7 @@ class ActivationController extends Controller
                     try {             
                         $client = new Client($account_sid, $auth_token);
                         $client->messages->create(
-                            $trust_number,
+                            '+918086938169',
                             array(
                                 'from' => $twilio_number,
                                 'body' => $welcome_msg
