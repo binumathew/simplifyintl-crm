@@ -243,7 +243,7 @@ class GlobalSim {
             Log::info('modifycustomerrequest',[
                 'request'=>$params
             ]);
-            
+
             $result = self::get($params,'ModifyCustomer');
             if($result !== false) {
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
@@ -312,13 +312,13 @@ class GlobalSim {
                     'Username'=>$customer_id,
                     'Password'=>Helper::random(8),
                     'Title'=>'',
-                    'FirstName'=>$user->first_name,
+                    'FirstName'=>isset($user->first_name) ? $user->first_name : '',
                     'MiddleInitials'=>'',
-                    'Surname'=>$user->last_name,
+                    'Surname'=>isset($user->last_name) ? $user->first_name : '',
                     'Country'=>$user->country->short_code,
                 ],
                 'Contact' =>[
-                    'Email'=>$user->email,
+                    'Email'=>isset($user->email) ? $user->email : '',
                     'CallKeyID'=>$customer_id,
                 ],
                 'Address' =>[
