@@ -685,8 +685,8 @@ class ActivationController extends Controller
                         $auto_plan_data['status'] = 1;
                         if(is_null($plan->next_renewal)){
                             $auto_plan_data['switch_billing_plan'] = 0;
-                            if($sim_data->stock->network->service_type == 2){
-                                $auto_plan_data['next_renewal'] = date('Y-m-t', strtotime(Carbon::now()));
+                            if($sim_data->stock->network->service_type == 1){
+                                $auto_plan_data['next_renewal'] = Carbon::parse($sim_data->auto_plan->plan->period)->format('Y-m-d');
                             }else{
                                 $auto_plan_data['next_renewal'] = Carbon::now()->addMonthNoOverflow()->startOfMonth()->format('Y-m-d');
                             }
