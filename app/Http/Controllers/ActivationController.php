@@ -80,7 +80,7 @@ class ActivationController extends Controller
                 if($provider == 'E_SIM'){
                     try {
                         $provision_status =  $sim_data->provision;
-                        if($provision_status == 4){
+                        if($provision_status == 3){
                             $iccid          = $sim_data->stock->sim_number;
                             
                             // $getmsisdn      = GlobalSim::AssignMsisdn($iccid);
@@ -1348,7 +1348,7 @@ class ActivationController extends Controller
                     // $msisdn  = $getmsisdn['STATUS_Response']['MSISDN'];
                     // $transid = $getmsisdn['STATUS_Response']['TRANSACTION_ID'];
                     // SimStock::whereId($sim_list->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
-                    SimList::where('id', $provision['list_id'])->update(['provision' => 4]);
+                    SimList::where('id', $provision['list_id'])->update(['provision' => 3]);
                 }
                 return response()->json(['error' => false]);
             } catch (\Exception $e) {
