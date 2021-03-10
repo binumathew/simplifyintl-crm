@@ -44,8 +44,8 @@ class NotifyActivation implements ShouldQueue
     public function handle()
     {
        //\Log::info(json_encode($this->details));
-        $bcc_emails = Helper::get_option('bcc_emails');
-        $bcc_emails = explode(',', $bcc_emails);
+       $email_bcc = json_decode(Helper::get_option('email_bcc'),TRUE);
+       $email_bcc = (!empty($email_bcc)) ? $email_bcc : [];
         foreach ($this->details as $dkey => $list) {
             $hierarchy = Admins::find($dkey)->ascendings()->toArray();
             array_push($hierarchy,$dkey);
@@ -53,9 +53,7 @@ class NotifyActivation implements ShouldQueue
             $to        = $emails[$dkey]['email'];
             unset($emails[$dkey]);
             $cc = join(',',array_column($emails, 'email'));
-            $email_bcc = json_decode(Helper::get_option('email_bcc'),TRUE);
-            $email_bcc = (!empty($email_bcc)) ? $email_bcc : [];
-
+            
                 $obj            = new \stdClass();
                 $obj->name      = 'Dealer';
                 $obj->subject   = 'Provision Status';

@@ -55,7 +55,6 @@
                                             <td>{{ $key+1 }}</td>
                                             <td>{{ $list->order_id }}</td>
                                             <td>{{ $list->name }}</td>
-                                            <td>{{ $list->msisdn }}</td>
                                             </tr>
                                         @endforeach
                                         </tbody>
