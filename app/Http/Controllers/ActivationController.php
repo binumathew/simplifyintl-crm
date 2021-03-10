@@ -80,7 +80,7 @@ class ActivationController extends Controller
                 if($provider == 'E_SIM'){
                     try {
                         $provision_status =  $sim_data->provision;
-                        if($provision_status == 3){
+                        if($provision_status == 4){
                             $iccid          = $sim_data->stock->sim_number;
                             
                             // $getmsisdn      = GlobalSim::AssignMsisdn($iccid);
@@ -1490,38 +1490,76 @@ class ActivationController extends Controller
     */ 
     public function provision_check(Request $request)
     {
-        $provision_id = SimList::where('id', $request->sim_id)->value('provision_id'); 
-        $data['order_id'] = /*'3277455';*/ $provision_id;                 
-        $search_xml = DwpHelper::dwp_order_search($data);
-        $response  = DwpHelper::dwp_process_api($search_xml);
-        $response  = json_decode(DwpHelper::dwp_response_handler($response));
+        $sim_data = SimList::where('id', $request->sim_id)->first();
+        $provider = $sim_data->stock->provider;
+        if(in_array($provider,['O2','EE_O2','VUK'])){
+            $provision_id = SimList::where('id', $request->sim_id)->value('provision_id'); 
+            $data['order_id'] = /*'3277455';*/ $provision_id;                 
+            $search_xml = DwpHelper::dwp_order_search($data);
+            $response  = DwpHelper::dwp_process_api($search_xml);
+            $response  = json_decode(DwpHelper::dwp_response_handler($response));
 
-        if($response->children[0]->no == 0){
-            $provision_check = 4;
-            $result = $this->dwp_response($response->children);
-            $status['request_id'] = $result['orders']['block']['id'];
-            $status['state'] =  ucfirst($result['orders']['block']['components']['block']['state']);
-            $status['updated_at'] = $result['orders']['block']['components']['block']['last-update'];
-            $status['request_status'] = $result['orders']['block']['request-stage'];           
-            $html = view('modal-popup', compact('status','provision_check'))->render();
-            if($status['state'] == 'Completed' && $status['request_status'] == 'Complete'){
-                $sim_number = $result['orders']['block']['components']['block']['sim-serial'];
-                $mobile_number = $result['orders']['block']['components']['block']['mobile-number'];
-                $phone_number = '44'.ltrim($mobile_number,'0');
-                // if($sim_number != $list->stock->sim_number){
-                // $search_xml = DwpHelper::dwp_change_simnumber($data);
-                // $response = DwpHelper::dwp_process_api($search_xml);
-                // }
-                try{
-                    SimStock::where('id',$list->stock_id)->update(['phone_number' => $phone_number, 'verified' => 1]);
-                }catch(\Exceptions $e){
+            if($response->children[0]->no == 0){
+                $provision_check = 4;
+                $result = $this->dwp_response($response->children);
+                $status['request_id'] = $result['orders']['block']['id'];
+                $status['state'] =  ucfirst($result['orders']['block']['components']['block']['state']);
+                $status['updated_at'] = $result['orders']['block']['components']['block']['last-update'];
+                $status['request_status'] = $result['orders']['block']['request-stage'];           
+                $html = view('modal-popup', compact('status','provision_check'))->render();
+                if($status['state'] == 'Completed' && $status['request_status'] == 'Complete'){
+                    $sim_number = $result['orders']['block']['components']['block']['sim-serial'];
+                    $mobile_number = $result['orders']['block']['components']['block']['mobile-number'];
+                    $phone_number = '44'.ltrim($mobile_number,'0');
+                    // if($sim_number != $list->stock->sim_number){
+                    // $search_xml = DwpHelper::dwp_change_simnumber($data);
+                    // $response = DwpHelper::dwp_process_api($search_xml);
+                    // }
+                    try{
+                        SimStock::where('id',$list->stock_id)->update(['phone_number' => $phone_number, 'verified' => 1]);
+                    }catch(\Exceptions $e){
 
-                }
-                SimList::where('id', $request->sim_id)->update(['provision' => 4]);
-            }               
+                    }
+                    SimList::where('id', $request->sim_id)->update(['provision' => 4]);
+                }               
             return response()->json(['error' => false,'html' => $html]);
-        }else{
-            return response()->json(['error' => true, 'message' => $response->children[0]->text]);
+            }else{
+                return response()->json(['error' => true, 'message' => $response->children[0]->text]);
+            }
+        }elseif(in_array($provider,['E_SIM'])){
+            try {
+                $iccid          = $sim_data->stock->sim_number;
+                $getsiminfo     = GlobalSim::getSimInfo($iccid);
+                if($getsiminfo == false){
+                    return response()->json(['error' => true, 'message' =>'Failed to fetch sim info']);
+                }
+                if($getsiminfo['@attributes']['status'] == 'success'){
+                    if(gettype($getsiminfo['Sim']['ActiveProfileLastUsed']) == 'array'){
+                        return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
+                    }else{
+                        $msisdn         = $getsiminfo['Sim']['PublicNumber'];
+                        $esimuser       = $getsiminfo['Sim']['UserId'];
+                        $esimcustomer   = $getsiminfo['Sim']['CustomerId'];
+                    }
+                }else{
+                    return response()->json(['error' => true, 'message' =>'Inactive Sim profile.']);  
+                }
+                SimStock::whereId($sim_data->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
+                SimList::whereId($sim_data->id)->update(['esim_customer'=>$esimcustomer,'esim_user'=>$esimuser,'provision'=>4]);
+                $status['request_id'] = $msisdn;
+                $status['state']      = 'Active';
+                $status['updated_at'] = Carbon::now()->format('d-m-Y');
+                $status['request_status'] = 'Complete';    
+                $html = view('modal-popup', compact('status','provision_check'))->render();
+                return response()->json(['error' => false,'html' => $html]);
+            } catch (\Exception $e) {
+                Log::error('ASSIGNMSISDN',[
+                    'order' => $sim_data->sim_request->order_id,
+                    'simnumber' => $sim_data->stock->sim_number,
+                    'error' =>   $e->getMessage()
+                ]);
+                return response()->json(['error' => true, 'message' => 'Assign number failed..'.$e->getMessage()]);
+            } 
         }
     }
 

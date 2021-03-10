@@ -110,11 +110,7 @@
                                       @if($simDetail['provision'] < 3)
                                       <button class="btn btn-info btn-xs sim_provisioning" data-stock_id="{{ $simDetail['stockId'] }}">Provision</button>
                                       @elseif($simDetail['provision'] == 3)
-                                      @if($provider == 'E_SIM')
-                                        Activation Pending
-                                      @else
-                                      <button class="btn btn-info btn-xs check_provision_status" data-id="{{ $simDetail['idetifier'] }}">Check</button>  
-                                      @endif                                    
+                                      <button class="btn btn-info btn-xs check_provision_status" data-id="{{ $simDetail['idetifier'] }}">Check</button>                                      
                                       @elseif($simDetail['status']=='Not Active' && $simDetail['provision'] == 4)
                                       <button class="btn btn-warning btn-xs activate_sim" data-id="{{ $simDetail['idetifier'] }}">Activate</button>
                                       @endif
