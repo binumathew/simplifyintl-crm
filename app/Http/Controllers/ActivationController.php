@@ -1546,6 +1546,7 @@ class ActivationController extends Controller
                 }
                 SimStock::whereId($sim_data->stock->id)->update(['phone_number'=>$msisdn,'verified'=>1]);
                 SimList::whereId($sim_data->id)->update(['esim_customer'=>$esimcustomer,'esim_user'=>$esimuser,'provision'=>4]);
+                $provision_check      = 4;
                 $status['request_id'] = $msisdn;
                 $status['state']      = 'Active';
                 $status['updated_at'] = Carbon::now()->format('d-m-Y');
