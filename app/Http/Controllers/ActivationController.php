@@ -682,7 +682,7 @@ class ActivationController extends Controller
                         }               
                     }
 
-                    $welcome_msg = "Greetings! from ".config('settings.app_name')." Mobile. Now you can download ".config('settings.app_name')." Mobile App for making FREE and affordable international calls. https://bit.ly/2C1SyOw\n\nThankyou.";
+                    $welcome_msg = "Greetings! from ".config('settings.app_name')." Mobile. Your eSIM is activated\nThankyou.";
 
                     $account_sid = Helper::get_option('twilio_account_sid');
                     $auth_token =  Helper::get_option('twilio_auth_token');
@@ -690,7 +690,7 @@ class ActivationController extends Controller
                     try {             
                         $client = new Client($account_sid, $auth_token);
                         $client->messages->create(
-                            '+918086938169',
+                            $trust_number,
                             array(
                                 'from' => $twilio_number,
                                 'body' => $welcome_msg
