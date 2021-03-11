@@ -116,9 +116,9 @@ class DeliveryController extends Controller
                     if($simlist->stock->provider == 'E_SIM' && $agent == 'Soft Delivery'){
                         if( $simlist->stock->is_esim){
                             try {
-                                
-                                SoftDelivery::dispatch($request_id)
-                                        ->delay(Carbon::now()->addSeconds(10));
+                                DB::table('tbl_sim_list')->where('id', $simlist->id)->limit(1)->update(['web_request' => 1]);
+                                SoftDelivery::dispatch($request_id);
+
                             } catch (\Exception $e) {
                                 Log::error('SoftDelivery',[
                                     'error' =>   $e->getMessage()
