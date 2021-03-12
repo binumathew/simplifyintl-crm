@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Carbon;
 use Log;
 use Utils;
+use DB;
 
 use App\Models\User;
 use App\Models\UserCall;
@@ -105,10 +106,6 @@ class GlobalSim implements ShouldQueue
                 }
             }
         }
-        Log::info('GLOBALSIMCDR',[
-            'data'=>$data_history,
-            'calls'=>$call_data
-        ]);
         if(!empty($data_history)){
             //UserHistory::insert($data_history);
             DB::table('usage_history_copy')->insert($data_history);
