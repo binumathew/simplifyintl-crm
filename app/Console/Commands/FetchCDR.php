@@ -55,7 +55,7 @@ class FetchCDR extends Command
                 foreach($users as $key => $list){
                     $user_id = $list->user_id;
                     try{
-                    GlobalSim::dispatch($user_id);  
+                        GlobalSim::dispatch($user_id);  
                     }catch(\Exception $e){
                         Log::error('GLOBALSIMCDR',[
                             'user_id'=>$user_id,
