@@ -1076,92 +1076,94 @@ class ActivationController extends Controller
     */ 
     public function calculate_dealer_commision($auto_plan_id, $promocode)
     { 
-        $list_pending = SimList::where('autoplan_id', $auto_plan_id)->where('reg_status', '0')->count();
-        if($list_pending == 0) {
-            $dealer = DB::table('admins')->where('promocode',$promocode)->first();
-            if($dealer) {              
-                $idata =  DB::table('tbl_sim_request as sr')->select('ap.plan_id','ap.bundle_id','ap.total_amount','ad.id as commuser', 'ad.role as commuserrole')
-                        ->join('tbl_sim_list as sl', 'sl.request_id', '=', 'sr.id')
-                        ->join('auto_plan as ap', 'ap.id', '=', 'sl.autoplan_id')
-                        ->leftJoin('admins as ad', 'ad.promocode', '=', 'sr.promocode')
-                        ->where('ap.id', $auto_plan_id)->first(); //get plan to provide commission
+        if(!is_null($promocode)){
+            $list_pending = SimList::where('autoplan_id', $auto_plan_id)->where('reg_status', '0')->count();
+            if($list_pending == 0) {
+                $dealer = DB::table('admins')->where('promocode',$promocode)->whereNotNull('promocode')->first();
+                if($dealer) {              
+                    $idata =  DB::table('tbl_sim_request as sr')->select('ap.plan_id','ap.bundle_id','ap.total_amount','ad.id as commuser', 'ad.role as commuserrole')
+                            ->join('tbl_sim_list as sl', 'sl.request_id', '=', 'sr.id')
+                            ->join('auto_plan as ap', 'ap.id', '=', 'sl.autoplan_id')
+                            ->leftJoin('admins as ad', 'ad.promocode', '=', 'sr.promocode')
+                            ->where('ap.id', $auto_plan_id)->first(); //get plan to provide commission
 
-                $planType = ($idata->bundle_id === 0) ? 1 : 2;  
-                $planId   = $idata->plan_id;
-                if( $planType === 2){
-                    $planId = $idata->bundle_id;
-                }
+                    $planType = ($idata->bundle_id === 0) ? 1 : 2;  
+                    $planId   = $idata->plan_id;
+                    if( $planType === 2){
+                        $planId = $idata->bundle_id;
+                    }
 
-                $role_details = DB::table('tbl_roles')->where('id', $idata->commuserrole)->first();
-                if($role_details->short_code == 'DEALER') {
-                    if($idata->commuser != "")
-                    {
-                        $commusers = Admins::find($idata->commuser)->ascendings();
-                        $commusers->push($idata->commuser);
-                        $i =0;
-                        foreach ($commusers as  $benifuser) {
-                            $commStud = UserCommission::join('comm_durations as cd', 'cd.id', '=', 'userplan_commissions.comm_duration')
-                             ->where('user_id',$benifuser)
-                             ->where('plan_type',$planType)
-                             ->where('plan_id',$planId)
-                             ->where('status',1)
-                             ->get();  //To check dealer have special commission rates
+                    $role_details = DB::table('tbl_roles')->where('id', $idata->commuserrole)->first();
+                    if($role_details->short_code == 'DEALER') {
+                        if($idata->commuser != "")
+                        {
+                            $commusers = Admins::find($idata->commuser)->ascendings();
+                            $commusers->push($idata->commuser);
+                            $i =0;
+                            foreach ($commusers as  $benifuser) {
+                                $commStud = UserCommission::join('comm_durations as cd', 'cd.id', '=', 'userplan_commissions.comm_duration')
+                                ->where('user_id',$benifuser)
+                                ->where('plan_type',$planType)
+                                ->where('plan_id',$planId)
+                                ->where('status',1)
+                                ->get();  //To check dealer have special commission rates
 
-                            if( $commStud->isEmpty()){
+                                if( $commStud->isEmpty()){
 
-                                $checkparent = DB::table('admins')->select('parent_id')
-                                                ->where('id',$benifuser)->first();
+                                    $checkparent = DB::table('admins')->select('parent_id')
+                                                    ->where('id',$benifuser)->first();
 
-                                if($checkparent->parent_id != 0){ //check whether this parent if child enter loop
+                                    if($checkparent->parent_id != 0){ //check whether this parent if child enter loop
 
-                                    $getparents = Admins::find($benifuser)->ascendings();
+                                        $getparents = Admins::find($benifuser)->ascendings();
 
-                                    foreach ($getparents as $parentid) {
+                                        foreach ($getparents as $parentid) {
 
-                                        $commStud = UserCommission::join('comm_durations as cd', 'cd.id', '=', 'userplan_commissions.comm_duration')
-                                             ->where('user_id',$parentid)
-                                             ->where('plan_type',$planType)
-                                             ->where('plan_id',$planId)
-                                             ->where('status',1)
-                                             ->get();
-                                        if( $commStud->isEmpty()){ continue; }else { break; } //break the loop if commission exists
-                                    }
-                                    if( $commStud->isEmpty()){
+                                            $commStud = UserCommission::join('comm_durations as cd', 'cd.id', '=', 'userplan_commissions.comm_duration')
+                                                ->where('user_id',$parentid)
+                                                ->where('plan_type',$planType)
+                                                ->where('plan_id',$planId)
+                                                ->where('status',1)
+                                                ->get();
+                                            if( $commStud->isEmpty()){ continue; }else { break; } //break the loop if commission exists
+                                        }
+                                        if( $commStud->isEmpty()){
+                                            $commStud = PlanCommission::join('comm_durations as cd', 'cd.id', '=', 'plan_commissions.comm_duration')
+                                            ->where('plan_type',$planType)
+                                            ->where('plan_id',$planId)
+                                            ->where('status',1)
+                                            ->get();          //To take the default commission rates
+                                        }
+                                    }else{ //if parent take default plan rates since special commission doesn't exist
+
                                         $commStud = PlanCommission::join('comm_durations as cd', 'cd.id', '=', 'plan_commissions.comm_duration')
-                                         ->where('plan_type',$planType)
-                                         ->where('plan_id',$planId)
-                                         ->where('status',1)
-                                         ->get();          //To take the default commission rates
+                                            ->where('plan_type',$planType)
+                                            ->where('plan_id',$planId)
+                                            ->where('status',1)
+                                            ->get();          //To take the default commission rates
                                     }
-                                }else{ //if parent take default plan rates since special commission doesn't exist
-
-                                    $commStud = PlanCommission::join('comm_durations as cd', 'cd.id', '=', 'plan_commissions.comm_duration')
-                                         ->where('plan_type',$planType)
-                                         ->where('plan_id',$planId)
-                                         ->where('status',1)
-                                         ->get();          //To take the default commission rates
                                 }
-                            }
-                            
-                            foreach ($commStud as $key => $comm) { 
-                                $commAmount = $planAmount = $commAmount = 0;
-                                $commArray    = [];
-                                $planAmount   = $idata->total_amount;
-                                $commAmount   = $comm->comm_rate;
-                                $paymentDate  = Carbon::now()->addDays($comm->days)->format("Y-m-d");
-                                $paymentEnd= Carbon::parse($paymentDate)->addDays(1)->format("Y-m-d");
-                                if($comm->comm_type === 2) {
-                                    $percent = ($commAmount / 100) * $planAmount;
-                                    $commAmount = number_format(floor($percent*100)/100, 2);
+                                
+                                foreach ($commStud as $key => $comm) { 
+                                    $commAmount = $planAmount = $commAmount = 0;
+                                    $commArray    = [];
+                                    $planAmount   = $idata->total_amount;
+                                    $commAmount   = $comm->comm_rate;
+                                    $paymentDate  = Carbon::now()->addDays($comm->days)->format("Y-m-d");
+                                    $paymentEnd= Carbon::parse($paymentDate)->addDays(1)->format("Y-m-d");
+                                    if($comm->comm_type === 2) {
+                                        $percent = ($commAmount / 100) * $planAmount;
+                                        $commAmount = number_format(floor($percent*100)/100, 2);
+                                    }
+                                    $commArray['autoplan_id']     = $auto_plan_id;
+                                    $commArray['comm_user']       = $benifuser;
+                                    $commArray['payment_date']    = $paymentDate;
+                                    $commArray['payment_end']     = $paymentEnd;
+                                    $commArray['pay_amount']      = $commAmount;
+                                    $commArray['comm_rate']       = $comm->comm_rate;
+                                    $commArray['comm_type']       = $comm->comm_type;
+                                    PaymentCommission::firstOrCreate(['autoplan_id' => $auto_plan_id,'comm_user' => $benifuser,'payment_date' => $paymentDate], $commArray);
                                 }
-                                $commArray['autoplan_id']     = $auto_plan_id;
-                                $commArray['comm_user']       = $benifuser;
-                                $commArray['payment_date']    = $paymentDate;
-                                $commArray['payment_end']     = $paymentEnd;
-                                $commArray['pay_amount']      = $commAmount;
-                                $commArray['comm_rate']       = $comm->comm_rate;
-                                $commArray['comm_type']       = $comm->comm_type;
-                                PaymentCommission::firstOrCreate(['autoplan_id' => $auto_plan_id,'comm_user' => $benifuser,'payment_date' => $paymentDate], $commArray);
                             }
                         }
                     }
