@@ -50,6 +50,7 @@ class FetchCDR extends Command
                         ->select('u.id as user_id')
                         ->join('tbl_sim_stock as tss','u.stock_id','=','tss.id')
                         ->where('tss.provider','E_SIM')
+                        ->where('u.id',100005)
                         ->get();
             if($users->isNotEmpty()){
                 foreach($users as $key => $list){
