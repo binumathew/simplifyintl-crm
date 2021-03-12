@@ -39,8 +39,8 @@ class GlobalSim implements ShouldQueue
     public function handle()
     {
 
-        $from               = Carbon::now()->format('Y-m-d').'T00:00:00';
-        $to                 = Carbon::now()->format('Y-m-d').'T23:59:59';
+        $from               = '2021-01-01T00:00:00';//Carbon::now()->format('Y-m-d').'T00:00:00';
+        $to                 = '2021-01-31T00:00:00';//Carbon::now()->format('Y-m-d').'T23:59:59';
         $user_id            = $this->user_id;
 
         $seller_margin      = Utils::settings('seller_percent');
@@ -71,14 +71,14 @@ class GlobalSim implements ShouldQueue
                         $call_type      = trim($log['CallType']);
 
                         if($call_type == 'SMS Relay'){
-                            $smsdata = ['user_id'=> $user_id, 'from_number' => $msisdn, 'to_number'=> $to_number, 'date' => $connect, 'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO'];
+                            $smsdata = ['user_id'=> $user_id, 'from_number' => $msisdn, 'to_number'=> $to_number, 'date' => $connect, 'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO','provider'=>'E_SIM'];
                             $data_history[] = $smsdata;
                         }else{
                             $service_type   = 1;
                             if($call_type == 'Incoming Call'){
                                 $service_type   = 2;
                             }
-                            $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $msisdn, 'cli_in' => $msisdn, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'call_id' => $callid,  'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $endusercost,'base_cost'=>$basecost,'reseller_cost'=>$resellercost, 'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name];
+                            $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $msisdn, 'cli_in' => $msisdn, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'call_id' => $callid,  'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $endusercost,'base_cost'=>$basecost,'reseller_cost'=>$resellercost, 'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name,'provider'=>'E_SIM'];
                             $call_data[]    = $simhis_data;
                         }
                     }
@@ -99,17 +99,19 @@ class GlobalSim implements ShouldQueue
                         }
                         $callid         = $log['callid'];
 
-                        $data = ['user_id' => $user_id, 'from_number' => $msisdn, 'to_number'=> "", 'date' => $connect,'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost,'service_type' => 'DATA'];
+                        $data = ['user_id' => $user_id, 'from_number' => $msisdn, 'to_number'=> "", 'date' => $connect,'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost,'service_type' => 'DATA','provider'=>'E_SIM'];
                         $data_history[] = $data;
                     }
                 }
             }
         }
         if(!empty($data_history)){
-            UserHistory::insert($data_history);
+            //UserHistory::insert($data_history);
+            DB::table('usage_history_copy')->insert($data_history);
         }
         if(!empty($call_data)){
-            UserCall::insert($call_data);
+           // UserCall::insert($call_data);
+           DB::table('user_calls_copy')->insert($data_history);
         }
     }
     public function failed(\Exception $exception){
