@@ -49,15 +49,17 @@ class UserPlanCreate extends Command
             try {
                 $start_time      = microtime(true);
                 $currDay         = Carbon::now()->startOfMonth()->toDateString();
-                $getsubscription =  AutoPlan::select('user_list','plan_id')
+                $getsubscription =  AutoPlan::select('auto_plan.user_list','auto_plan.plan_id')
                                     ->where(function($query) use ($currDay){
-                                        $query->where('status',1);
-                                        $query->orWhereDate('status_changeon', '>=', $currDay);
+                                        $query->where('auto_plan.status',1);
+                                        $query->orWhereDate('auto_plan.status_changeon', '>=', $currDay);
                                     })
-                                    ->whereDate('start_date', '<', $currDay)
-                                    ->whereNotNull('user_list')
-                                    ->whereIn('id',[100007,100008,100006,100004])
+                                    ->join('tbl_plans as tp','tp.id','=','auto_plan.plan_id')
+                                    ->whereDate('auto_plan.start_date', '<', $currDay)
+                                    ->whereNotNull('auto_plan.user_list')
+                                    ->whereIn('tp.provider',['O2','VUK'])
                                     ->get();
+                                    
                 $getsubscription->each(function ($item, $key){
                     try {
                        UpdateorCreateUserPlanJob::dispatch($item->user_list,$item->plan_id);

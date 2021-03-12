@@ -13,7 +13,7 @@ use DB;
 
 use App\Models\UserPlan;
 
-class UpdateorCreateUserPlanJob //implements ShouldQueue
+class UpdateorCreateUserPlanJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $user_id;
