@@ -66,13 +66,7 @@ class GlobalSim {
                 ]
                 ];
             $result = self::get($params,'GetCallsForAnMSISDN');
-            Log::info('getCalls',[
-                'result'=>$result
-            ]);
             if($result !== false) {
-                Log::info('getCalls',[
-                    'result'=>json_decode(json_encode(simplexml_load_string($result)),true)
-                ]);
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
             return false;
@@ -92,13 +86,7 @@ class GlobalSim {
                 ]
                 ];
             $result = self::get($params,'DataGetFullCallHistoryForAnMSISDN');
-            Log::info('getDataHistory',[
-                'result'=>$result
-            ]);
             if($result !== false) {
-                Log::info('getDataHistory',[
-                    'result'=>json_decode(json_encode(simplexml_load_string($result)),true)
-                ]);
                 return  json_decode(json_encode(simplexml_load_string($result)),true);
             }
             return false;
