@@ -38,9 +38,9 @@
                 <div class="row p-3">
                     @php
                     if($simstatus == 0){ 
-                        $status = '<span class="badge badge-success">Active</span>'; 
-                    }elseif($simstatus == 1){
                         $status = '<span class="badge badge-danger">Not Active</span>'; 
+                    }elseif($simstatus == 1){
+                        $status = '<span class="badge badge-success">Active</span>'; 
                     }
                     @endphp
                     <div class="col-md-12">
@@ -64,6 +64,7 @@
                         }else{
                             $dwpkey    = $service_info[$bar->service_key];
                             $label     = $servicevalue[$dwpkey];
+                            $labelcont = ($dwpkey == 1) ? 'Bared' : 'Not Bared';
                             $disable   = '';
                             if(isset($recentlyopted[$bar->id])){
                                 $disable = 'disabled';
@@ -82,7 +83,7 @@
                             <td width="30%" class="td_pad">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input custom_manage_bars" id="bars_{{ $key }}" title="{{ $bar->service_name }}" data-bar_id="{{ $bar->id }}" data-status="{{ $status }}" {{ $checked }} {{ $disable }}>
-                                <label class="custom-control-label" for="bars_{{ $key }}"> </label>
+                                <label class="custom-control-label" for="bars_{{ $key }}"> <b> {{$labelcont}}</b></label>
                             </div>
                             </td>
                         </tr>
@@ -114,6 +115,7 @@
                             
                             $dwpkey    = $network_info[$bar->service_key];
                             $label     = $servicevalue[$dwpkey];
+                            $labelcont = ($dwpkey == 1) ? 'Active' : 'Not Active';
                             $disable   = '';
                             if(isset($recentlyopted[$bar->id])){
                                 $disable = 'disabled';
@@ -132,10 +134,30 @@
                             <td width="30%" class="td_pad">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input custom_manage_network {{ $disable }}" id="bars_{{ $key }}" title="{{ $bar->service_name }}" data-bar_id="{{ $bar->id }}" data-status="{{ $status }}" {{ $checked }} {{ $disable }}>
-                                <label class="custom-control-label" for="bars_{{ $key }}"> </label>
+                                <label class="custom-control-label" for="bars_{{ $key }}"><b> {{$labelcont}}</b> </label>
                             </div>
                             </td>
                         </tr>
+                        @if($bar->service_short_code == 'SER_GPRS')
+                        <tr height="50px;">
+                            <td width="70%" class="td_pad">4G Service (Auto added via GPRS Tariff)</td>
+                            <td width="30%" class="td_pad">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input custom_manage_network disabled" {{ $checked }}>
+                                <label class="custom-control-label" for=""><b> {{$labelcont}}</b>(Depend on GPRS)</label>
+                            </div>
+                            </td>
+                        </tr>
+                        <tr height="50px;">
+                            <td width="70%" class="td_pad">3G Enabled (O2 only can change)</td>
+                            <td width="30%" class="td_pad">
+                            <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input custom_manage_network disabled" {{ $checked }}>
+                                <label class="custom-control-label" for=""><b> {{$labelcont}}</b>(Depend on GPRS)</label>
+                            </div>
+                            </td>
+                        </tr>
+                        @endif
                         @endforeach
                         </tbody>
                         </table>

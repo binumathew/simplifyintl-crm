@@ -286,7 +286,7 @@ class UserController extends Controller
                     $html = view('user.settings', compact('user'))->render();
                 break;
                 case 'services':
-                    $simstatus   = $html= '';
+                    $simstatus = 0;  $html= '';
                     $bars = (!is_null($user->stock_id)) ? DB::table('provider_services')
                     ->where('short_code',$user->msisdn->provider)->where('status',1)->get() : collect([]);
                     $user_services = DB::table('user_services')->where('user_id',$user->id)->get()->keyBy('service_id')->toArray();
@@ -301,14 +301,14 @@ class UserController extends Controller
                         $phone_number = ($provider == 'AT_T') ? ltrim($user->msisdn->phone_number,$user->country->dial_code) : '0'.ltrim($user->msisdn->phone_number,$user->country->dial_code);
 
                         if(in_array($provider,['O2','EE_O2','VUK'])){
-                            $simdata['network']     = $user->msisdn->network->provider;
-                            $simdata['sim_number']  = $user->msisdn->sim_number;
-                            $sim_xml        = DwpHelper::dwp_check_sim_xml($simdata);
-                            $response       = DwpHelper::dwp_process_api($sim_xml);
-                            $response       = json_decode(DwpHelper::dwp_response_handler($response));
-                            if($response->children[0]->no == 0){
-                                $simstatus  = $response->children[1]->html;
-                            }
+                            // $simdata['network']     = $user->msisdn->network->provider;
+                            // $simdata['sim_number']  = $user->msisdn->sim_number;
+                            // $sim_xml        = DwpHelper::dwp_check_sim_xml($simdata);
+                            // $response       = DwpHelper::dwp_process_api($sim_xml);
+                            // $response       = json_decode(DwpHelper::dwp_response_handler($response));
+                            // if($response->children[0]->no == 0){
+                            //     $simstatus  = $response->children[1]->html;
+                            // }
 
                             $data['cli']    = $phone_number;//07766742689;
                             $bars_xml       = DwpHelper::dwp_check_mobile_bars_xml($data);
@@ -316,12 +316,12 @@ class UserController extends Controller
                             $response       = json_decode(DwpHelper::dwp_response_handler($response));
                             $service_info   = [];
                             $network_info   = [];
-                            
+
                             if($response->children[0]->no == 0){
                                 $servicereq = $response->children[1]->children;
-                                
+
                                 $service_info = DwpHelper::dwp_service_response($servicereq);
-                                
+
                                 $data['active_bars'] = join(',',array_keys($service_info, 1));
                                 $compact_xml  = DwpHelper::dwp_service_compact($data);
                                 $response     = DwpHelper::dwp_process_api($compact_xml);
@@ -336,7 +336,7 @@ class UserController extends Controller
                                         }
                                         foreach($service_info as $key => $alist){
                                             if($alist == 1)
-                                            array_push($compact,$key); 
+                                            array_push($compact,$key);
                                         }
                                         $service_info = array_intersect_key($service_info, array_flip($compact));
                                     }
@@ -346,8 +346,10 @@ class UserController extends Controller
                             $services_xml   = DwpHelper::dwp_check_mobile_service_xml($data);
                             $response       = DwpHelper::dwp_process_api($services_xml);
                             $response       = json_decode(DwpHelper::dwp_response_handler($response));
-                            
+
                             if($response->children[0]->no == 0){
+
+                                $simstatus  = 1;
                                 $servicereq = $response->children[1]->children;
                                 $network_info = DwpHelper::dwp_service_response($servicereq);
                             }
