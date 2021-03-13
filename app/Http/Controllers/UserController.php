@@ -13,6 +13,8 @@ use Helper;
 use DwpHelper;
 use DataTables;
 use SwitchHelper;
+use GlobalSim;
+use Log;
 use App\Helpers\SIMHelper;
 use App\Models\User;
 use App\Models\Country;
@@ -296,9 +298,11 @@ class UserController extends Controller
                                     ->where('updated_at','>=',Carbon::now()->subMinute(15)->format('Y-m-d H:i:s'))->get()->keyBy('service_id')->toArray();
 
                     if($bars->isNotEmpty()){
-                        $service_info = collect([]);
+                        //$service_info = collect([]);
                         $provider     = $user->msisdn->provider;
-                        $phone_number = ($provider == 'AT_T') ? ltrim($user->msisdn->phone_number,$user->country->dial_code) : '0'.ltrim($user->msisdn->phone_number,$user->country->dial_code);
+                        $phone_number = ($provider == 'E_SIM') ? ltrim($user->msisdn->phone_number) : '0'.ltrim($user->msisdn->phone_number,$user->country->dial_code);
+                        $service_info   = [];
+                        $network_info   = [];
 
                         if(in_array($provider,['O2','EE_O2','VUK'])){
                             // $simdata['network']     = $user->msisdn->network->provider;
@@ -314,8 +318,6 @@ class UserController extends Controller
                             $bars_xml       = DwpHelper::dwp_check_mobile_bars_xml($data);
                             $response       = DwpHelper::dwp_process_api($bars_xml);
                             $response       = json_decode(DwpHelper::dwp_response_handler($response));
-                            $service_info   = [];
-                            $network_info   = [];
 
                             if($response->children[0]->no == 0){
                                 $servicereq = $response->children[1]->children;
@@ -355,6 +357,27 @@ class UserController extends Controller
                             }
                             
                             $html = view('user.services', compact('provider','user','bars','service_info','simstatus','network_info','user_services','recentlyopted'))->render();
+                        }elseif(in_array($provider,['E_SIM'])){
+                            try {
+                                $network_info = GlobalSim::GetSimStatus($phone_number);
+                                if($network_info == false || $network_info['@attributes']['status'] == 'fail'){
+                                    Log::error('GetSimStatus',[
+                                        'user_id' => $user->id,
+                                        'error' =>   $network_info
+                                    ]);
+                                    return response()->json(['error' => true, 'message' => 'sim services request failed']);
+                                }
+                                if($network_info['SimStatus'] == 'Enabled'){
+                                    $simstatus  = 1;
+                                }
+                                $html = view('user.services', compact('provider','user','bars','service_info','simstatus','network_info','user_services','recentlyopted'))->render(); 
+                            } catch (\Exception $e) {
+                                Log::error('GetSimStatus',[
+                                    'user_id' => $user->id,
+                                    'error' =>   $e->getMessage()
+                                ]);
+                                return response()->json(['error' => true, 'message' => 'Fetching sim services failed'.$e->getMessage()]);
+                            }
                         }
                     }  
                 break;          
@@ -1648,20 +1671,20 @@ class UserController extends Controller
     * @return \Illuminate\Contracts\Support\Renderable
     */
     public function services_change(Request $request){
-
         $user       = User::find(Crypt::decrypt($request->user_id));
         $provider   = $user->msisdn->provider;
         $requesttype = $request->requesttype; 
         if(isset($request->dataid)){
             $dataid  = Crypt::decrypt($request->dataid);
         }else{
-            if(in_array($provider,['O2','EE_O2','VUK'])){
+            if(in_array($provider,['O2','EE_O2','VUK','E_SIM'])){
                 $bars       = json_decode($request->bars,TRUE);
                 if(empty($bars)){
                     return response()->json(['status' => 422, 'message' => 'No changes applied']); 
                 }
                 $service_id = array_column($bars,'bar_id');
                 $services   = DB::table('provider_services')->whereIn('id',$service_id)->get();
+
                 if($services->isNotEmpty()){
                     foreach($services as $key => $list){
                         $servicevalue = json_decode($list->service_value,TRUE);
@@ -1676,14 +1699,14 @@ class UserController extends Controller
                 }
             }
         }
-
-        if(in_array($provider,['O2','EE_O2','VUK'])){
-            $dataid  = is_array($dataid) ? $dataid : [$dataid];
-            $getdata = DB::table('opted_services as os')
+        $dataid  = is_array($dataid) ? $dataid : [$dataid];
+        $getdata = DB::table('opted_services as os')
                         ->select('os.*','ps.short_code','ps.service_key','ps.service_short_code','ps.service_name')
                         ->join('provider_services as ps', 'ps.id', '=', 'os.service_id')
                         ->whereIn('os.id', $dataid)->get();
 
+        if(in_array($provider,['O2','EE_O2','VUK'])){
+            
             $datalist['order_id'] = isset($user->order) ? $user->order->order_id : $user->parent->order->order_id;
             $datalist['phone']    = '0'.ltrim($user->msisdn->phone_number,$user->country->dial_code);
 
@@ -1722,6 +1745,29 @@ class UserController extends Controller
                 $errormsg        = isset($response->children[0]->text) ? $response->children[0]->text: 'Failed to change services';
                 $update = DB::table('opted_services')->whereIn('id',$dataid)->update(['status'=>$servstatus,'description'=>$errormsg,'done_by'=>Auth::id()]);
                 return response()->json(['status' => 422, 'message' => $errormsg]);
+            }
+        }elseif(in_array($provider,['E_SIM'])){
+            if($requesttype == 2){
+                $reqtype      = "Services";
+                $networkarray = [];
+                foreach($getdata as $key => $list){
+                    $networkarray[$list->service_key] = $list->opted_value;
+                }
+                $setservice = GlobalSim::SetSimStatus($user->msisdn->phone_number,$networkarray);
+                if($setservice == false || $setservice['@attributes']['status'] == 'fail'){
+                    Log::error('GetSimStatus',[
+                        'user_id' => $user->id,
+                        'error' =>   $setservice
+                    ]);
+                    $update = DB::table('opted_services')->whereIn('id',$dataid)->update(['status'=>2,'description'=>'','done_by'=>Auth::id()]);
+                    return response()->json(['status' => 422, 'message' =>'sim services request failed']);
+                }
+                foreach($getdata as $key => $list){
+                    $userservice = DB::table('user_services')
+                                ->updateOrInsert(['user_id' => $user->id, 'service_id' => $list->service_id],['service_status' => $list->opted_key]);
+                }
+                $update = DB::table('opted_services')->whereIn('id',$dataid)->update(['status'=>1,'description'=>'','done_by'=>Auth::id()]);
+                return response()->json(['status' => 200, 'message' =>'Service changed Successfully']);
             }
         }
     }

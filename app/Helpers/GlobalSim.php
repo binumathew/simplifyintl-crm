@@ -421,7 +421,53 @@ class GlobalSim {
             return false;
         }
     }
-
+    public static function GetSimStatus($msisdn){
+        try{
+            $params = [
+                'MSISDN' =>$msisdn,
+                'Authentication' => [
+                    'Username' => config('services.globalsim.username'),
+                    'Password' => config('services.globalsim.password'),
+                ]
+                ];
+            $result = self::get($params,'GetSimStatus');
+            if($result !== false) {
+                return  json_decode(json_encode(simplexml_load_string($result)),true);
+            }
+            return false;
+        }catch(\Exception $e){
+            Log::error('GetSimStatus',[
+                'error' =>   $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+    public static function SetSimStatus($msisdn,$services){
+        if(!empty($services)){
+            try{
+                $params = [
+                    'MSISDN' =>$msisdn,
+                    'Authentication' => [
+                        'Username' => config('services.globalsim.username'),
+                        'Password' => config('services.globalsim.password'),
+                    ]
+                    ];
+                foreach($services as $key => $ser){
+                    $params[$key] = $ser;
+                }
+                $result = self::get($params,'SetSimStatus');
+                if($result !== false) {
+                    return  json_decode(json_encode(simplexml_load_string($result)),true);
+                }
+                return false;
+            }catch(\Exception $e){
+                Log::error('SetSimStatus',[
+                    'error' =>   $e->getMessage()
+                ]);
+                return false;
+            }
+        }
+    }
 }
 
 
