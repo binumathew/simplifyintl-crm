@@ -49,7 +49,7 @@ class InvoiceGeneration extends Command
         if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
             try {
                 $start_time      = microtime(true);
-                $currDay         = '2021-03-01';//Carbon::now()->startOfMonth()->toDateString();
+                $currDay         = Carbon::now()->startOfMonth()->toDateString();
                 $getsubscription =  AutoPlan::select('auto_plan.id')
                                     ->where(function($query) use ($currDay){
                                         $query->where('auto_plan.status',1);

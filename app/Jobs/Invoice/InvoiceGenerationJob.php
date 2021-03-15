@@ -46,7 +46,7 @@ class InvoiceGenerationJob implements ShouldQueue
      */
     public function handle()
     {
-        $invoiceDate    = '2021-03-01';//Carbon::now()->startOfMonth()->toDateString();
+        $invoiceDate    = Carbon::now()->startOfMonth()->toDateString();
         $prev_start     = Carbon::parse($invoiceDate)->subMonth()->startOfMonth()->toDateString();
         $prev_end       = Carbon::parse($invoiceDate)->subMonth()->endOfMonth()->toDateString();
         $autoplan_id    = $this->autoplan_id;
@@ -174,7 +174,7 @@ class InvoiceGenerationJob implements ShouldQueue
                             ->whereDate('created_at', '<=', $prev_end)
                             ->limit(1)->update(['out_pay_status'=>1]);
                 AutoPlan::whereId($autoplan->id)->limit(1)->update([
-                    'next_renewal' => Carbon::parse($invoiceDate)->startOfMonth()->toDateString()
+                    'next_renewal' => Carbon::parse($invoiceDate)->addMonthNoOverflow()->startOfMonth()->toDateString()
                 ]);
             DB::commit();
         }
