@@ -273,6 +273,14 @@
                                 </ul>
                             </li>
                             @endif
+                            @if(Helper::has_permission('user_invoice','edit'))
+                            <li class="has-submenu"><a><i class="mdi mdi-chart-pie"></i>Invoices</a>
+                                <ul class="submenu">
+                                    <li><a href="{{ url('/report-invoice') }}">Users Invoice</a></li>
+                                    <li><a href="{{ url('/report-invoice-txn') }}">Transactions</a></li>
+                                </ul>
+                            </li>
+                            @endif
                             @if(Helper::has_permission('reports'))
                             <li class="has-submenu"><a><i class="mdi mdi-chart-pie"></i>Reports</a>
                                 <ul class="submenu">
