@@ -651,7 +651,9 @@ class ActivationController extends Controller
                         //     }
                         // }
                     }
-                    SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]);  
+                    SimList::where('id',$sim_data->id)->update(['reg_status' => 1, 'provision' => 4]); 
+                    User::where('id', $user->id)
+                    ->update(['time_zone' => $user->country->time_zone, 'status' => 1]); 
                     NotificationLog::where('payload', 'like', '%"order_activation"%')
                                     ->where('payload', 'like', '%"'.$sim_data->sim_request->order_id.'"%')
                                     // ->where('user_id',$user->id)
