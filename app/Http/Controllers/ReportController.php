@@ -30,6 +30,10 @@ use \App\Models\UserPlan;
 
 use App\Models\User;
 
+use App\Models\UserInvoice;
+
+use App\Models\UserInvoiceTransaction;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
@@ -1042,5 +1046,265 @@ class ReportController extends Controller
 
     }
 
+    /**
+    * Show the application user invoice report.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function report_invoice(){
+
+        if (!Helper::has_permission('user_invoice')) {
+            abort(403,'Access denied');
+        }
+        return view('report.report-invoice');
+    }
+    /**
+    * Show the usage user invoice pagination
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function list_invoice(Request $request)
+    { 
+        $payments = UserInvoice::join('users as usr','usr.id','=','user_id')
+                        ->join('country as c','usr.country_id','=','c.id')
+                        ->leftJoin('tbl_sim_list as sl','sl.user_id','=','usr.id')
+                        ->leftJoin('tbl_sim_request as rq','rq.id','=','sl.request_id')
+                        //->where('user_invoices.currency_code',$request->input('currency','GBP'))
+                        ->orderBy('user_invoices.date','DESC')
+                        ->orderBy('user_invoices.user_id');
+                        
+        if ($request->order_id) {
+            $payments->where('rq.order_id', $request->order_id);
+        }
+        if ($request->phone) {
+            $phone = ltrim($request->phone, '0');
+            $payments->where('usr.phone', 'like', '%'.$phone);
+        }
+        if (!empty($request->from)) {
+            $from = Carbon::parse($request->from)->format('Y-m-d');
+            $payments->whereDate('user_invoices.date', '>=', $from);
+            if($request->to){
+                $to   = Carbon::parse($request->to)->format('Y-m-d');
+                $payments->whereDate('user_invoices.date', '<=', $to);
+            }
+        }else{
+            // $from = Carbon::now()->startofMonth()->format('Y-m-d');
+            // $payments->whereDate('user_invoices.date', $from);
+        }
+        if($request->payment_status != '') {
+            $payments->where('user_invoices.status', $request->payment_status);
+        }
+        $payments = $payments->select(
+            'rq.order_id',
+            'user_invoices.id',
+            'usr.id as user_id',
+            'usr.name',
+            'usr.phone',
+            'usr.email',
+            'user_invoices.currency_code',
+            'sub_total',
+            'user_invoices.tax as tax',
+            'total',
+            'credits_applied',
+            'amount_due',
+            'user_invoices.date',
+            'paid_at',
+            'user_invoices.status as status',
+            'user_invoices.last_payment_request_at',
+            'user_invoices.payment_requests_count'
+            
+        );               
+        $result =  Datatables::eloquent($payments)
+                ->editColumn('name', function ($payment) {
+                    return $payment->name;
+                })->editColumn('created_at', function ($payment) {
+                    return Helper::date_format($payment->date);
+                })->editColumn('last_payment_request_at', function ($payment) {
+                    return Carbon::parse($payment->last_payment_request_at)->format('d-m-Y');
+                })->editColumn('date', function ($payment) {
+                    return Carbon::parse($payment->date)->format('d-m-Y');
+                })->editColumn('paid_at', function ($payment) {
+                    return Carbon::parse($payment->paid_at)->format('d-m-Y');
+                })
+                ->addColumn('downloadurl', function ($payment){
+                    $dt = explode('-', $payment->date);
+                    return Crypt::encrypt($payment->user_id).'-'.base64_encode($dt[1]).'-'.base64_encode($dt[0]);
+                })
+                ->editColumn('action', function ($payment) {
+                    $paylink = '';
+                    // if (Helper::has_permission('user_invoice','edit')) {
+                        if($payment->status == 8){
+                            $paylink = '<a href="javascript:void(0);"><button class="btn btn-primary btn-sm pay_link"  title="Send Payment Link" data-id="'.Crypt::encrypt($payment->id).'">Pay Link</button></a>';
+                        }
+                    // }
+                    return $paylink;
+                    // if(Helper::has_permission('payment_history', 'edit') && $payment->status == 1){
+                    //     $refund = '<a href="javascript:void(0);" title="Refund" class="action_refund text-danger" data-id="'.Crypt::encrypt($payment->id).'" data-amount="'.$payment->total_amount.'" data-currency="'.$payment->currency_symbol.'"><i class="mdi mdi-undo-variant mdi-24px"></i></a>';
+                    // }
+                    //return '<form class="grid_form" method="post" action="'.url('/user-details').'">'.csrf_field().'<input type="hidden" name="identifier" value="'.$payment->phone.'"><a title="View Details"  href="javascript:void(0);"  class="show_user_data text-muted m-r-10"><i class="mdi mdi-eye mdi-24px"></i></a> '. $refund .'</form>';
+                })
+                ->rawColumns(['name','action'])
+                ->make(true); 
+        if($request->exportdata){
+            $result = collect($result->getData()->data);
+            $datas = $result->map(function ($item,$key) {
+                switch ($item->status) {
+                    case 0:
+                        $item->status = 'Not Processed';
+                        break;
+                    case 1:
+                        $item->status = 'Paid';
+                        break;
+                    case 2:
+                        $item->status = 'Partially paid';
+                        break;
+                    case 3:
+                        $item->status = 'unpaid';
+                        break;
+                    case 4:
+                        $item->status = 'cancel';
+                        break;
+                    case 5:
+                        $item->status = 'Pending';
+                        break;
+                    case 6:
+                        $item->status = 'Refund';
+                        break;
+                    case 7:
+                        $item->status = 'Dispute';
+                        break;
+                    case 8:
+                        $item->status = 'Failed';
+                        break;
+                    default:
+                        $item->status = 'Draft';
+                        break;
+                }
+                return collect($item)->only(['order_id','name','phone','email','status','date','sub_total','tax','total','credits_applied','amount_due','paid_at']);
+                });
+            $datas->prepend(array('Order ID','NAME','PHONE','EMAIL','SUB TOTAL','TAX','TOTAL','CREDITS','AMOUNT DUE','INVOICE DATE','PAYMENT DATE','STATUS'));
+            return Excel::download(new CustomExport($datas->toArray()), 'invoice.csv');
+        }else{
+            return $result;
+        }     
+    }
+    /**
+    * Show the application user invoice report.
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function report_invoice_txn(){
+
+        if (!Helper::has_permission('user_invoice')) {
+            abort(403,'Access denied');
+        }
+        return view('report.report-invoice-txn');
+    }
+    /**
+    * Show the usage user invoice pagination
+    *
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function list_invoice_txn(Request $request)
+    { 
+        $payments = UserInvoiceTransaction::join('user_invoices as usr_inv','usr_inv.id','=','invoice_id')
+                        ->join('users as usr','usr.id','=','usr_inv.user_id')
+                        ->join('country as c','usr.country_id','=','c.id')
+                        ->leftJoin('user_invoice_transactions_meta as utm','utm.inv_txn_id','=','user_invoice_transactions.id')
+                        ->join('tbl_sim_list as sl','sl.user_id','=','usr.id')
+                        ->join('tbl_sim_request as rq','rq.id','=','sl.request_id')
+                        ->orderBy('user_invoice_transactions.date','DESC')
+                        ->orderBy('usr_inv.user_id');
+
+        if ($request->order_id) {
+            $payments->where('rq.order_id', $request->order_id);
+        }
+        if ($request->transaction_id) {
+            $payments->where('user_invoice_transactions.transaction_id', $request->transaction_id);
+        }
+        if ($request->phone) {
+            $phone = ltrim($request->phone, '0');
+            $payments->where('usr.phone', 'like', '%'.$phone);
+        }
+        if (!empty($request->from)) {
+            $from = Carbon::parse($request->from)->format('Y-m-d');
+            $payments->whereDate('user_invoice_transactions.date', '>=', $from);
+            if($request->to){
+                $to   = Carbon::parse($request->to)->format('Y-m-d');
+                $payments->whereDate('user_invoice_transactions.date', '<=', $to);
+            }
+        }
+        if($request->payment_status != '') {
+            $payments->where('user_invoice_transactions.status', $request->payment_status);
+        }
+        $payments = $payments->select(
+            'rq.order_id',
+            'user_invoice_transactions.id',
+            'usr.id as user_id',
+            'usr.name',
+            'usr.phone',
+            'usr.email',
+            'user_invoice_transactions.date as inv_txn_date',
+            'user_invoice_transactions.currency_code',
+            'user_invoice_transactions.transaction_id',
+            'utm.meta_data as meta_data',
+            'amount',
+            'user_invoice_transactions.status as status'
+            
+        );            
+        $result =  Datatables::eloquent($payments)
+                ->editColumn('name', function ($payment) {
+                    return $payment->name;
+                })->addColumn('date', function ($payment) {
+                    return Carbon::parse($payment->inv_txn_date)->format('d-m-Y');
+                })->addColumn('failed_desc', function ($payment) {
+                    return strlen($payment->meta_data) >= 200 ? isset(json_decode($payment->meta_data)->error) ? json_decode($payment->meta_data)->error->message: json_decode($payment->meta_data)->message : '';
+                })
+                ->rawColumns(['name','action'])
+                ->make(true);  
+
+        if($request->exportdata){
+            $result = collect($result->getData()->data);
+            $datas = $result->map(function ($item,$key) {
+                switch ($item->status) {
+                    case 0:
+                        $item->status = 'Not Processed';
+                        break;
+                    case 1:
+                        $item->status = 'Paid';
+                        break;
+                    case 2:
+                        $item->status = 'Partially paid';
+                        break;
+                    case 3:
+                        $item->status = 'unpaid';
+                        break;
+                    case 4:
+                        $item->status = 'cancel';
+                        break;
+                    case 5:
+                        $item->status = 'Pending';
+                        break;
+                    case 6:
+                        $item->status = 'Refund';
+                        break;
+                    case 7:
+                        $item->status = 'Dispute';
+                        break;
+                    case 8:
+                        $item->status = 'Failed';
+                        break;
+                    default:
+                        $item->status = 'Draft';
+                        break;
+                }
+                return collect($item)->only(['order_id','name','phone','email','status','date','transaction_id','amount']);
+                });
+            $datas->prepend(array('Order ID','NAME','PHONE','EMAIL','TRANSACTION','AMOUNT','STATUS','DATE'));
+            return Excel::download(new CustomExport($datas->toArray()), 'invoice_txn.csv');
+        }else{
+            return $result;
+        }  
+    }
 }
 
