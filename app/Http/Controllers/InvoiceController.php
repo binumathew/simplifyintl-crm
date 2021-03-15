@@ -148,8 +148,8 @@ class InvoiceController extends Controller
                 //$view = view('invoice.user_invoice', compact('invoiceData','user'))->render();
                 $filename = $month.$year.'_'.$invoice->id.'_'.$user->userDetail->user_platform.$user->id.'.pdf';
                 $pdf = MPDF::loadView('invoice.user_invoice', compact('invoiceData','user'));
-                //return $pdf->download($filename);
-                return $pdf->stream($filename);
+                return $pdf->download($filename);
+                //return $pdf->stream($filename);
             }else{
                 dd('Invoice Details not found.');
             }
