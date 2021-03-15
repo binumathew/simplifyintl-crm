@@ -15,6 +15,7 @@ use GlobalSim;
 use App\Models\ScheduledTask;
 use App\Models\SimList;
 use App\Models\SimStock;
+use App\Models\AutoPlan;
 use App\Models\NotificationLog;
 use App\Jobs\NotifyActivation;
 use Cron\CronExpression;
@@ -70,10 +71,6 @@ class ActivationNotify extends Command
                         $search_xml = DwpHelper::dwp_order_search($data);
                         $response  = DwpHelper::dwp_process_api($search_xml);
                         $response  = json_decode(DwpHelper::dwp_response_handler($response));
-                        Log::info('activation-notify',[
-                            'request'=> $search_xml,
-                            'response' => $response
-                        ]);
                         if($response->children[0]->no == 0){
                             $result = DwpHelper::dwp_response($response->children);                                                       
                             $status['state'] =  ucfirst($result['orders']['block']['components']['block']['state']);
@@ -81,6 +78,8 @@ class ActivationNotify extends Command
                             if($status['state'] == 'Completed' && $status['request_status'] == 'Complete'){
                                 $user = $list->sim_request->user;
                                 DB::table('tbl_sim_list')->whereId($list->id)->update(['provision' => 4]);
+                                $start_date = $result['orders']['block']['components']['block']['completion-date'];
+                                $start_date = isset($start_date) ? Carbon::parse($start_date)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
                                 $sim_number = $result['orders']['block']['components']['block']['sim-serial'];
                                 $mobile_number = $result['orders']['block']['components']['block']['mobile-number'];
                                 $phone_number = '44'.ltrim($mobile_number,'0');
@@ -91,6 +90,9 @@ class ActivationNotify extends Command
                                 // $response = DwpHelper::dwp_process_api($search_xml);
                                 }
                                 try{
+                                    AutoPlan::whereId($list->autoplan_id)->limit(1)->update([
+                                        'start_date' =>$start_date
+                                    ]);
                                     SimStock::where('id',$list->stock_id)->update(['phone_number' => $phone_number, 'verified' => 1]);
                                 }catch(\Exceptions $e){
 

@@ -171,10 +171,10 @@ class ActivationController extends Controller
     */ 
     public function prorata_billing_process(Request $request)
     {   
-        $date_from = $request->date_from;
         $autoplan_id = $request->autoplan;
         $card_id = Crypt::decrypt($request->credit_card); 
         $plan = AutoPlan::where('id', $autoplan_id)->first();
+        $date_from = is_null($plan->start_date) ? $request->date_from : $plan->start_date;
         $simList = SimList::where('autoplan_id', $autoplan_id)->get();
         $user = User::find($simList[0]->sim_request->user->id);
         if($card_id != 'cash'){
@@ -488,7 +488,7 @@ class ActivationController extends Controller
                         ->update(['sim_account_id' => $account_id]);
                 $accounts[$sim_data->stock_id] = $account_id;
             }
-            AutoPlan::whereId($sim_data->autoplan_id)->where('act_check',0)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
+            // AutoPlan::whereId($sim_data->autoplan_id)->where('act_check',0)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
             SimList::where('id', $sim_data->id)->update(['user_id' => $user->id]);
             User::where('id', $user->id)->update(['dealer_id' => $dealer_id]);
         }

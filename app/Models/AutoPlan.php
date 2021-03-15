@@ -8,7 +8,7 @@ class AutoPlan extends Model
 {
     protected $table = 'auto_plan';
 
-    protected $fillable = ['user_id', 'transaction_id', 'plan_id', 'next_renewal', 'amount', 'tax', 'total_amount', 'bundle_id', 'card_expiry', 'card_type', 'card_id', 'gateway', 'adv_pay', 'status'];
+    protected $fillable = ['user_id', 'transaction_id', 'plan_id', 'next_renewal', 'amount', 'tax', 'total_amount', 'bundle_id', 'card_expiry', 'card_type', 'card_id', 'gateway', 'adv_pay', 'status','start_date'];
 
     public function plan()
     {
