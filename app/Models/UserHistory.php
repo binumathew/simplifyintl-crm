@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class UserHistory extends Model
 {
 
-    protected $table = 'usage_history_copy';
+    protected $table = 'usage_history';
     public $timestamps = true;
 }

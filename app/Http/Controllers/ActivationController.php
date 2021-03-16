@@ -596,7 +596,6 @@ class ActivationController extends Controller
                     }
                 }
                 $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
-                AutoPlan::whereId($sim_data->auto_plan->id)->where('act_check',0)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
             } else {
                 $response = json_decode('{"orderCode":"o2order","Subscription":{"SubscriptionId":"o2subid"},"resultType":"Ok","resultCode":"0"}');
             }
@@ -661,7 +660,8 @@ class ActivationController extends Controller
 
                     $this->calculate_dealer_commision($auto_plan_id, $promocode);
 
-                    $auto_plan_data['user_list'] = $user_list;
+                    $auto_plan_data['user_list']  = $user_list;
+                    $auto_plan_data['start_date'] = Carbon::now()->format('Y-m-d');
                     if(is_null($plan->next_renewal) || $plan->status == 0){
                         $auto_plan_data['status'] = 1;
                         if(is_null($plan->next_renewal)){

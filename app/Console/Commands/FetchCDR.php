@@ -8,8 +8,9 @@ use Carbon;
 use Cron\CronExpression;
 use App\Models\ScheduledTask;
 use Illuminate\Console\Scheduling\Schedule;
-use App\Jobs\FetchCDR\GlobalSim;
 
+use App\Jobs\FetchCDR\GlobalSim;
+use App\Jobs\CDR\EsimUsageSummaryJob;
 class FetchCDR extends Command
 {
     /**
@@ -63,6 +64,7 @@ class FetchCDR extends Command
                         ]);
                     }
                 }
+              EsimUsageSummaryJob::dispatch();  
             }
             $end_time   = microtime(true);
             $exec_time  = round(($end_time - $start_time), 5);

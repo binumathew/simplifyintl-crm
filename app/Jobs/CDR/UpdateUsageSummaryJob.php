@@ -51,16 +51,17 @@ class UpdateUsageSummaryJob implements ShouldQueue
         $serviceType    = $plans->network->service_type;
         $plandate       = $userplan->created_at;
 
-        $startdate      = Carbon::parse($plandate)->startOfMonth()->format('Y-m-d');
-
         switch ($serviceType) {
             case 1:
-                $enddate    = Carbon::parse($plandate)->addDays(30)->format('Y-m-d');
+                $startdate  = Carbon::parse($plandate)->format('Y-m-d');
+                $enddate    = Carbon::parse($plandate)->addDays($plans->period)->format('Y-m-d');
                 break;
             case 2:
+                $startdate  = Carbon::parse($plandate)->startOfMonth()->format('Y-m-d');
                 $enddate    = Carbon::parse($startdate)->endOfMonth()->format('Y-m-d');
                 break;
             default:
+                $startdate      = Carbon::parse($plandate)->startOfMonth()->format('Y-m-d');
                 $enddate    = Carbon::parse($startdate)->endOfMonth()->format('Y-m-d');
                 break;
         }

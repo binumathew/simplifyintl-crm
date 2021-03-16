@@ -107,12 +107,10 @@ class GlobalSim implements ShouldQueue
             }
         }
         if(!empty($data_history)){
-            //UserHistory::insert($data_history);
-            DB::table('usage_history_copy')->insert($data_history);
+            UserHistory::insert($data_history);
         }
         if(!empty($call_data)){
-           // UserCall::insert($call_data);
-           DB::table('user_calls_copy')->insert($call_data);
+           UserCall::insert($call_data);
         }
     }
     public function failed(\Exception $exception){
