@@ -488,7 +488,6 @@ class ActivationController extends Controller
                         ->update(['sim_account_id' => $account_id]);
                 $accounts[$sim_data->stock_id] = $account_id;
             }
-            // AutoPlan::whereId($sim_data->autoplan_id)->where('act_check',0)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
             SimList::where('id', $sim_data->id)->update(['user_id' => $user->id]);
             User::where('id', $user->id)->update(['dealer_id' => $dealer_id]);
         }
@@ -597,6 +596,7 @@ class ActivationController extends Controller
                     }
                 }
                 $response = json_decode('{"orderCode":"E_SIMorder","Subscription":{"SubscriptionId":'.$subsrib_id.'},"resultType":"Ok","resultCode":"0"}');
+                AutoPlan::whereId($sim_data->auto_plan->id)->where('act_check',0)->update(['start_date'=>Carbon::now()->format('Y-m-d')]);
             } else {
                 $response = json_decode('{"orderCode":"o2order","Subscription":{"SubscriptionId":"o2subid"},"resultType":"Ok","resultCode":"0"}');
             }
