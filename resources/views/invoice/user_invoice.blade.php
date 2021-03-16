@@ -69,7 +69,7 @@ $sym         = $user->country->currency_symbol;
     <td align="right">
         <div class="" style="width:100%">
             <img alt="" src="{{ asset('images/logo.png') }}" width="60" style="margin-right:2%;"/>
-            <h5 class="" style="float:right">{{config('settings.app_name')}}</h5>
+            <!-- <h5 class="" style="float:right">{{config('settings.app_name')}}</h5> -->
         </div>
     </td>
   </tr>
@@ -106,6 +106,62 @@ $sym         = $user->country->currency_symbol;
 <div style="left:31.85px;"><span>Your bill total is </span><span> <b>{{ $sym.$invoiceData->invoice->total}}</b></span></div>
 <div style="left:500.47px;position:absolute;margin-top:-40px;"><span><b>Payment status - @php echo ($invoiceData->invoice->status == 1) ? 'Uptodate' : 'Processing'; @endphp </b></span></div>
 <br><br><br>
+@if(in_array($invoiceData->invoice->subscription->plan->provider,['E_SIM']))
+<table class="summarytable" width="100%">
+    <thead>
+      <tr>
+        <th></th>
+        <th align="left">Bundles & Extras <br><span style="font-size:9px;font-weight:normal;">(exc.vat/tax)</span></th>
+        <th align="left">Price</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>({{ $user->phone }})</td>
+            <td>{{ $sym.$invoiceData->subscription->amount}}</td>
+            <td>{{ $sym.$invoiceData->subscription->amount }}</td>
+        </tr>
+        @if($invoiceData->subscription->all->isNotEmpty())
+            @foreach($invoiceData->additional->all as $skey => $slist)
+            <tr>
+                <td>{{ $slist->details->description }}</td>
+                <td>{{ $sym.$slist->amount }}</td>
+                <td>{{ $sym.$slist->amount }}</td>
+            </tr>
+            @endforeach
+        @endif
+        @if($invoiceData->invoice->credits_applied != 0)
+        <tr>
+            <td colspan="2">Credit Applied</td>
+            <td>-{{ $sym.$invoiceData->invoice->credits_applied }}</td>
+        </tr>
+        @endif
+        <tr>
+            <td colspan="1"></td>
+            <td><b>Sub Total</b></td>
+            <td><b>{{ $sym.$invoiceData->invoice->sub_total}}</b></td>
+        </tr>
+        <tr>
+            <td colspan="1"></td>
+            <td><b>VAT/Tax</b></td>
+            <td><b>{{ $sym.$invoiceData->invoice->tax}}</b></td>
+        </tr>
+        <tr>
+            <td colspan="1"></td>
+            <td><b>Total</b></td>
+            <td><b>{{ $sym.$invoiceData->invoice->total}}</b></td>
+        </tr>
+        @if($invoiceData->alreadytaken->isNotEmpty())
+        @foreach($invoiceData->alreadytaken as $key => $altaken)
+        <tr>
+            <td colspan="3" style="font-size:16px;"><b>Payment received on joining - {{ Carbon::parse($altaken->created_at)->format('d-m-Y')}}</b></td>
+            <td><b> -{{ $sym.Helper::number_format($altaken->total_amount)}}</b></td>
+        </tr>
+        @endforeach
+        @endif
+    </tbody>
+</table>
+@else
 <table class="summarytable" width="100%">
     <thead>
       <tr>
@@ -153,6 +209,10 @@ $sym         = $user->country->currency_symbol;
         @endif
     </tbody>
 </table>
+@endif
+@if(in_array($invoiceData->invoice->subscription->plan->provider,['E_SIM']))
+<div style="page-break-after:always;"></div>
+@else
 @if($invoiceData->subscription->all->isNotEmpty())
 <div style="page-break-after:always;"></div>
   <h4 class="titlehead">Bundles & Extras</h4>
@@ -201,6 +261,7 @@ $sym         = $user->country->currency_symbol;
     </tbody>
 </table>
 @endif
+@endif
 @if($invoiceData->credit->isNotEmpty())
 <h4 class="titlehead">Credit Details</h4>
   <table class="table" width="100%">
@@ -245,7 +306,7 @@ $sym         = $user->country->currency_symbol;
         $totalcall     = $totalcall + $uclist->duration;
         @endphp
         <tr>
-        <td>{{Carbon::parse($uclist->connect_date)->format('d-M')}}</td>
+        <td>{{Carbon::parse($uclist->connect_date)->format('d-M-Y')}}</td>
         <td>{{Carbon::parse($uclist->connect_date)->format('H:i:s')}}</td>
         <td>{{ ($uclist->history_from == 1) ? 'Mobile app' : 'Sim' }}</td>
         <td>{{ '+'.str_replace("+","",$uclist->cli)}}</td>
@@ -256,8 +317,8 @@ $sym         = $user->country->currency_symbol;
         @endforeach
         <tr>
             <td colspan="5"><b>Total</b></td>
-            <td>{{ Helper::secondsToTime($totalcall) }}</td>
-            <td>{{$sym.Helper::number_format($totalcallcost)}}</td>
+            <td><b>{{ Helper::secondsToTime($totalcall) }}</b></td>
+            <td><b>{{$sym.Helper::number_format($totalcallcost)}}</b></td>
         </tr>
     </tbody>
     </table>
@@ -285,15 +346,15 @@ $sym         = $user->country->currency_symbol;
     @endphp
     <tr>
     <td>{{ '+'.str_replace("+","",$udlist->from_number)}} </td>
-    <td>{{Carbon::parse($udlist->date)->format('d-M')}}</td>
+    <td>{{Carbon::parse($udlist->date)->format('d-M-Y')}}</td>
     <td>{{ $data }}</td>
     <td>{{ $sym.Helper::number_format($datacost) }}</td>
     </tr>
     @endforeach
     <tr>
         <td colspan="2"><b>Total</b></td>
-        <td>{{ $totaldata }}</td>
-        <td>{{$sym.Helper::number_format($totaldatacost)}}</td>
+        <td><b>{{ $totaldata }}</b></td>
+        <td><b>{{$sym.Helper::number_format($totaldatacost)}}</b></td>
     </tr>
 </tbody>
 </table>
@@ -320,7 +381,7 @@ $sym         = $user->country->currency_symbol;
     $smscount = $smscount + $uslist->duration;
     @endphp
     <tr>
-    <td>{{Carbon::parse($uslist->date)->format('d-M')}}</td>
+    <td>{{Carbon::parse($uslist->date)->format('d-M-Y')}}</td>
     <td>{{ '+'.str_replace("+","",$uslist->from_number)}} </td>
     <td>{{ (strlen(trim($uslist->to_number)) <=6) ? $uslist->to_number : '0'.$uslist->to_number}} </td>
     <td>{{ $uslist->duration }} </td>
@@ -329,8 +390,8 @@ $sym         = $user->country->currency_symbol;
     @endforeach
     <tr>
         <td colspan="3"><b>Total</b></td>
-        <td>{{ $smscount}} </td>
-        <td>{{$sym.Helper::number_format($totalsmscost)}}</td>
+        <td><b>{{ $smscount}} </b></td>
+        <td><b>{{$sym.Helper::number_format($totalsmscost)}}</b></td>
     </tr>
 </tbody>
 </table>

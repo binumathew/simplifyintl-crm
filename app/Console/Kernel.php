@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
 	\App\Console\Commands\HourlyCDR::class,
         \App\Console\Commands\FetchCDR::class,
 	\App\Console\Commands\UserPlanCreate::class,
+        \App\Console\Commands\EsimInvoiceGeneration::class,
     ];
 
     /**
@@ -78,7 +79,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('hourly:cdr')
                  ->hourly();
         $schedule->command('userplan:create')
-                 ->monthlyOn(1, '1:30');	
+                 ->monthlyOn(1, '1:30');
+        $schedule->command('esiminvoice:generate')
+                 ->dailyAt('00:01');
     }
 
     /**

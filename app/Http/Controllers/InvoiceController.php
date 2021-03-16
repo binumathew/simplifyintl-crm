@@ -73,22 +73,33 @@ class InvoiceController extends Controller
     {
         $datas      = explode('-', $id);
         $user_id    = Crypt::decrypt($datas[0]);
-        $month      = base64_decode($datas[1]);
-        $year       = base64_decode($datas[2]);
-        $givendate  = $year.'-'.$month.'-01';
+        $year       = base64_decode($datas[1]);
+        $month      = base64_decode($datas[2]);
+        $day        = base64_decode($datas[3]);
+        $givendate  = $year.'-'.$month.'-'.$day;
 
-        if(Carbon::parse($givendate)->lt(Carbon::now())){
-            $invoiceDate  = Carbon::parse($givendate)->startOfMonth()->toDateString();
-            $prevfirstDay = Carbon::parse($givendate)->subMonth()->startOfMonth()->toDateString();
-            $prevlastDay  = Carbon::parse($givendate)->subMonth()->endOfMonth()->toDateString().' 23:59:59';
+        if(Carbon::parse($givendate)->lte(Carbon::now())){
+            $user       = User::whereId($user_id)->first();
 
-            $user        = User::whereId($user_id)->first();
-            $invoice     = UserInvoice::where('user_id',$user_id)
+            if(in_array($user->msisdn->provider,['E_SIM'])){
+                $invoiceDate  = Carbon::parse($givendate)->toDateString();
+            }else{
+                $invoiceDate  = Carbon::parse($givendate)->startOfMonth()->toDateString();
+            }
+            $invoice    = UserInvoice::where('user_id',$user_id)
                                     ->whereDate('date',$invoiceDate)
-                                    ->first();
-                                    
+                                    ->first();  
             if($invoice){
-                $diff_in_months = Carbon::parse($invoice->subscription->start_date)->diffInMonths(Carbon::parse($invoiceDate));
+                if(in_array($user->msisdn->provider,['E_SIM'])){
+                    $invoiceDate  = Carbon::parse($givendate)->toDateString();
+                    $prevfirstDay = Carbon::parse($invoice->date)->subDays($invoice->subscription->plan->period)->toDateString();
+                    $prevlastDay  = Carbon::parse($invoice->date)->subDays()->toDateString().' 23:59:59';
+                    $diff_in_months = 1;
+                }else{
+                    $prevfirstDay = Carbon::parse($givendate)->subMonth()->startOfMonth()->toDateString();
+                    $prevlastDay  = Carbon::parse($givendate)->subMonth()->endOfMonth()->toDateString().' 23:59:59';
+                    $diff_in_months = Carbon::parse($invoice->subscription->start_date)->diffInMonths(Carbon::parse($invoiceDate));
+                }
                 $alreadytaken = collect();
                 if($diff_in_months == 0){
                     $alreadytaken = UserPayment::where('user_id',$user_id)
@@ -148,8 +159,8 @@ class InvoiceController extends Controller
                 //$view = view('invoice.user_invoice', compact('invoiceData','user'))->render();
                 $filename = $month.$year.'_'.$invoice->id.'_'.$user->userDetail->user_platform.$user->id.'.pdf';
                 $pdf = MPDF::loadView('invoice.user_invoice', compact('invoiceData','user'));
-                return $pdf->download($filename);
-                //return $pdf->stream($filename);
+                //return $pdf->download($filename);
+                return $pdf->stream($filename);
             }else{
                 dd('Invoice Details not found.');
             }

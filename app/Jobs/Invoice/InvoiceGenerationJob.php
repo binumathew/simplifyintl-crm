@@ -46,27 +46,40 @@ class InvoiceGenerationJob implements ShouldQueue
      */
     public function handle()
     {
-        $invoiceDate    = Carbon::now()->startOfMonth()->toDateString();
-        $prev_start     = Carbon::parse($invoiceDate)->subMonth()->startOfMonth()->toDateString();
-        $prev_end       = Carbon::parse($invoiceDate)->subMonth()->endOfMonth()->toDateString();
         $autoplan_id    = $this->autoplan_id;
         $autoplan       = AutoPlan::whereId($autoplan_id)->first();
-
-        $diff_in_months = Carbon::parse($autoplan->start_date)->diffInMonths(Carbon::parse($invoiceDate));
+        if(in_array($autoplan->plan->provider,['E_SIM'])){
+            $invoiceDate    = Carbon::parse($autoplan->next_renewal)->toDateString();
+            $prev_start     = Carbon::parse($autoplan->next_renewal)->subDays($autoplan->plan->period)->toDateString();
+            $prev_end       = Carbon::parse($autoplan->next_renewal)->subDay()->toDateString();
+            $next_renewal   = Carbon::parse($invoiceDate)->addDays($autoplan->plan->period)->toDateString();
+            $next_end_date = Carbon::parse($invoiceDate)->addDays($autoplan->plan->period)->format('d-m-Y');
+            $diff_in_months = 1;
+        }else{
+            $invoiceDate    = Carbon::now()->startOfMonth()->toDateString();
+            $prev_start     = Carbon::parse($invoiceDate)->subMonth()->startOfMonth()->toDateString();
+            $prev_end       = Carbon::parse($invoiceDate)->subMonth()->endOfMonth()->toDateString();
+            $next_renewal   = Carbon::parse($invoiceDate)->addMonthNoOverflow()->startOfMonth()->toDateString();
+            $next_end_date  = Carbon::parse($invoiceDate)->endOfMonth()->format('d-m-Y');
+            $diff_in_months = Carbon::parse($autoplan->start_date)->diffInMonths(Carbon::parse($invoiceDate));
+        }
 
         if(!empty($autoplan)){
             $user    = User::whereId($autoplan->user_list)->where('status',1)->first();
             $blocked = Helper::check_fraudster($autoplan->user_id);
         }
         if($user && !$blocked){
-            $net_out_charge = $billamount = $billtotal = $planamount = $balancecredit = $amountdue = $creditapplied = 0;
+            $net_out_charge = $billamount = $billtotal = $planamount = $balancecredit = $amountdue = $creditapplied = $prepaid_credit = 0;
 
             $credits         = $user->credits;
 
             if($diff_in_months >= 1){
                 $getamount   = Helper::taxCalculation($autoplan->plan->sell_price,$user->country);
                 $planamount += $getamount->amount;
-                $plan_desc  = Carbon::parse($invoiceDate)->format('d-m-Y').' - '.Carbon::parse($invoiceDate)->endOfMonth()->format('d-m-Y');
+                $plan_desc  = Carbon::parse($invoiceDate)->format('d-m-Y').' - '.$next_end_date;
+                if(in_array($autoplan->plan->provider,['E_SIM'])){
+                    $prepaid_credit = $user->userDetail->prepaid_credit;
+                }
             }else{
                 $numberofdays   = Carbon::parse($autoplan->start_date)->endOfMonth()->diffInDays(Carbon::parse($autoplan->start_date)) + 1;
                 $days           = Carbon::parse($autoplan->start_date)->daysInMonth;
@@ -76,7 +89,6 @@ class InvoiceGenerationJob implements ShouldQueue
                 $plan_desc  = Carbon::parse($autoplan->start_date)->format('d-m-Y').' - '.Carbon::parse($autoplan->start_date)->endOfMonth()->format('d-m-Y');
                 $credits = $planamount;
             }
-
             $add_charge_list = UserCharge::where('user_id',$user->id)->where('state',0)
                                     ->whereDate('created_at', '>=', $prev_start)
                                     ->whereDate('created_at', '<=', $prev_end)
@@ -84,16 +96,20 @@ class InvoiceGenerationJob implements ShouldQueue
 
             $add_charges     = $add_charge_list->sum('amount');
 
-            $out_charge_list = UserPlan::where('user_id',$user->id)
-                                ->whereDate('created_at', '>=', $prev_start)
-                                ->whereDate('created_at', '<=', $prev_end)
-                                ->first();
+            $out_charge_list = UserPlan::where('user_id',$user->id);
 
-            if($out_charge_list){
-                $net_out_charge = $out_charge_list->service_total;
-            }
+            if(in_array($autoplan->plan->provider,['E_SIM'])){
+                $out_charge_list = $out_charge_list->where('status',1)->first();
+            }else{
+                $out_charge_list =  $out_charge_list->whereDate('created_at', '>=', $prev_start)
+                                    ->whereDate('created_at', '<=', $prev_end)
+                                    ->first();
+                if($out_charge_list){
+                    $net_out_charge = $out_charge_list->service_total;
+                }
+            } 
 
-            $billamount     = ($planamount + $add_charges + $net_out_charge);
+            $billamount     = ($planamount + $add_charges + $net_out_charge + $prepaid_credit);
 
             $billtotal      = ($credits >= $billamount) ? 0 : $billamount - $credits;
             $creditapplied  = ($credits >= $billamount) ?  $billamount : $credits;
@@ -129,8 +145,16 @@ class InvoiceGenerationJob implements ShouldQueue
                 'price'=>$planamount
 
             ];
-
-            if($out_charge_list){
+            if($prepaid_credit != 0){
+                $lineitems[] = [
+                    'invoice_id' => $getinv->id,
+                    'plan_id'=>null,
+                    'description'=> 'Prepaid Credit',
+                    'quantity'=>1,
+                    'price'=>$prepaid_credit
+                ];
+            }
+            if($out_charge_list && $net_out_charge != 0){
                 if($out_charge_list->service_total > 0){
                     $outparms = collect(['sms','call','data']);
                     $outparms->each(function ($item, $key) use(&$lineitems,$getinv,$out_charge_list){
@@ -174,9 +198,28 @@ class InvoiceGenerationJob implements ShouldQueue
                             ->whereDate('created_at', '<=', $prev_end)
                             ->limit(1)->update(['out_pay_status'=>1]);
                 AutoPlan::whereId($autoplan->id)->limit(1)->update([
-                    'next_renewal' => Carbon::parse($invoiceDate)->addMonthNoOverflow()->startOfMonth()->toDateString()
+                    'next_renewal' => $next_renewal
                 ]);
             DB::commit();
+            if(in_array($autoplan->plan->provider,['E_SIM'])){
+                DB::beginTransaction();
+                    UserPlan::where('user_id',$user->id)
+                            ->where('plan_type','sim')
+                            ->whereDate('created_at','>=',$prev_start)
+                            ->whereDate('created_at','<=',$prev_end)
+                            ->update(['status'=>0]);
+                    if(UserPlan::where('user_id',$user->id)->whereDate('created_at','>=',$invoiceDate)->whereDate('created_at','<=',$next_renewal)->doesntExist()){
+                        UserPlan::insertGetId([
+                            'user_id'=>$user->id,
+                            'plan_id'=>$autoplan->plan_id,
+                            'payment_id'=>0,
+                            'plan_type'=>'sim',
+                            'status'=>1,
+                            'created_at'=>$invoiceDate
+                        ]);
+                    }
+                DB::commit();
+            }
         }
     }
 }

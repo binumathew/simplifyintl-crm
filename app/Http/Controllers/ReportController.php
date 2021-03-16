@@ -1128,7 +1128,7 @@ class ReportController extends Controller
                 })
                 ->addColumn('downloadurl', function ($payment){
                     $dt = explode('-', $payment->date);
-                    return Crypt::encrypt($payment->user_id).'-'.base64_encode($dt[1]).'-'.base64_encode($dt[0]);
+                    return Crypt::encrypt($payment->user_id).'-'.base64_encode($dt[0]).'-'.base64_encode($dt[1]).'-'.base64_encode($dt[2]);
                 })
                 ->editColumn('action', function ($payment) {
                     $paylink = '';
