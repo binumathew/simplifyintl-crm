@@ -49,7 +49,7 @@ class EsimInvoiceGeneration extends Command
         if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
             try {
                 $start_time      = microtime(true);
-                $currDay         = '2021-02-22';//Carbon::now()->toDateString();
+                $currDay         =  Carbon::now()->toDateString();
                 $getsubscription =  AutoPlan::select('auto_plan.id')
                                     ->join('tbl_plans as tp','tp.id','=','auto_plan.plan_id')
                                     ->whereIn('tp.provider',['E_SIM'])
@@ -57,7 +57,7 @@ class EsimInvoiceGeneration extends Command
                                     ->whereDate('auto_plan.next_renewal', '=', $currDay)
                                     ->orderBy('auto_plan.id')
                                     ->get();
-                                    
+
                 $getsubscription->each(function ($item, $key){
                     try {
                         InvoiceGenerationJob::dispatch($item->id);
