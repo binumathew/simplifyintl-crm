@@ -38,12 +38,10 @@ class EsimUsageSummaryJob implements ShouldQueue
                             ->where('up.plan_type', 'sim')
                             ->where('u.status', 1)
                             ->where('up.status', 1)
-                            ->where('up.user_id', 100005)
                             ->orderBy('up.plan_id')->get();
         if($userlist->isNotEmpty()){
             foreach ($userlist as $user) {
                 UpdateUsageSummaryJob::dispatch($user->id,$user->user_plan_id,$user->plan_id);
-                dd($user);
             }
         }
     }
