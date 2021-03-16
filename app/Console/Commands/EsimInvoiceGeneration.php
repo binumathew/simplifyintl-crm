@@ -51,13 +51,9 @@ class EsimInvoiceGeneration extends Command
                 $start_time      = microtime(true);
                 $currDay         = '2021-02-22';//Carbon::now()->toDateString();
                 $getsubscription =  AutoPlan::select('auto_plan.id')
-                                    ->where(function($query) use ($currDay){
-                                        $query->where('auto_plan.status',1);
-                                        $query->orWhereDate('auto_plan.status_changeon', '>=', $currDay);
-                                    })
                                     ->join('tbl_plans as tp','tp.id','=','auto_plan.plan_id')
                                     ->whereIn('tp.provider',['E_SIM'])
-                                    ->whereDate('auto_plan.start_date', '<', $currDay)
+                                    ->where('auto_plan.status',1)
                                     ->whereDate('auto_plan.next_renewal', '=', $currDay)
                                     ->orderBy('auto_plan.id')
                                     ->count();
