@@ -56,11 +56,11 @@ class EsimInvoiceGeneration extends Command
                                     ->where('auto_plan.status',1)
                                     ->whereDate('auto_plan.next_renewal', '=', $currDay)
                                     ->orderBy('auto_plan.id')
-                                    ->count();
-                dd($getsubscription);
+                                    ->get();
+                                    
                 $getsubscription->each(function ($item, $key){
                     try {
-                        //InvoiceGenerationJob::dispatch($item->id);
+                        InvoiceGenerationJob::dispatch($item->id);
                     } catch (\Exception $e) {
                         Log::error('InvoiceGenerationJob',[
                             'params' =>   $item,
