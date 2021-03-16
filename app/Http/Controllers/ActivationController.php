@@ -568,7 +568,7 @@ class ActivationController extends Controller
                         }
                     }
                 }
-                if($user_data->prepaid_credit == 0){
+                if($user_data->prepaid_credit_applied == 0){
                     if($sim_data->credit != 0){
                         try {
                             $addcreditreq = GlobalSim::AddPrePaidCredit($user->userDetail->esim_customer,$sim_data->credit);
@@ -584,7 +584,7 @@ class ActivationController extends Controller
                                 'balance_amount' => DB::raw('balance_amount +'.$sim_data->credit)
                             ]);
                             DB::table('user_data')->where('user_id', $user->id)->limit(1)
-                            ->update(['prepaid_credit' => 1]);
+                            ->update(['prepaid_credit' => $sim_data->credit,'prepaid_credit_applied'=>1]);
                             DB::commit();
                         } catch (\Exception $e) {
                             Log::error('AddPrePaidCredit',[
