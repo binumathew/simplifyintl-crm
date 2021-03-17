@@ -70,7 +70,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('notify:activation')
                 ->hourly();
         $schedule->command('fetch:cdr')
-                ->dailyAt('20:00');
+                ->everyTwoHours();
         // $schedule->command('addon:usage')
         //         ->cron('* * * * *');
 
