@@ -89,22 +89,22 @@ class GlobalSim implements ShouldQueue
         if($data_log != false){
             if($data_log['@attributes']['status'] == 'success'){
                 if(!empty($data_log['Calls'])){
-                    Log::error('DATALOGERROR',[
-                        'datalog' =>   $data_log['Calls']['Call']
-                    ]);
                     foreach($data_log['Calls']['Call'] as $key => $log){
-                        $connect    = '';//Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s');
-                        $duration   = (float)trim($log['actualbytes']);
-                        $basecost   = (float)trim($log['cost']);
-                        $resellercost  = $endusercost = 0;
-                        if($basecost != 0){
-                            $resellercost = round(($basecost + ($basecost*($seller_margin/100))),4);
-                            $endusercost  = round(($resellercost + ($resellercost*($reseller_margin/100))),4);
-                        }
-                        $callid         = $log['callid'];
+                        Log::error('DATALOGERROR',[
+                            'datalog' =>   $log
+                        ]);
+                        // $connect    = '';//Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s');
+                        // $duration   = (float)trim($log['actualbytes']);
+                        // $basecost   = (float)trim($log['cost']);
+                        // $resellercost  = $endusercost = 0;
+                        // if($basecost != 0){
+                        //     $resellercost = round(($basecost + ($basecost*($seller_margin/100))),4);
+                        //     $endusercost  = round(($resellercost + ($resellercost*($reseller_margin/100))),4);
+                        // }
+                        // $callid         = $log['callid'];
 
-                        $data = ['user_id' => $user_id, 'from_number' => $msisdn, 'to_number'=> "", 'date' => $connect,'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost,'service_type' => 'DATA','provider'=>'E_SIM'];
-                        $data_history[] = $data;
+                        // $data = ['user_id' => $user_id, 'from_number' => $msisdn, 'to_number'=> "", 'date' => $connect,'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost,'service_type' => 'DATA','provider'=>'E_SIM'];
+                        // $data_history[] = $data;
                     }
                 }
             }
