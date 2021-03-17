@@ -50,7 +50,11 @@ class GlobalSim implements ShouldQueue
         $country_name       = $user->country->country_name;
         $call_log           = SimHelper::getCalls($msisdn,$from,$to);
         $data_log           = SimHelper::getDataHistory($msisdn,$from,$to);
-
+        Log::info('GLOBALSIMCDRDETAILS',[
+            'user_id'=>$user_id,
+            'calls'=> $call_log,
+            'data'=>$data_log
+        ]);
         if($call_log != false){
             if($call_log['@attributes']['status'] == 'success'){
                 if(!empty($call_log['Calls'])){
