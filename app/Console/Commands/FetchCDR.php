@@ -53,14 +53,12 @@ class FetchCDR extends Command
                         ->select('u.id as user_id')
                         ->join('tbl_sim_stock as tss','u.stock_id','=','tss.id')
                         ->where('tss.provider','E_SIM')
-                        ->where('u.id',100008)
                         ->get();
             if($users->isNotEmpty()){
                 foreach($users as $key => $list){
                     $user_id = $list->user_id;
                     try{
                         GlobalSim::dispatch($user_id); 
-                        dd($user_id); 
                     }catch(\Exception $e){
                         Log::error('GLOBALSIMCDR',[
                             'user_id'=>$user_id,
@@ -68,7 +66,7 @@ class FetchCDR extends Command
                         ]);
                     }
                 }
-              //EsimUsageSummaryJob::dispatch();  
+              EsimUsageSummaryJob::dispatch();  
             }
             $end_time   = microtime(true);
             $exec_time  = round(($end_time - $start_time), 5);
