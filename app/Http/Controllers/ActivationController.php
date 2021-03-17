@@ -322,8 +322,13 @@ class ActivationController extends Controller
                     }
                     
                     if(!$user || !is_null($user->stock_id)){
+                        $parent_user = User::where('id', $parent_id)->first();
                         $password = Helper::unique_code(8);                 
-                        $user = User::create([                        
+                        $user = User::create([
+                            'name'=>$parent_user->name,
+                            'first_name'=>$parent_user->first_name,
+                            'last_name'=>$parent_user->last_name,
+                            'email'=>  $parent_user->email,                      
                             'username' => $cli_number,           
                             'phone' => $phone_number,
                             'password' => Hash::make($password),                        
