@@ -1133,9 +1133,9 @@ class ReportController extends Controller
                 ->editColumn('action', function ($payment) {
                     $paylink = '';
                     // if (Helper::has_permission('user_invoice','edit')) {
-                        if($payment->status == 8){
-                            $paylink = '<a href="javascript:void(0);"><button class="btn btn-primary btn-sm pay_link"  title="Send Payment Link" data-id="'.Crypt::encrypt($payment->id).'">Pay Link</button></a>';
-                        }
+                        // if($payment->status == 8){
+                        //     $paylink = '<a href="javascript:void(0);"><button class="btn btn-primary btn-sm pay_link"  title="Send Payment Link" data-id="'.Crypt::encrypt($payment->id).'">Pay Link</button></a>';
+                        // }
                     // }
                     return $paylink;
                     // if(Helper::has_permission('payment_history', 'edit') && $payment->status == 1){
