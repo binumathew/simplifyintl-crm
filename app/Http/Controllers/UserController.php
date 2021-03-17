@@ -39,6 +39,7 @@ use App\Models\NotificationLog;
 use App\Models\Credit;
 use App\Models\UserBank;
 use App\Models\OptedService;
+use App\Models\UserInvoice;
 
 use Illuminate\Http\Request;
 use App\Models\TempUser;
@@ -382,8 +383,9 @@ class UserController extends Controller
                     }  
                 break;          
                 case 'invoice':
-                    $html = view('user.invoice', compact('user'))->render();
-                break;           
+                    $invoice = UserInvoice::where('user_id',$user->id)->orderBy('date','DESC')->get();
+                    $html    = view('user.invoice', compact('user','invoice'))->render();
+                break;
                 default:
                     $html = 'error';
             }  
