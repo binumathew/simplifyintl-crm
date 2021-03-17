@@ -119,10 +119,10 @@ class GlobalSim implements ShouldQueue
     }
     public function failed(\Exception $exception){
 
-         Log::error('GlobalSimFetchCDR',[
-             'user_id' => $this->user_id,
-             'from' =>   $from,
-             'to'   =>  $to
-         ]);
+        //  Log::error('GlobalSimFetchCDR',[
+        //      'user_id' => $this->user_id,
+        //      'from' =>   $from,
+        //      'to'   =>  $to
+        //  ]);
     }
 }
