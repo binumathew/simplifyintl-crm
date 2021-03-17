@@ -50,11 +50,11 @@ class GlobalSim implements ShouldQueue
         $country_name       = $user->country->country_name;
         $call_log           = SimHelper::getCalls($msisdn,$from,$to);
         $data_log           = SimHelper::getDataHistory($msisdn,$from,$to);
-
         if($call_log != false){
             if($call_log['@attributes']['status'] == 'success'){
                 if(!empty($call_log['Calls'])){
-                    foreach($call_log['Calls']['Call'] as $key => $log){
+                    $call_log_loop = ($call_log['ReturnedRows_count'] > 1) ? $call_log['Calls']['Call']: $call_log['Calls'];
+                    foreach($call_log_loop as $key => $log){
                         $connect    = Carbon::parse($log['ConnectTime'])->format('Y-m-d H:i:s');
                         $disconnect = Carbon::parse($log['EndTime'])->format('Y-m-d H:i:s');
                         $to_number  = strlen(ltrim($log['DialledNumber'])) > 12 ? ltrim($log['DialledNumber'],0) : ltrim($log['DialledNumber']);
@@ -89,22 +89,20 @@ class GlobalSim implements ShouldQueue
         if($data_log != false){
             if($data_log['@attributes']['status'] == 'success'){
                 if(!empty($data_log['Calls'])){
-                    foreach($data_log['Calls']['Call'] as $key => $log){
-                        Log::error('DATALOGERROR',[
-                            'datalog' =>   $log
-                        ]);
-                        // $connect    = '';//Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s');
-                        // $duration   = (float)trim($log['actualbytes']);
-                        // $basecost   = (float)trim($log['cost']);
-                        // $resellercost  = $endusercost = 0;
-                        // if($basecost != 0){
-                        //     $resellercost = round(($basecost + ($basecost*($seller_margin/100))),4);
-                        //     $endusercost  = round(($resellercost + ($resellercost*($reseller_margin/100))),4);
-                        // }
-                        // $callid         = $log['callid'];
+                    $data_log_loop = ($data_log['ReturnedRows_count'] > 1) ? $data_log['Calls']['Call']: $data_log['Calls'];
+                    foreach($data_log_loop as $key => $log){
+                        $connect    = Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s');
+                        $duration   = (float)trim($log['actualbytes']);
+                        $basecost   = (float)trim($log['cost']);
+                        $resellercost  = $endusercost = 0;
+                        if($basecost != 0){
+                            $resellercost = round(($basecost + ($basecost*($seller_margin/100))),4);
+                            $endusercost  = round(($resellercost + ($resellercost*($reseller_margin/100))),4);
+                        }
+                        $callid         = $log['callid'];
 
-                        // $data = ['user_id' => $user_id, 'from_number' => $msisdn, 'to_number'=> "", 'date' => $connect,'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost,'service_type' => 'DATA','provider'=>'E_SIM'];
-                        // $data_history[] = $data;
+                        $data = ['user_id' => $user_id, 'from_number' => $msisdn, 'to_number'=> "", 'date' => $connect,'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost,'service_type' => 'DATA','provider'=>'E_SIM'];
+                        $data_history[] = $data;
                     }
                 }
             }
