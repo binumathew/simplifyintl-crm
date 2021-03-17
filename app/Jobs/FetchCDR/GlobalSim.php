@@ -40,10 +40,9 @@ class GlobalSim implements ShouldQueue
     public function handle()
     {
 
-        $from               = '2021-03-01T00:00:00';//Carbon::now()->format('Y-m-d').'T00:00:00';
-        $to                 = '2021-03-16T00:00:00';//Carbon::now()->format('Y-m-d').'T23:59:59';
+        $from               = Carbon::now()->subHours(5)->format('Y-m-d H:i:s');//.'T00:00:00';//'2021-03-01T00:00:00';//
+        $to                 = Carbon::now()->subHours(3)->format('Y-m-d H:i:s');//'2021-03-16T00:00:00';//Carbon::now()->format('Y-m-d').'T23:59:59';
         $user_id            = $this->user_id;
-
         $seller_margin      = Utils::settings('seller_percent');
         $reseller_margin    = Utils::settings('reseller_percent');
         $user               = User::find($user_id);
@@ -72,7 +71,8 @@ class GlobalSim implements ShouldQueue
                         $call_type      = trim($log['CallType']);
 
                         if($call_type == 'SMS Relay'){
-                            $smsdata = ['user_id'=> $user_id, 'from_number' => $msisdn, 'to_number'=> $to_number, 'date' => $connect, 'call_id'=> $callid, 'duration' => $duration, 'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO','provider'=>'E_SIM'];
+                            
+                            $smsdata = ['user_id'=> $user_id, 'from_number' => $msisdn, 'to_number'=> $to_number, 'date' => $connect, 'call_id'=> $callid, 'duration' => 1, 'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO','provider'=>'E_SIM'];
                             $data_history[] = $smsdata;
                         }else{
                             $service_type   = 1;

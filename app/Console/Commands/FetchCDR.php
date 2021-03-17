@@ -66,7 +66,7 @@ class FetchCDR extends Command
                         ]);
                     }
                 }
-              EsimUsageSummaryJob::dispatch();  
+              //EsimUsageSummaryJob::dispatch();  
             }
             $end_time   = microtime(true);
             $exec_time  = round(($end_time - $start_time), 5);
