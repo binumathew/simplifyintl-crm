@@ -89,10 +89,10 @@ class GlobalSim implements ShouldQueue
         if($data_log != false){
             if($data_log['@attributes']['status'] == 'success'){
                 if(!empty($data_log['Calls'])){
+                    Log::error('DATALOGERROR',[
+                        'datalog' =>   $data_log['Calls']['Call']
+                    ]);
                     foreach($data_log['Calls']['Call'] as $key => $log){
-                         Log::error('DATALOGERROR',[
-                                'connect' =>   $log['connecttime']
-                        ]);
                         $connect    = '';//Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s');
                         $duration   = (float)trim($log['actualbytes']);
                         $basecost   = (float)trim($log['cost']);
