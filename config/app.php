@@ -482,6 +482,7 @@ return [
 
         'MPDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class,
 
+	    'Stripepayments' => App\Helpers\PaymentGateways\Stripepayments::class,
         'GlobalSim' => App\Helpers\GlobalSim::class,
 
     ],

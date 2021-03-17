@@ -6,11 +6,11 @@ use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Cron\CronExpression;
 use Carbon;
-
+use Log;
 use App\Models\ScheduledTask;
-use App\Models\AutoPlan;
+use App\Models\UserInvoice;
 
-use App\Jobs\Subscription\AutoPlanSubscriptionJob;
+use App\Jobs\Invoice\InvoiceRequestPaymentJob;
 
 class AutoPlanSubscription extends Command
 {
@@ -49,17 +49,21 @@ class AutoPlanSubscription extends Command
         if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
             try {
                 $start_time = microtime(true);
+                $invoiceDay         = Carbon::now()->toDateString();
+                $getsubscription    = UserInvoice::select('id')
+                                        ->where(function($query) use ($invoiceDay){
+                                            $query->whereDate('due_date','=',$invoiceDay);
+                                            $query->orWhereDate('next_retry_at','=',$invoiceDay);
+                                        })
+                                        ->where('deleted', 0)
+                                        ->whereIn('status',[0,2,3,8])
+                                        ->where('amount_due','>',0)
+                                        ->where('failed_attempt','<',2)
+                                        ->orderBy('id')
+                                        ->get();
 
-                $curr_day   = Carbon::now()->startOfMonth()->format('Y-m-d');
-                $getuser    = AutoPlan::whereDate('next_renewal', $curr_day)
-                                //->whereNotIn('plan_id', [1, 2, 3, 4, 5, 6, 15])
-                                ->where('status', 1)
-                                ->where('adv_pay', 0)
-                                ->whereDate('card_expiry', '>=', $curr_day)
-                                ->groupBy('user_id')
-                                ->get();
-                $getuser->each(function ($item, $key) {
-                    AutoPlanSubscriptionJob::dispatch($item->user_id);
+                $getsubscription->each(function ($item, $key){
+                    InvoiceRequestPaymentJob::dispatch($item->id);
                 });
 
                 $end_time = microtime(true);
@@ -75,7 +79,9 @@ class AutoPlanSubscription extends Command
                 ScheduledTask::where('command', $this->signature)
                     ->update(['run_time' => $exec_time,'next_run' => $next_run]);
             } catch (\Exception $e) {
-               
+                Log::error('AutoPlanSubscription',[
+                    'error'=>$e->getMessage()
+                ]);
             }
         }
     }
