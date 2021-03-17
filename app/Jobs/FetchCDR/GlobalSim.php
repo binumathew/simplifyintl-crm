@@ -40,8 +40,8 @@ class GlobalSim implements ShouldQueue
     public function handle()
     {
 
-        $from               = Carbon::now()->subHours(220)->toDateTimeLocalString();//.'T00:00:00';//'2021-03-01T00:00:00';//
-        $to                 = Carbon::now()->subHours(218)->toDateTimeLocalString();//'2021-03-16T00:00:00';//Carbon::now()->format('Y-m-d').'T23:59:59';
+        $from               = Carbon::now()->subHours(220)->toDateTimeLocalString();
+        $to                 = Carbon::now()->subHours(218)->toDateTimeLocalString();
         $user_id            = $this->user_id;
         $seller_margin      = Utils::settings('seller_percent');
         $reseller_margin    = Utils::settings('reseller_percent');
@@ -50,11 +50,7 @@ class GlobalSim implements ShouldQueue
         $country_name       = $user->country->country_name;
         $call_log           = SimHelper::getCalls($msisdn,$from,$to);
         $data_log           = SimHelper::getDataHistory($msisdn,$from,$to);
-        Log::info('GLOBALSIMCDRDETAILS',[
-            'user_id'=>$user_id,
-            'calls'=> $call_log,
-            'data'=>$data_log
-        ]);
+
         if($call_log != false){
             if($call_log['@attributes']['status'] == 'success'){
                 if(!empty($call_log['Calls'])){
@@ -94,6 +90,10 @@ class GlobalSim implements ShouldQueue
             if($data_log['@attributes']['status'] == 'success'){
                 if(!empty($data_log['Calls'])){
                     foreach($data_log['Calls']['Call'] as $key => $log){
+                         Log::error('DATALOGERROR',[
+                                'connect' =>   $log['connecttime'],
+                                'connect'   =>  Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s')
+                            ]);
                         $connect    = Carbon::parse($log['connecttime'])->format('Y-m-d H:i:s');
                         $duration   = (float)trim($log['actualbytes']);
                         $basecost   = (float)trim($log['cost']);
