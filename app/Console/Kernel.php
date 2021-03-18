@@ -23,6 +23,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\AdvPaidSubscription::class,
         \App\Console\Commands\AddonUsage::class,
         \App\Console\Commands\ActivationNotify::class,
+        \App\Console\Commands\DwpUsersActivationDate::class,
+        \App\Console\Commands\DwpSubscriptionActivationDate::class,
 	\App\Console\Commands\HourlyCDR::class,
         \App\Console\Commands\FetchCDR::class,
 	\App\Console\Commands\UserPlanCreate::class,
@@ -76,6 +78,11 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('switch:totalusage')
         //        ->dailyAt('09:30');
+        $schedule->command('update:usersactivationdate')
+                ->hourly();
+        $schedule->command('update:subscriptionactivationdate')
+                ->hourly();
+
         $schedule->command('hourly:cdr')
                  ->hourly();
         $schedule->command('userplan:create')

@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Console\Scheduling\Schedule;
+use Cron\CronExpression;
+use Carbon;
+use Log;
+
+use App\Models\ScheduledTask;
+use App\Models\AutoPlan;
+
+use App\Jobs\Activation\UpdateSubscriptionActivationDateJob;
+
+class DwpSubscriptionActivationDate extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'update:subscriptionactivationdate';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Fetch subscription activation date from DWP';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct(Schedule $schedule)
+    {
+        $this->schedule = $schedule;
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
+            try {
+                $start_time = microtime(true);
+                $autoplan   = AutoPlan::select('auto_plan.id')
+                              ->join('tbl_plans as tp','tp.id','=','auto_plan.plan_id')
+                              ->whereIn('tp.provider',['O2','VUK'])
+                              ->where('auto_plan.status',1)
+                              ->where('auto_plan.act_check',0)
+                              ->get();  
+                                   
+                $autoplan->each(function ($item, $key) {
+                    UpdateSubscriptionActivationDateJob::dispatch($item->id);
+                });
+
+                $end_time = microtime(true);
+                $exec_time = round(($end_time - $start_time), 5);
+                $next_run = '';
+                collect($this->schedule->events())->map(function ($event) use(&$next_run) {
+                  if(strpos($event->command, $this->signature)){
+                    $next = CronExpression::factory($event->expression)->getNextRunDate();
+                    $next_run =  Carbon::parse($next)->format('Y-m-d H:i:s');
+                  }
+                });
+
+                ScheduledTask::where('command', $this->signature)
+                    ->update(['run_time' => $exec_time,'next_run' => $next_run]);
+            } catch (\Exception $e) {
+               Log::error('subscriptionactivationdate',[
+                'error' =>   $e->getMessage()
+                ]);
+            }
+        }
+    }
+}
