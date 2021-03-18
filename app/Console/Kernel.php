@@ -85,8 +85,13 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('hourly:cdr')
                  ->hourly();
+
+        $schedule->command('switch:subscription')
+                 ->monthlyOn(1, '00:30');
+                 
         $schedule->command('userplan:create')
-                 ->monthlyOn(1, '1:30');
+                 ->monthlyOn(1, '00:15');
+
         $schedule->command('esiminvoice:generate')
                  ->dailyAt('00:01');
     }
