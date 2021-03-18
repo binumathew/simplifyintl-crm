@@ -58,7 +58,7 @@ class SwitchSubscription extends Command
 
                 $getsubscription->each(function ($item, $key){
                     try {
-                        //SwitchSubscriptionJob::dispatch($item->user_list,$item->id);
+                        SwitchSubscriptionJob::dispatch($item->user_list,$item->id);
                     } catch (\Exception $e) {
                         Log::error('SwitchSubscriptionJob',[
                             'params' =>   $item,
