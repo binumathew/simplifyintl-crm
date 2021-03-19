@@ -41,12 +41,10 @@ class OrderRequestJob implements ShouldQueue
     public function handle()
     {
         $when = now()->addMinutes(5);
-        $bcc_emails = Helper::get_option('bcc_emails');
-        $bcc_emails = explode(',', $bcc_emails);
+        $email_bcc = json_decode(Helper::get_option('email_bcc'),TRUE);
+        $email_bcc = (!empty($email_bcc)) ? $email_bcc : [];
         Mail::to($this->details->email)
-            // ->cc()
-            ->bcc($bcc_emails)
+            ->bcc($email_bcc)
             ->send(new OrderRequest($this->details));
-            // ->later($when, new OrderRequest($obj));
     }
 }

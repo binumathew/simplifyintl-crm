@@ -547,7 +547,8 @@ class OrderController extends Controller
         $data['category'] = 'sim';
         $data['discount_amount'] = $discount_amount;
         $data['discount_coupon'] = $discount_code;
-        
+        $data['gateway'] = $request->gateway;
+
         if($request->gateway == 'Paypal'){            
             $response = Helper::paypal_payment_process($data);
         }elseif($request->gateway == 'Braintree'){
@@ -720,8 +721,7 @@ class OrderController extends Controller
             }
              
             if($request->session()->has('cart_id')){            
-                $email = (filter_var($user->email, FILTER_VALIDATE_EMAIL))?$user->email:'jijojoseph001@gmail.com'; //support@avoomobile.com
-                // $email = 'jijojoseph001@gmail.com';
+                $email = (filter_var($user->email, FILTER_VALIDATE_EMAIL))?$user->email:Config('general.settings.support_email');
                 $obj = (object) array(
                     'request_id' => $order[0]->id,
                     'email'=> $email,
@@ -731,7 +731,7 @@ class OrderController extends Controller
   
                 OrderRequestJob::dispatch($obj)
                     ->delay(now()->addMinutes(1));
-            }
+           }
              
             $request->session()->forget('cart_id');
             return view('orders.success', compact('order','payment','user','currency','title'));

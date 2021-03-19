@@ -664,7 +664,7 @@ class Helper
     /* Stripe Payment */
     public static function stripe_payment_process($data)
     {
-        $stripe     = Stripe::setApiKey(config('services.stripe.secret'));
+        $stripe        = new \Stripe\StripeClient(config('services.stripe.secret'));
         $user_id       = $data['user_id'];
         $user          = User::where('id', $user_id)->first();
         $customer_id   = $user->userDetail->stripe_customer;
@@ -678,19 +678,29 @@ class Helper
                 $response['message']        = 'Invalid card details';
                 return $response;
             }
-            $txn_card_id = $card_data->transaction_id;
+            $payment_method_id = $card_data->transaction_id;
         }else{
+            if(isset($data['stripeToken']) && $data['stripeToken'] != ""){
+                $payment_method =   $stripe->paymentMethods->create([
+                                        'type' => 'card',
+                                        'card' => [
+                                        'token' => $data['stripeToken']
+                                        ],
+                                    ]);
+                $payment_method_id = $payment_method->id;
+            }else{
+                $payment_method_id = json_decode($data['paymentMethod'])->id;
+            }
             if(is_null($customer_id) || $customer_id == ''){
                 try{
-                    $customer = \Stripe\Customer::create([
+                    $customer = $stripe->customers->create([
                             'name' => $user->name,
                             'description' => '',
                             'email' => $user->email,
-                            'source' => $data['stripeToken'],
+                            'payment_method' => $payment_method_id,
                             "address" => ["city" => $user->userDetail->city, "country" => $user->country->short_code, "line1" => $user->userDetail->address, "line2" => "", "postal_code" => $user->userDetail->postal_code, "state" => $user->userDetail->state]
                             ]);
                     $customer_id = $customer->id;
-                    $txn_card_id = $customer->default_source;
                 }catch (\Exception $e) {
                     $error  = $e->getMessage();
                     $response['status'] = 0;
@@ -700,11 +710,11 @@ class Helper
                 }
             }else{
                 try{
-                    $newcard = \Stripe\Customer::createSource(
-                      $customer_id,
-                      ['source' => $data['stripeToken']]
+                    $newcard = $stripe->paymentMethods->attach(
+                        $payment_method_id,
+                        ['customer' => $customer_id]
                     );
-                    $txn_card_id = $newcard->id;
+                    $payment_method_id = $newcard->id;
                 }catch (\Exception $e) {
                     $error  = $e->getMessage();
                     $response['status'] = 0;
@@ -717,30 +727,32 @@ class Helper
         $success = 0;
         try {
 
-            $intent = \Stripe\PaymentIntent::create([
+            $intent = $stripe->paymentIntents->create([
                     'amount' => $data['total_amount'] * 100,
                     'currency' => $data['currency'],
                     'customer' => $customer_id,
-                    'payment_method' => $txn_card_id,
+                    'payment_method' => $payment_method_id,
                     'off_session' => true,
                     'confirm' => true,
                     'description' => $data['payment_for'],
                   ]);
 
-            // $fp = fopen('stripe_res.txt', 'a+');
-            // fwrite($fp, json_encode($intent));
-            // fclose($fp);
             $txn_id      =  $intent->id;
             $txn_card_id =  $intent->payment_method;
 
             DB::table('user_data')->where('user_id', $user_id)->update(['stripe_customer' => $customer_id]);
 
+            $gateway = DB::table('payment_gateway')->select('id')->where('gateway','Stripe')->first();
+
             $stripeCard  = $intent->charges->data[0]->payment_method_details->card;
             $card_type   = $stripeCard->network.' ****'.$stripeCard->last4;
             $exp_day     = date('t',strtotime($stripeCard->exp_year.'-'.$stripeCard->exp_month));
             $card_expire = $stripeCard->exp_year.'-'.$stripeCard->exp_month.'-'.$exp_day;
+            
+            UserCreditCard::where('user_id',$user_id)->update(['is_default'=>0]);
 
-            $card_data = UserCreditCard::updateOrCreate(['user_id' => $user_id, 'card_type' => $card_type, 'card_expiry' => $card_expire, 'transaction_id' => $txn_card_id, 'gateway' => 3]);
+            $card_data = UserCreditCard::updateOrCreate(['user_id' => $user_id, 'card_type' => $card_type, 'card_expiry' => $card_expire, 'transaction_id' => $txn_card_id, 'gateway' => $gateway->id],['user_id' => $user_id, 'card_type' => $card_type, 'card_expiry' => $card_expire, 'transaction_id' => $txn_card_id, 'gateway' => $gateway->id,'is_default'=>1]);
+            
 
             $payment = ['user_id' => $user_id, 'transaction_id' => $txn_id, 'buy_price' => $data['buy_price'], 'amount' => $data['net_amount'], 'tax_amount' => $data['vat_amount'], 'currency' => $data['currency'], 'total_amount' => $data['total_amount'], 'card_type' => $card_type, 'payment_method' => 'Stripe', 'discount_amount' => $data['discount_amount'], 'discount_coupon' => $data['discount_coupon'], 'payment_for' => $data['payment_for'], 'description' => $data['description'], 'status' => '1', 'category' => $data['category']];
 

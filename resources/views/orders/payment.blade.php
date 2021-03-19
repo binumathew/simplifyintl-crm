@@ -328,6 +328,12 @@
                                 cache: false,
                                 contentType: false,
                                 processData: false,
+                                beforeSend: function(){
+                                    $(".confirm_payment").html('Processing..');
+                                },
+                                complete: function(){
+                                    $(".confirm_payment").html('Submit');
+                                },
                                 success:function(data){
                                     if(data.error){
                                     	$this.prop('disabled',false);

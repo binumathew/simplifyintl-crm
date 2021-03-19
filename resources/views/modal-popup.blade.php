@@ -95,7 +95,10 @@
                                     <tr>
                                         @if($i==1)
                                         <td rowspan="{{ $simDetail['count'] }}">{{ $sim->auto_plan->plan->plan_name }}
-                                            ({{$sim->auto_plan->plan->provider}})</td>
+                                            ({{$sim->auto_plan->plan->provider}}) 
+                                        
+                                        {{ ($sim->auto_plan->plan->provider == 'E_SIM' &&  !$sim->stock->is_esim) ? 'Hard Sim' : ''}}
+                                        </td>
                                         @php $i++ @endphp
                                         @endif
                                         <td>{{ ($sim->stock->verified)?$sim->stock->phone_number:'0759xxxxxxx'}}/<br>{{$sim->stock->sim_number }}</td>
