@@ -13,6 +13,7 @@
 									<p style="font-size: 18px;">Hello {{ $data->name }},
 									</p>
 									<span style="font-size: 16px;"> 
+										<p> Plan Name : {{$data->plan_name}} </p>
 										<p>									
 											Scan the Qrcode to activate the sim. 
 										</p>	

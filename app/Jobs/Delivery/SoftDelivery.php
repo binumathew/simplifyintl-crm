@@ -21,15 +21,15 @@ class SoftDelivery //implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $request_id;
+    protected $list_id;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($request_id)
+    public function __construct($list_id)
     {
-        $this->request_id = $request_id;
+        $this->list_id = $list_id;
     }
 
     /**
@@ -39,8 +39,7 @@ class SoftDelivery //implements ShouldQueue
      */
     public function handle()
     {
-        $request_id = $this->request_id;
-        $sim_list = SimList::where('request_id',$request_id)->first();
+        $sim_list = SimList::whereId($this->list_id)->first();
         try {
             $user    = $sim_list->sim_request->user;
             if($user){
@@ -53,6 +52,7 @@ class SoftDelivery //implements ShouldQueue
                     $obj->heading   = config('settings.app_name').' Sim';
                     $obj->qrcode    = Utils::qrcode($qrdata,true);
                     $obj->date      = Carbon::now()->format('d M Y');
+                    $obj->plan_name = $sim_list->auto_plan->plan->plan_name;
 
                     Mail::to($user->email)
                         ->bcc(['arun@gencomtel.com'])

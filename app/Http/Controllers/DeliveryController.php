@@ -111,30 +111,19 @@ class DeliveryController extends Controller
             $agent = $request->agent;
             foreach ($sim_request as $request) {
                 if ($request->delivery_status == 0) {
-                    $request_id    = $request->id;
-                    $simlist = SimList::where('request_id',$request_id)->first();
-                    if($simlist->stock->provider == 'E_SIM' && $agent == 'Soft Delivery'){
-                        if( $simlist->stock->is_esim){
-                            try {
-                                DB::table('tbl_sim_list')->where('id', $simlist->id)->limit(1)->update(['web_request' => 1]);
-                                SoftDelivery::dispatch($request_id);
-
-                            } catch (\Exception $e) {
-                                Log::error('SoftDelivery',[
-                                    'error' =>   $e->getMessage()
-                                ]);
+                    $simlist = SimList::where('request_id',$request->id)->get();
+                    if($simlist->isNotEmpty()){
+                        foreach($simlist as $key => $list){
+                            if($list->stock->provider == 'E_SIM' && $agent == 'Soft Delivery' && $list->stock->is_esim){
+                                try {
+                                    DB::table('tbl_sim_list')->where('id', $list->id)->limit(1)->update(['web_request' => 1]);
+                                    SoftDelivery::dispatch($list->id);
+                                } catch (\Exception $e) {
+                                    Log::error('SoftDelivery',[
+                                        'error' =>   $e->getMessage()
+                                    ]);
+                                }   
                             }
-                            
-                        }else{
-                            DB::beginTransaction();
-                            DB::table('tbl_sim_request')->where('id', $request->id)->update(['delivery_status' => 1]);
-                            DB::table('delivery_history')->insert(['sim_request_id'=>$request->id, 'type'=>1, 'proceed_by'=>$admin->id, 'note'=>$note]);
-                            DB::commit(); 
-                            // Log::error('SOFTDELIVERY',[
-                            //     'order_id' =>   $request->order_id,
-                            //     'message'=>'Contains physical sim not possible to send as soft delivery'
-                            // ]);
-                            // return response()->json(['error' => true, 'message' => $request->order_id .' contains physical sim. Not possible to send as soft delivery!.']);
                         }
                     }
                     DB::beginTransaction();

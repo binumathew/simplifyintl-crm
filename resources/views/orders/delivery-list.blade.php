@@ -409,6 +409,12 @@
                             type: 'POST',
                             url: 'order-shipment',
                             data: {selected:checked,agent:agent_name},
+                            beforeSend: function(){
+                                $("#action_shipping").html('Processing..');
+                            },
+                            complete: function(){
+                                $("#action_shipping").html('Save & Send');
+                            },
                             success:function(data){
                                 if (data.error) {
                                     $('#custom_status').html('<div class="text-danger">'+data.message+'</div>');
