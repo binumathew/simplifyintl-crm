@@ -148,9 +148,9 @@ class ActivationController extends Controller
             return response()->json(['error' => true, 'message' => 'Access denied!']);
         }
         $prorata_billing = 1;
-        $date_from = ($request->date_from)?:date('Y-m-d');
-        $date_to = ($request->date_to)?:date('Y-m-t');
         $simList = SimList::where('autoplan_id', $request->autoplan)->get();
+        $date_from  = is_null($simList[0]->auto_plan->start_date) ? ($request->date_from)?:date('Y-m-d') : $simList[0]->auto_plan->start_date;
+        $date_to    = ($request->date_to)?:date('Y-m-t');
         $user_id = $simList[0]->sim_request->user->id;
         $currency = $simList[0]->sim_request->user->country->currency_symbol;
         $cards = [];
@@ -158,7 +158,6 @@ class ActivationController extends Controller
         // if($cards->isEmpty()){
         //     return response()->json(['error' => true, 'message' => 'Card not exist!']);
         // }
-
         $html = view('modal-popup', compact('simList','cards','prorata_billing','date_from','date_to','currency'))->render();
 
         return response()->json(['error' => false, 'html' => $html]);
@@ -179,11 +178,12 @@ class ActivationController extends Controller
         $user = User::find($simList[0]->sim_request->user->id);
         if($card_id != 'cash'){
             $card = UserCreditCard::where('id', $card_id)->first();
+            $gateway = DB::table('payment_gateway')->select('gateway')->where('id',$card->gateway)->first();
+            $card->gateway = $gateway->gateway;
         }else{
             $card = new \stdClass();
             $card->gateway = 'cash';            
         }
-
         $bill_amount = $buy_amount = 0; $endofday = date('t'); $cur_day = date('d',strtotime($date_from)); 
         foreach($simList as $sim){
             $sell_price = $sim->auto_plan->plan->sell_price;
@@ -211,11 +211,11 @@ class ActivationController extends Controller
         $data['description'] = 'Plan Subscription Pro-rata Payment ('.Carbon::parse($date_from)->format('M d - M t') .') -  processed by '. Auth::user()->first_name.' '.Auth::user()->last_name;
         $data['category'] = 'sim';
 
-        if($card->gateway == 1){            
+        if($card->gateway == 'Paypal'){            
             $response = Helper::paypal_payment_process($data);
-        }elseif($card->gateway == 2){
+        }elseif($card->gateway == 'Braintree'){
             $response = Helper::braintree_payment_process($data);
-        }elseif($card->gateway == 3){
+        }elseif($card->gateway == 'Stripe'){
             $response = Helper::stripe_payment_process($data);
         }elseif($card->gateway == 'cash'){            
             $payment = ['user_id' => $user->id, 'transaction_id' => '', 'buy_price' => $data['buy_price'], 'amount' => $data['net_amount'], 'tax_amount' => $data['vat_amount'], 'currency' => $data['currency'], 'total_amount' => $data['total_amount'], 'card_type' => '-', 'payment_method' => 'Cash', 'discount_amount' => $data['discount_amount'], 'discount_coupon' => $data['discount_coupon'], 'payment_for' => $data['payment_for'], 'description' => $data['description'], 'status' => '1', 'category' => $data['category']];

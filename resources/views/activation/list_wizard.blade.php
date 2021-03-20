@@ -52,7 +52,7 @@
 					<td class="next_renewal">
 						@if(is_null($sim->auto_plan->next_renewal))
 							@if($sim->stock->network->service_type == 1)
-								{{ Carbon::now()->addDays(30)->format('Y-m-d') }}
+								{{ Carbon::now()->addDays($sim->auto_plan->plan->period)->format('Y-m-d') }}
 							@else
 								@php 
 									$cur_day = date('d');
@@ -193,6 +193,12 @@
 				type: 'POST',                                                
 				url: base_url+'/pro-rata-payment',
 				data: {date_from:date_from,credit_card:credit_card,autoplan:autoplan},
+				beforeSend: function(){
+					$("#collect_prorarta").html('Processing..');
+				},
+				complete: function(){
+					$("#collect_prorarta").html('Submit');
+				},
 				success:function(data){	
 					if(!data.error){
 						$this = $('#wizard-error_1');
