@@ -17,7 +17,7 @@ use App\Models\User;
 use App\Models\SimList;
 use App\Mail\SimSoftDelivery;
 
-class SoftDelivery //implements ShouldQueue
+class SoftDelivery implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -43,19 +43,19 @@ class SoftDelivery //implements ShouldQueue
         try {
             $user    = $sim_list->sim_request->user;
             if($user){
-                $qrdata = $sim_list->stock->stockcode->qr_code;
-                if($qrdata){
+                $token  = Utils::encodeHash($sim_list->id);
+                if($token){
 
                     $obj            = new \stdClass();
                     $obj->name      = ($user->name)?:'User';
                     $obj->subject   = config('settings.app_name').' Sim';
                     $obj->heading   = config('settings.app_name').' Sim';
-                    $obj->qrcode    = Utils::qrcode($qrdata,true);
+                    //$obj->qrcode    = Utils::qrcode($qrdata,true);
                     $obj->date      = Carbon::now()->format('d M Y');
                     $obj->plan_name = $sim_list->auto_plan->plan->plan_name;
-
-                    Mail::to($user->email)
-                        ->bcc(['arun@gencomtel.com'])
+                    $obj->token_link = config('app.FRONT_ENDURL').'qrcode-link?token='.$token;
+                    Mail::to('alphalabsllp.arun@gmail.com')//$user->email
+                        //->bcc(['arun@gencomtel.com'])
                         ->send(new SimSoftDelivery($obj));
                         
                 }
@@ -63,7 +63,7 @@ class SoftDelivery //implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('SimSoftDelivery',[
                 'error' =>  $e->getMessage(),
-                'request_id'=> $request_id,
+                'request_id'=> $this->list_id,
                 'order'=>$sim_list->sim_request->order_id
             ]);
         }

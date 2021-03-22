@@ -120,6 +120,8 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'FRONT_ENDURL'=> env('FRONT_ENDURL'),
+
 
 
     /*

@@ -14,11 +14,19 @@
 									</p>
 									<span style="font-size: 16px;"> 
 										<p> Plan Name : {{$data->plan_name}} </p>
-										<p>									
-											Scan the Qrcode to activate the sim. 
-										</p>	
-										<img src="{{$data->qrcode}}" alt="QR Code" width="300" height="300"/>																
      								</span>
+								</p>
+								<p style="font-size: 16px; text-align: justify;">
+									Please find below the link to activate your eSIM.<br/> <br/>
+									<div align="center" class="button-container" style="padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
+										<a href="{{ $data->token_link }}" style="-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #e4572e; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; width: auto; width: auto; border-top: 1px solid #fc7318; border-right: 1px solid #fc7318; border-bottom: 1px solid #fc7318; border-left: 1px solid #fc7318; padding-top: 4px; padding-bottom: 4px; font-family: 'Lato', Tahoma, Verdana, Segoe, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;" target="_blank">
+											<span style="padding-left:40px;padding-right:40px;font-size:16px;display:inline-block;">
+												<span style="font-size: 16px; font-weight: 500; line-height: 32px; padding-top: 11px;    padding-bottom: 8px;">
+													<strong>Click Here</strong>
+												</span>
+											</span>
+										</a>
+									</div>				
 								</p>
 								<p>***This is an automatically generated email, please do not reply***</p>
 								Best regards,<br />
