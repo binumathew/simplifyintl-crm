@@ -1124,11 +1124,25 @@ class ReportController extends Controller
                 })->editColumn('date', function ($payment) {
                     return Carbon::parse($payment->date)->format('d-m-Y');
                 })->editColumn('paid_at', function ($payment) {
-                    return Carbon::parse($payment->paid_at)->format('d-m-Y');
+                    return ($payment->paid_at != '0000-00-00') ? Carbon::parse($payment->paid_at)->format('d-m-Y') : '';
+                })
+                ->addColumn('failed_desc', function ($payment){
+                    $failed_desc = '';
+                    if($payment->status == 8){
+                        if($payment->transactions->isNotEmpty()){
+                            foreach($payment->transactions as $key => $txn){
+                                if($txn->txn_meta->isNotEmpty()){
+                                    foreach($txn->txn_meta as $tkey => $tmeta){
+                                      $failed_desc .= json_encode($tmeta->meta_data);
+                                    }
+                                }
+                            }
+                        }
+                        return $failed_desc;
+                    }
                 })
                 ->addColumn('downloadurl', function ($payment){
-                    $dt = explode('-', $payment->date);
-                    return Crypt::encrypt($payment->user_id).'-'.base64_encode($dt[0]).'-'.base64_encode($dt[1]).'-'.base64_encode($dt[2]);
+                    return Crypt::encrypt($payment->id);
                 })
                 ->editColumn('action', function ($payment) {
                     $paylink = '';

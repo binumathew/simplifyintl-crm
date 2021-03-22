@@ -282,9 +282,19 @@ class UserController extends Controller
                     $html = view('user.calls', compact('user','calls','currency'))->render();
                 break; 
                 case 'transaction':
-                    $payments = DB::table('user_payments')->whereIn('user_id', [$user->id, $user->parent_id])->orderBy('created_at','desc')->get();
-                    $html = view('user.transaction', compact('user','payments','currency'))->render();
-                break; 
+                    $payments_a = DB::table('user_payments')
+                        ->select('id','transaction_id','total_amount','payment_method','created_at','status','description','currency')
+                        ->whereIn('user_id', [$user->id])
+                        ->where('status', 1);
+                    $payments = DB::table('user_payment_requests')
+                                ->select('id','transaction_id','total as total_amount',DB::raw("'Stripe Direct Debit' as payment_method"),'created_at','status','comments as description',DB::raw("'GBP' as currency"))
+                                ->union($payments_a)
+                                ->where('status', 1)
+                                ->whereIn('user_id', [$user->id])
+                                ->orderBy('created_at','DESC')->get();
+                    $invoice = UserInvoice::where('user_id',$user->id)->orderBy('date','DESC')->get();
+                    $html = view('user.transaction', compact('user','payments','currency','invoice'))->render();
+                break;
                 case 'settings':
                     $html = view('user.settings', compact('user'))->render();
                 break;

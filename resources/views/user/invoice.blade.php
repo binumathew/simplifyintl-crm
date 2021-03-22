@@ -111,8 +111,7 @@ $currency = $user->country->currency_symbol;
                         </td>   
                         <td>
                         @php
-                        $dt = explode('-', $inv->date);
-                        $inv_link = Crypt::encrypt($inv->user_id).'-'.base64_encode($dt[1]).'-'.base64_encode($dt[0]);
+                        $inv_link = Crypt::encrypt($inv->id);
                         @endphp
                         <a href="{{url('/generate-invoices/'.$inv_link)}}"><button class="btn btn-info btn-sm" >Download</button></a>
                         </td>                       

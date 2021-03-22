@@ -71,101 +71,86 @@ class InvoiceController extends Controller
     */
     public function generate_invoices($id)
     {
-        $datas      = explode('-', $id);
-        $user_id    = Crypt::decrypt($datas[0]);
-        $year       = base64_decode($datas[1]);
-        $month      = base64_decode($datas[2]);
-        $day        = base64_decode($datas[3]);
-        $givendate  = $year.'-'.$month.'-'.$day;
+        $inv_id     = Crypt::decrypt($id);
+        $invoice    = UserInvoice::whereId($inv_id)->first();
 
-        if(Carbon::parse($givendate)->lte(Carbon::now())){
-            $user       = User::whereId($user_id)->first();
-
+        if($invoice){
+            $user_id      = $invoice->user_id;
+            $user         = User::whereId($user_id)->first();
+            $invoiceDate  = Carbon::parse($invoice->date)->toDateString();
             if(in_array($user->msisdn->provider,['E_SIM'])){
-                $invoiceDate  = Carbon::parse($givendate)->toDateString();
+                $prevfirstDay = Carbon::parse($invoice->date)->subDays($invoice->subscription->plan->period)->toDateString();
+                $prevlastDay  = Carbon::parse($invoice->date)->subDays()->toDateString().' 23:59:59';
+                $diff_in_months = 1;
             }else{
-                $invoiceDate  = Carbon::parse($givendate)->startOfMonth()->toDateString();
+                $prevfirstDay = Carbon::parse($invoice->date)->subMonth()->startOfMonth()->toDateString();
+                $prevlastDay  = Carbon::parse($invoice->date)->subMonth()->endOfMonth()->toDateString().' 23:59:59';
+                $diff_in_months = Carbon::parse($invoice->subscription->start_date)->diffInMonths(Carbon::parse($invoiceDate));
             }
-            $invoice    = UserInvoice::where('user_id',$user_id)
-                                    ->whereDate('date',$invoiceDate)
-                                    ->first();  
-            if($invoice){
-                if(in_array($user->msisdn->provider,['E_SIM'])){
-                    $invoiceDate  = Carbon::parse($givendate)->toDateString();
-                    $prevfirstDay = Carbon::parse($invoice->date)->subDays($invoice->subscription->plan->period)->toDateString();
-                    $prevlastDay  = Carbon::parse($invoice->date)->subDays()->toDateString().' 23:59:59';
-                    $diff_in_months = 1;
-                }else{
-                    $prevfirstDay = Carbon::parse($givendate)->subMonth()->startOfMonth()->toDateString();
-                    $prevlastDay  = Carbon::parse($givendate)->subMonth()->endOfMonth()->toDateString().' 23:59:59';
-                    $diff_in_months = Carbon::parse($invoice->subscription->start_date)->diffInMonths(Carbon::parse($invoiceDate));
-                }
-                $alreadytaken = collect();
-                if($diff_in_months == 0){
-                    $alreadytaken = UserPayment::where('user_id',$user_id)
-                                    ->whereDate('created_at','<=',Carbon::parse($invoice->subscription->start_date)->endOfMonth()->toDateString())->get();
-                }
-                $credit     = UserPaymentRequest::where('user_id',$user_id)->where('status',1)->get();
-                $usercalls  = $this->model->user_calls($user_id,$prevfirstDay,$prevlastDay);
-                $userdata   = $this->model->user_data($user_id,$prevfirstDay,$prevlastDay);
-                $usersms    = $this->model->user_sms($user_id,$prevfirstDay,$prevlastDay);
+            $alreadytaken = collect();
+            if($diff_in_months == 0){
+                $alreadytaken = UserPayment::where('user_id',$user_id)
+                                ->whereDate('created_at','<=',Carbon::parse($invoice->subscription->start_date)->endOfMonth()->toDateString())->get();
+            }
+            $credit     = UserPaymentRequest::where('user_id',$user_id)->where('status',1)->get();
+            $usercalls  = $this->model->user_calls($user_id,$prevfirstDay,$prevlastDay);
+            $userdata   = $this->model->user_data($user_id,$prevfirstDay,$prevlastDay);
+            $usersms    = $this->model->user_sms($user_id,$prevfirstDay,$prevlastDay);
 
-                $planData = collect();
-                $addData  = collect();
-                $invoice->items->each(function ($item, $key) use($user,&$planData,&$addData){
-                    $getcal = Helper::vataddCalculation($item->price,$user->country->tax);
-                    if($item->plan_id != ""){
-                        $planprice = Helper::vatreduceCalculation($item->plan->sell_price,$user->country->tax);
-                        $planData[] = (object)[
-                            'plan' => $item->plan,
-                            'price'=>$planprice,
-                            'details' => $item,
-                            'amount'=> $getcal->amount,
-                            'tax'=>$getcal->tax_amount,
-                            'total'=>$getcal->total_amount
-                        ];
-                    }else{
-                        $addData[] = (object)[
-                            'details' => $item,
-                            'amount'=> $getcal->amount,
-                            'tax'=>$getcal->tax_amount,
-                            'total'=>$getcal->total_amount
-                        ];
-                    }
-                });
-                $invoiceData = (object)[
-                    'invoice'=>$invoice,
-                    'details'=> (object)[
-                        'account_no' =>$user->userDetail->user_platform.$user->id,
-                        'invoice_number'=>Config('settings.app_prefix').'_INV'.str_pad($invoice->id,5,0,STR_PAD_LEFT),
-                        'office_address'=>Helper::get_option('company_details'),
-                    ],
-                    'subscription'=> (object)[
-                        'amount'=>$planData->sum('amount'),
-                        'all'=>$planData
-                    ],
-                    'additional'=> (object)[
-                        'amount'=>$addData->sum('amount'),
-                        'all'=>$addData
-                    ],
-                    'alreadytaken'=>$alreadytaken,
-                    'credit'=>$credit,
-                    'calls'=>$usercalls,
-                    'data'=>$userdata,
-                    'sms'=>$usersms,
-                    'amounttotal'=> (float)$planData->sum('amount') + (float)$addData->sum('amount'),
-                    'total'=>(float)$planData->sum('total') + (float)$addData->sum('total')
-                ];
-                //$view = view('invoice.user_invoice', compact('invoiceData','user'))->render();
-                $filename = $month.$year.'_'.$invoice->id.'_'.$user->userDetail->user_platform.$user->id.'.pdf';
-                $pdf = MPDF::loadView('invoice.user_invoice', compact('invoiceData','user'));
-                //return $pdf->download($filename);
-                return $pdf->stream($filename);
-            }else{
-                dd('Invoice Details not found.');
-            }
+            $planData = collect();
+            $addData  = collect();
+            $invoice->items->each(function ($item, $key) use($user,&$planData,&$addData){
+                $getcal = Helper::vataddCalculation($item->price,$user->country->tax);
+                if($item->plan_id != ""){
+                    $planprice = Helper::vatreduceCalculation($item->plan->sell_price,$user->country->tax);
+                    $planData[] = (object)[
+                        'plan' => $item->plan,
+                        'price'=>$planprice,
+                        'details' => $item,
+                        'amount'=> $getcal->amount,
+                        'tax'=>$getcal->tax_amount,
+                        'total'=>$getcal->total_amount
+                    ];
+                }else{
+                    $addData[] = (object)[
+                        'details' => $item,
+                        'amount'=> $getcal->amount,
+                        'tax'=>$getcal->tax_amount,
+                        'total'=>$getcal->total_amount
+                    ];
+                }
+            });
+            $invoiceData = (object)[
+                'invoice'=>$invoice,
+                'details'=> (object)[
+                    'account_no' =>$user->userDetail->user_platform.$user->id,
+                    'invoice_number'=>Config('settings.app_prefix').'_INV'.str_pad($invoice->id,5,0,STR_PAD_LEFT),
+                    'office_address'=>Helper::get_option('company_details'),
+                ],
+                'subscription'=> (object)[
+                    'amount'=>$planData->sum('amount'),
+                    'all'=>$planData
+                ],
+                'additional'=> (object)[
+                    'amount'=>$addData->sum('amount'),
+                    'all'=>$addData
+                ],
+                'alreadytaken'=>$alreadytaken,
+                'credit'=>$credit,
+                'calls'=>$usercalls,
+                'data'=>$userdata,
+                'sms'=>$usersms,
+                'amounttotal'=> (float)$planData->sum('amount') + (float)$addData->sum('amount'),
+                'total'=>(float)$planData->sum('total') + (float)$addData->sum('total')
+            ];
+            //$view = view('invoice.user_invoice', compact('invoiceData','user'))->render();
+            $filename = explode('-',$invoice->date)[1].explode('-',$invoice->date)[0].'_'.$invoice->id.'_'.$user->userDetail->user_platform.$user->id.'.pdf';
+            $pdf = MPDF::loadView('invoice.user_invoice', compact('invoiceData','user'));
+            //return $pdf->download($filename);
+            return $pdf->stream($filename);
         }else{
-            dd('Cannot Generate future month invoice');
+            dd('Invoice Details not found.');
         }
+       
     }
 }

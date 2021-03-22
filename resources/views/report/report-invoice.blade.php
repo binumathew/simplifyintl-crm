@@ -222,7 +222,7 @@
                                 }else{
                                     payelem = '<br><span>link sent count - '+data.payment_requests_count+'</span>';
                                 }
-                                return '<span class="badge badge-danger">Failed</span>'+payelem;
+                                return '<span class="badge badge-danger" title="'+data.failed_desc+'">Failed <i class="mdi mdi-information"></i></span>'+payelem;
                                 break;
                             }
                         },"name":"status"},
