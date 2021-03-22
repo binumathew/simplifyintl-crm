@@ -216,7 +216,7 @@ $sym         = $user->country->currency_symbol;
         </tr>
         @if($invoiceData->invoice->credits_applied != 0)
         <tr>
-            <td colspan="3">Credit Applied</td>
+            <td colspan="2">Credit Applied</td>
             <td align="right" >-{{ $sym.$invoiceData->invoice->credits_applied }}</td>
         </tr>
         @endif
