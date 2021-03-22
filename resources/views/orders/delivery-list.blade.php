@@ -198,7 +198,8 @@
                     if (data.print_status == 0) {
                         html_data += '&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" class="text-muted print_welcome_letter" data-toggle="tooltip" title="Print" data-id="'+data.id+'"><i class="mdi mdi-printer mdi-24px"></i></a>';
                     }
-                    if($.inArray(data.delivery_status, [0,1]) !== -1 ){
+                    var qrscanned = data.qrcode_scanned.split(',');
+                    if($.inArray(data.delivery_status, [0,1]) !== -1 && $.inArray("1", qrscanned) == -1){
                         if(data.total_amount != 0 && data.total_amount != null){
                             html_data += '&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" class="text-muted order_refund" data-total-amount="'+data.total_amount+'" data-toggle="tooltip" title="Cancel order and refund" data-id="'+data.id+'"><i class="mdi mdi-undo-variant mdi-24px"></i></a>';
                         }

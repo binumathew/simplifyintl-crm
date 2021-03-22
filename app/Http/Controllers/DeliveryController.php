@@ -49,7 +49,7 @@ class DeliveryController extends Controller
         $where = DB::table('admins')->where('parent_id', $admin_id)->pluck('promocode')->toArray();        
         array_push($where, $promocode);
 
-        $delivery_list = DB::table('tbl_sim_request as rq')->select('rq.id', 'order_id', 'name', 'shipping_address', 'delivery_status', 'rq.created_at', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"), 'print_status', DB::raw("(SELECT short_code FROM tbl_roles as rl join admins as ad on ad.role = rl.id WHERE rq.promocode = ad.promocode) as short_code"),'up.total_amount')->join('users as usr', 'usr.id', '=', 'rq.user_id')->leftJoin('user_payments as up', 'up.id', '=', 'rq.payment_id');
+        $delivery_list = DB::table('tbl_sim_request as rq')->select('rq.id', 'order_id', 'name', 'shipping_address', 'delivery_status', 'rq.created_at', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"), 'print_status', DB::raw("(SELECT short_code FROM tbl_roles as rl join admins as ad on ad.role = rl.id WHERE rq.promocode = ad.promocode) as short_code"),DB::raw("(SELECT GROUP_CONCAT(qrcode_scanned SEPARATOR ',') as qrcode_scanned FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as qrcode_scanned"),'up.total_amount')->join('users as usr', 'usr.id', '=', 'rq.user_id')->leftJoin('user_payments as up', 'up.id', '=', 'rq.payment_id');
 
         if ($request->filter_type == 1) { 
             $delivery_list = $delivery_list->where('delivery_status','0');
