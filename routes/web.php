@@ -151,7 +151,7 @@ Route::post('/save-enquiry', 'DeliveryController@save_enquiry');
 Route::post('/update-address', 'DeliveryController@update_shipping_address');
 Route::post('/welcome-letter', 'DeliveryController@print_welcome_letter');
 Route::post('/cancel-order', 'DeliveryController@order_cancellation');
-
+Route::post('/order-cancel-refund', 'DeliveryController@order_cancel_refund');
 
 
 

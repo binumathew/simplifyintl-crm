@@ -196,4 +196,52 @@ class Stripepayments {
         return $response;
       }
     }
+    public static function stripeCardRefund($data,$metadata){
+      $stripe   = new \Stripe\StripeClient(config('services.stripe.secret'));
+      $success  = false;
+      try {
+          $refund = $stripe->refunds->create([
+            'payment_intent' => $data['transaction_id'],
+            'amount' => $data['amount'] * 100,
+            'metadata'=>$metadata
+          ]);
+          $response = (object)['status'=>true,'transaction_id'=>$refund->id];
+          $success  = true;
+          return $response;
+      }catch(\Stripe\Error\Card $e) {
+          $error = $e->getJsonBody();
+
+      }catch(\Stripe\Exception\CardException $e) {
+          // Card was declined.
+          $error = $e->getJsonBody();
+      } catch (\Stripe\Exception\RateLimitException $e) {
+          // Too many requests made to the API too quickly
+          $error = $e->getJsonBody();
+      } catch (\Stripe\Exception\InvalidRequestException $e) {
+        // Invalid parameters were supplied to Stripe's API
+          $error = $e->getJsonBody();
+      } catch (\Stripe\Exception\AuthenticationException $e) {
+        // Authentication with Stripe's API failed
+        // (maybe you changed API keys recently)
+          $error = $e->getJsonBody();
+      } catch (\Stripe\Exception\ApiConnectionException $e) {
+        // Network communication with Stripe failed
+          $error = $e->getJsonBody();
+      } catch (\Stripe\Exception\ApiErrorException $e) {
+        // Display a very generic error to the user, and maybe send
+        // yourself an email
+          $error = $e->getJsonBody();
+      } catch (\Exception $e) {
+        // Something else happened, completely unrelated to Stripe
+        $error = ['Something else happened, completely unrelated to Stripe'];
+      }
+      if($success == false){
+        Log::error('stripeCardRefund',[
+            'error' =>   $error,
+            'order_id'=>$metadata['order_id']
+        ]);
+        $response = (object)['status'=>false,'error'=>json_encode($error)];
+        return $response;
+      }
+    }
 }

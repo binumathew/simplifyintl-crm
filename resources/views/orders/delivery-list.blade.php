@@ -34,6 +34,7 @@
                                 <option value="1" selected>Request Recieved</option>
                                 <option value="2">Packed / Shipped</option>
                                 <option value="4">Canceled</option>
+                                <option value="5">Canceled & Refund</option>
                                 <option value="3">All</option>
                             </select>
                             <table id="orderlist" class="table table-striped dt-responsive nowrap table-vertical" width="100%" cellspacing="0">
@@ -196,6 +197,9 @@
                     // }
                     if (data.print_status == 0) {
                         html_data += '&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" class="text-muted print_welcome_letter" data-toggle="tooltip" title="Print" data-id="'+data.id+'"><i class="mdi mdi-printer mdi-24px"></i></a>';
+                    }
+                    if(data.total_amount != 0 && data.total_amount != null && data.delivery_status != 5){
+                        html_data += '&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" class="text-muted order_refund" data-total-amount="'+data.total_amount+'" data-toggle="tooltip" title="Cancel order and refund" data-id="'+data.id+'"><i class="mdi mdi-undo-variant mdi-24px"></i></a>';
                     }
                     return html_data;
 
@@ -616,6 +620,54 @@
                     shipping_city:'required',
                     shipping_country:'required'
                 }
+            });
+            $(document).on('click','.order_refund',function (e) {
+                var id = $(this).attr('data-id');
+                var total = $(this).attr('data-total-amount');
+                $('#orderCustomLabel').text('Cancel Order and Refund');
+                $('#orderCustombody').html('<div class="form-group"><label class="form-label">Order Amount <b>'+total+'</b></label><br> <label class="form-label">Refund Amount</label> <input type="hidden"  id="total_amount" value="'+ total +'"><input type="hidden"  id="refund_simlist_id" value="'+ id +'"><input type="text" class="form-control" id="refund_amount" placeholder="Refund Amount" maxlength="7"><br> <label class="form-label">Refund Reason</label><input type="text" class="form-control" id="refund_reason" placeholder="Refund Reason" maxlength="50"><div id="custom_status"></div></div><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" id="refund_order_request" class="btn btn-success pull-right">Cancel & Refund</button>');
+                $('#orderCustomModal').modal('show');
+            });
+            $(document).on('click','#refund_order_request',function () {
+                var id = $('#refund_simlist_id').val();
+                var amount = $('#refund_amount').val();
+                var total  = $('#total_amount').val();
+                var reason = $("#refund_reason").val();
+                if(amount == ""){
+                    alertify.error('Refund amount missing');
+                    return;
+                }else{ amount = parseFloat(amount); total = parseFloat(total);}
+                if(amount > total ){
+                    alertify.error('Refund amount cannot be greater than order amount');
+                    return;
+                }
+                if(reason == ""){
+                    alertify.error('Please provide a reason for cancelling the order');
+                    return; 
+                }
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: 'order-cancel-refund',
+                    data: {id:id,refundamount:amount,reason:reason},
+                    beforeSend: function(){
+                        $("#refund_order_request").html('Processing..');
+                    },
+                    complete: function(){
+                        $("#refund_order_request").html('Cancel & Refund');
+                    },
+                    success:function(data){
+                        if (data.error) {
+                            alertify.error(data.message);
+                        } else {
+                            alertify.success(data.message);
+                            $('#orderlist').DataTable().draw();
+                            $('#orderCustomModal').modal('hide');
+                        }
+                    }
+                });
             });
         });
     </script>

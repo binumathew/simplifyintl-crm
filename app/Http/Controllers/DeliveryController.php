@@ -11,6 +11,8 @@ use DataTables;
 use Carbon;
 use Utils;
 use Log;
+use Stripepayments;
+
 use App\Models\SimList;
 use App\Models\SimRequest;
 use Illuminate\Http\Request;
@@ -47,7 +49,7 @@ class DeliveryController extends Controller
         $where = DB::table('admins')->where('parent_id', $admin_id)->pluck('promocode')->toArray();        
         array_push($where, $promocode);
 
-        $delivery_list = DB::table('tbl_sim_request as rq')->select('rq.id', 'order_id', 'name', 'shipping_address', 'delivery_status', 'rq.created_at', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"), 'print_status', DB::raw("(SELECT short_code FROM tbl_roles as rl join admins as ad on ad.role = rl.id WHERE rq.promocode = ad.promocode) as short_code"))->join('users as usr', 'usr.id', '=', 'rq.user_id');
+        $delivery_list = DB::table('tbl_sim_request as rq')->select('rq.id', 'order_id', 'name', 'shipping_address', 'delivery_status', 'rq.created_at', DB::raw("(SELECT COUNT(*) FROM tbl_sim_list WHERE tbl_sim_list.request_id = rq.id) as sim_count"), 'print_status', DB::raw("(SELECT short_code FROM tbl_roles as rl join admins as ad on ad.role = rl.id WHERE rq.promocode = ad.promocode) as short_code"),'up.total_amount')->join('users as usr', 'usr.id', '=', 'rq.user_id')->leftJoin('user_payments as up', 'up.id', '=', 'rq.payment_id');
 
         if ($request->filter_type == 1) { 
             $delivery_list = $delivery_list->where('delivery_status','0');
@@ -55,6 +57,8 @@ class DeliveryController extends Controller
             $delivery_list = $delivery_list->where('delivery_status','1');
         } else if($request->filter_type == 4) { 
             $delivery_list = $delivery_list->where('delivery_status','4');
+        }else if($request->filter_type == 5) { 
+            $delivery_list = $delivery_list->where('delivery_status','5');
         }
         
         if(Helper::has_permission('delivery')){
@@ -427,5 +431,62 @@ class DeliveryController extends Controller
             return response()->json(['error' => true, 'message' => 'Failed to change status']);
         }
         return response()->json(['error' => false]);
+    }
+        /*
+    * Order Cancellation process and refund
+    */
+    public function order_cancel_refund(Request $request)
+    {
+        if (!Helper::has_permission('delivery','edit')) {
+            return response()->json(['error' => true, 'message' => 'Access denied']);
+        }
+
+        $sim_request = SimRequest::where('id', $request->id)->first();
+        if (!$sim_request) {
+            return response()->json(['error' => true, 'message' => 'Order details doesn\'t exist']); 
+        }
+        if($request->refundamount > $sim_request->payment->total_amount){
+            return response()->json(['error' => true, 'message' => 'Refund amount is greater than order amount']); 
+        }
+        $data = [
+            'transaction_id'=>$sim_request->payment->transaction_id,
+            'amount'=> $request->refundamount,
+            'reason'=>$request->reason
+        ];
+        $metadata = [
+            'order_id'=>$sim_request->order_id,
+            'user_id'=>$sim_request->user_id
+        ];
+        if($sim_request->payment->payment_method == 'Stripe'){
+            $refund  = Stripepayments::stripeCardRefund($data,$metadata);
+        }else{
+            return response()->json(['error' => true, 'message' => 'Payment gateway not found']);  
+        }
+        
+        $payment = ['user_id'=>$sim_request->user_id,'payment_method'=>$sim_request->payment->payment_method,'payment_for'=>'Order Cancel and Refund','currency'=>$sim_request->payment->currency,'card_type'=>$sim_request->payment->card_type,'category'=>$sim_request->payment->category,'amount'=>$request->refundamount,'total_amount'=>$request->refundamount];
+
+        if($refund->status){
+            $payment['transaction_id']  = $refund->transaction_id;
+            $payment['description']     = 'Order Cancel and Refund';
+            $payment['status']          = 1;
+            DB::beginTransaction();
+            try {
+                DB::table('tbl_sim_request')->where('id', $request->id)->update(['delivery_status' => 5]);
+                $note = 'Canceled and Refund '.$request->refundamount.' by '.Auth::user()->first_name.' '.Auth::user()->last_name.', for '.$request->reason.' on ';
+                DB::table('delivery_history')->insert(['sim_request_id' => $request->id, 'type' => 1, 'proceed_by' => Auth::user()->id, 'note' => $note]);
+                DB::table('user_payments')->insert($payment);
+                DB::commit();
+                return response()->json(['error' => false, 'message' => 'Refund initiated, order cancelled']);
+            } catch (\Exception $e) {
+                DB::rollback();
+                return response()->json(['error' => true, 'message' => 'Refund initiated, Failed to cancel the order']);
+            }
+        }else{
+            $payment['transaction_id']  = '';
+            $payment['description']     = 'Order Cancel and Refund -'.$refund->error;
+            $payment['status'] = 0;
+            DB::table('user_payments')->insert($payment);
+            return response()->json(['error' => true, 'message' => 'Refund failed, Failed to cancel the order']);
+        }
     }
 }
