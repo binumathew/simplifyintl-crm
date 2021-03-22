@@ -285,7 +285,6 @@ $sym         = $user->country->currency_symbol;
 @endif
 @if($invoiceData->invoice->itemized)
 @if($invoiceData->calls->isNotEmpty())
-<div style="page-break-after:always;"></div>
     <h4 class="titlehead">Calls</h4>
     <table class="table" width="100%" border="0">
     <thead>
