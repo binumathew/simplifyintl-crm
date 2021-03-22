@@ -90,7 +90,7 @@
 										<div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:25px; padding-bottom:25px; padding-right: 0px; padding-left: 25px;">
 											<div align="left" class="img-container left fixedwidth" style="padding-right: 0px;padding-left: 0px;">
 												<a href="{{url('/')}}">
-													<img alt="Image" border="0" class="left fixedwidth" src="{{url('/')}}/images/logo.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 45%; max-width: 100px; display: block;" title="Image" width="40"/>
+													<img alt="GeoKall" border="0" class="left fixedwidth" src="{{url('/')}}/images/logo.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 45%; max-width: 100px; display: block;" title="Image" width="40"/>
 												</a>
 											</div>
 										</div>
