@@ -54,7 +54,7 @@ class SoftDelivery implements ShouldQueue
                     $obj->date      = Carbon::now()->format('d M Y');
                     $obj->plan_name = $sim_list->auto_plan->plan->plan_name;
                     $obj->token_link = config('app.FRONT_ENDURL').'qrcode-link?token='.$token;
-                    Mail::to('vigikaran.php@gmail.com')//$user->email
+                    Mail::to($user->email)
                         ->bcc(['alphalabsllp.arun@gmail.com'])
                         ->send(new SimSoftDelivery($obj));
                         
