@@ -87,7 +87,7 @@ class InvoiceGenerationJob implements ShouldQueue
                 $prorata        = Helper::taxCalculation($prorata_extra,$user->country);
                 $planamount     += $prorata->amount;
                 $plan_desc  = Carbon::parse($autoplan->start_date)->format('d-m-Y').' - '.Carbon::parse($autoplan->start_date)->endOfMonth()->format('d-m-Y');
-                $credits = $planamount;
+                $credits += $planamount;
             }
             $add_charge_list = UserCharge::where('user_id',$user->id)->where('state',0)
                                     ->whereDate('created_at', '>=', $prev_start)

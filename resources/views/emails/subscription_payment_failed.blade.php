@@ -16,7 +16,7 @@
 									<span style="font-size: 16px;">
 										<p>
                                         @if($attempt == 1)
-										Our attempt to process your subscription payment failed. We will attempt again within 24 Hrs. Should this attempt fail there will be an additional admin charge of £10 each for second and third attempt. To avoid service disruption, we request you to kindly contact our customer support ASAP.
+										Our attempt to process your subscription payment failed. We will attempt again within 24 Hrs. Should this attempt fail there will be an additional admin charge of £{{Config('general.settings.stripe_failed_fee')}} each for second and third attempt. To avoid service disruption, we request you to kindly contact our customer support ASAP.
 										@elseif($attempt == 2)
 										Our first and second attempt failed to successfully process your monthly subscription. As part of standard process the System terminate your account and be will with collection agency. Your current outstanding will include additional admin charges of £{{Config('general.settings.stripe_failed_fee')}} To avoid service disruption, we request you to kindly contact our customer support ASAP to remit the outstanding. We look forward to your continued association.
 										@endif
