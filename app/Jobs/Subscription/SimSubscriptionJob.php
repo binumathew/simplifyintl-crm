@@ -55,7 +55,7 @@ class SimSubscriptionJob implements ShouldQueue
                     'value' => $autoplan->plan->buy_price,
                     'staff_id' => '0',
                     'reference_id' => $response->orderCode,
-                    'created_at'=>'2020-12-01 01:30:10'
+                    'created_at'=>'2021-01-01 01:30:10'
                 );
                 AvooSimLog::insert($log_data);
             }else{
