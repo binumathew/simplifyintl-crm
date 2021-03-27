@@ -51,7 +51,7 @@ class SimSubscription extends Command
         if(ScheduledTask::where(['command' => $this->signature, 'status' => 1])->exists()){
             try {
                 $start_time      = microtime(true);
-                $currDay         = '2020-11-01';//Carbon::now()->startOfMonth()->toDateString();
+                $currDay         = '2020-12-01';//Carbon::now()->startOfMonth()->toDateString();
                 $getsubscription =  AutoPlan::select('auto_plan.id','auto_plan.user_list')
                                     ->where(function($query) use ($currDay){
                                         $query->where('auto_plan.status',1);
