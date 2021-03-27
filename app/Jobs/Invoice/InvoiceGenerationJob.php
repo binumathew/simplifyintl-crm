@@ -21,6 +21,7 @@ use App\Models\UserPlan;
 use App\Models\UserInvoice;
 use App\Models\UserInvoiceItem;
 use App\Models\UserPayment;
+use App\Models\AvooSimLog;
 
 use App\Jobs\Alerts\SubscriptionPaymentAlertsJob;
 
@@ -218,6 +219,17 @@ class InvoiceGenerationJob implements ShouldQueue
                             'created_at'=>$invoiceDate
                         ]);
                     }
+                    $log_data = array(
+                        'user_id' => $user->id,
+                        'stock_id' => $user->stock_id,
+                        'msisdn' => $user->msisdn->phone_number,
+                        'category' => 'RECURRING',
+                        'plan_id' => $autoplan->plan_id,
+                        'value' => $autoplan->plan->buy_price,
+                        'staff_id' => '0',
+                        'reference_id' => 'E_SIMorder'
+                    );
+                    AvooSimLog::insert($log_data);
                 DB::commit();
             }
         }
