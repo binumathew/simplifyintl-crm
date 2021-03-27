@@ -29,6 +29,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\FetchCDR::class,
 	\App\Console\Commands\UserPlanCreate::class,
         \App\Console\Commands\EsimInvoiceGeneration::class,
+        \App\Console\Commands\SimSubscription::class,
+        \App\Console\Commands\SwitchSubscription::class,
     ];
 
     /**
@@ -86,12 +88,15 @@ class Kernel extends ConsoleKernel
         $schedule->command('hourly:cdr')
                  ->hourly();
 
-        $schedule->command('switch:subscription')
-                 ->monthlyOn(1, '00:30');
-                 
         $schedule->command('userplan:create')
-                 ->monthlyOn(1, '00:15');
+                 ->monthlyOn(1, '00:05');
 
+        $schedule->command('switch:subscription')
+                 ->monthlyOn(1, '00:10');
+
+        $schedule->command('sim:subscription')
+                 ->monthlyOn(1, '00:15');
+                 
         $schedule->command('esiminvoice:generate')
                  ->dailyAt('00:01');
     }
