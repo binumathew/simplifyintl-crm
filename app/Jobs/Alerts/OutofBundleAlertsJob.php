@@ -50,7 +50,7 @@ class OutofBundleAlertsJob implements ShouldQueue
         $phone_number   = '+'.$user->msisdn->phone_number;
         $phone          = str_replace($user->country->dial_code,'0',$phone_number);
 
-        $msg = 'Important note: It seems you have used some chargeable premium services on your '.$phone.'. Please contact us to resolve the same. Best - Nex Mobile';
+        $msg = 'Important note: It seems you have used some chargeable premium services on your '.$phone.'. Please contact us to resolve the same. Best - '.config('settings.app_name');
         
         try {             
             $client = new Client($account_sid, $auth_token);

@@ -48,7 +48,7 @@ class SubscriptionPaymentAlertsJob //implements ShouldQueue
             $phone_number   = '+'.$user->msisdn->phone_number;
             $phone          = str_replace($user->country->dial_code,'0',$phone_number);
 
-            $msg = 'Subscription Payment for '.Carbon::parse($invoice->date)->format('F Y').'  '.$user->country->currency_symbol.$invoice->amount_due.' - Nex Mobile';
+            $msg = 'Subscription Payment for '.Carbon::parse($invoice->date)->format('F Y').'  '.$user->country->currency_symbol.$invoice->amount_due.' - '.config('settings.app_name');
 
             // try {             
             //     $client = new Client($account_sid, $auth_token);
@@ -74,6 +74,5 @@ class SubscriptionPaymentAlertsJob //implements ShouldQueue
             }
               
         }
-        dd($invoice);
     }
 }

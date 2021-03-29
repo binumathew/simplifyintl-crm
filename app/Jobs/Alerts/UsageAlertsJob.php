@@ -52,7 +52,7 @@ class UsageAlertsJob implements ShouldQueue
         $phone_number   = '+'.$user->msisdn->phone_number;
         $phone          = str_replace($user->country->dial_code,'0',$phone_number);
 
-        $msg = 'Important: You have used '.$this->details->usage.'% of your data on '.$now_sms.', you may need to add more data till new bundle is active. Pls contact '.config('general.settings.sms_alert_email').' - Nex Mobile';
+        $msg = 'Important: You have used '.$this->details->usage.'% of your data on '.$now_sms.', you may need to add more data till new bundle is active. Pls contact '.config('general.settings.sms_alert_email').' - '.config('settings.app_name');
 
         try {             
             $client = new Client($account_sid, $auth_token);
