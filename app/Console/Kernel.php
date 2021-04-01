@@ -31,6 +31,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\EsimInvoiceGeneration::class,
         \App\Console\Commands\SimSubscription::class,
         \App\Console\Commands\SwitchSubscription::class,
+	\App\Console\Commands\UserPlanCreate::class,
         \App\Console\Commands\DealerRevenue::class,
     ];
 
@@ -90,16 +91,16 @@ class Kernel extends ConsoleKernel
                  ->hourly();
 
         $schedule->command('userplan:create')
-                 ->monthlyOn(1, '00:05');
+                 ->monthlyOn(1, '02:00');
 
         $schedule->command('switch:subscription')
-                 ->monthlyOn(1, '00:10');
+                 ->monthlyOn(1, '02:00');
 
         $schedule->command('sim:subscription')
-                 ->monthlyOn(1, '00:15');
+                 ->monthlyOn(1, '02:00');
                  
         $schedule->command('esiminvoice:generate')
-                 ->dailyAt('00:01');
+                 ->dailyAt('02:00');
 
         $schedule->command('dealer:revenue')
                  ->monthlyOn(1, '00:45');
