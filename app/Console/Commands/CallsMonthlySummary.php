@@ -10,6 +10,7 @@ use App\Mail\CronFailure;
 use App\Models\ScheduledTask;
 use Illuminate\Console\Scheduling\Schedule;
 
+use App\Jobs\CDR\SimUsageSummaryJob;
 class CallsMonthlySummary extends Command
 {
     /**
@@ -181,6 +182,7 @@ class CallsMonthlySummary extends Command
                     DB::table('user_calls')->insert($calls);
                 }
             }
+            SimUsageSummaryJob::dispatch($start_month, $end_month);
         } catch (\Exception $e) {
             $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
             $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
