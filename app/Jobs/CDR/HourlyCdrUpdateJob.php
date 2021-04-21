@@ -57,14 +57,17 @@ class HourlyCdrUpdateJob implements ShouldQueue
             $country[$c_list->country_code] = $c_list;
         }
 
-        $users = DB::table('trusted_numbers')->select('user_id','trusted_number')->get()->keyBy('trusted_number');
+        $users = DB::table('trusted_numbers as tn')->select('tn.user_id','tn.trusted_number',DB::raw('TRIM(LEADING c.dial_code FROM trusted_number) as trusted'))
+                    ->leftJoin('users as us','us.id','=','tn.user_id')
+                    ->leftJoin('country as c','c.id','=','us.country_id')
+                    ->get()->keyBy('trusted');
 
         foreach ($cdr_list as $lkey => $cdr) {
             $from         = strval(ltrim(trim($cdr[0]),0));
             $country_code = trim($cdr[9]);
             $dial_code    = isset($country[$country_code]) ? $country[$country_code]->dial_code : '';
             $country_name = isset($country[$country_code]) ? $country[$country_code]->country_name : '';
-            $user         = $users->get($dial_code.$from);
+            $user         = $users->get($from);
             if(!is_null($user)){
                 $user_id = $user->user_id;
                 $from_number = str_replace("+","", $user->trusted_number);
