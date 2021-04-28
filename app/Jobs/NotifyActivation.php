@@ -61,7 +61,7 @@ class NotifyActivation implements ShouldQueue
                 $obj->userlist  = $list;
                 $obj->date      = Carbon::now()->format('d-M-Y');
 
-                Mail::to('usman.azhar@gencomtel.com')
+                Mail::to(config('general.settings.info@geokall.com'))
                     // ->cc([
                     // [
                     // 'email' => 'shine@gencomtel.com',

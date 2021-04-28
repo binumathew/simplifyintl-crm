@@ -12,20 +12,12 @@ return [
     */
 
     'settings' => [
-        'sms_alert_email' => env('SMS_ALERT_MAIL','hello@nexmobile.co.uk'),
-        'support_email'=>'usman.azhar@gencomtel.com',
+        'sms_alert_email' => env('SMS_ALERT_MAIL','info@geokall.com'),
+        'support_email'=>'info@geokall.com',
         'bcc_emails'=> [
                 [
                     'email' => 'sojan@gencomtel.com',
                     'name' => 'Sojan'
-                ],
-                [
-                    'email' => 'usman.azhar@gencomtel.com',
-                    'name' => 'Usman'
-                ],
-                [
-                    'email' => 'jijo.joseph@gencomtel.com',
-                    'name' => 'Jijo'
                 ],
                 [
                     'email' => 'arun.raj610@gmail.com',
