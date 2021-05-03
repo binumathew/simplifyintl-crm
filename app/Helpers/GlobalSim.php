@@ -20,9 +20,9 @@ class GlobalSim {
                 ],
                 'body' => ArrayToXml::convert($params,['rootElementName' => $request],true, 'UTF-8')
             ];
-            Log::info('requestParams',[
-                'request'=>$options
-            ]);
+            // Log::info('requestParams',[
+            //     'request'=>$options
+            // ]);
             $result = $client->get(config('services.globalsim.api'),$options);
             return $result->getBody()->getContents();
         }
