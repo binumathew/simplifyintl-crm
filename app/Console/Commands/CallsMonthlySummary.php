@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use DB,Mail,Helper,Carbon,Storage;
 use Illuminate\Console\Command;
 use Cron\CronExpression;
+use Log;
 
 use App\Mail\CronFailure;
 use App\Models\ScheduledTask;
@@ -220,6 +221,9 @@ class CallsMonthlySummary extends Command
             Storage::disk('calllogs')->put($localfile, $file);
             $ftp->getDriver()->getAdapter()->disconnect();
         } catch (\Exception $e) {
+            Log::error('CallsMonthlySummary',[
+                'error'=>$e->getMessage()
+            ]);
             $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
             $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
             Mail::to('arun.raj610@gmail.com')
