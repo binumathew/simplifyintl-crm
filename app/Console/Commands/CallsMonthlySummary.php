@@ -63,6 +63,7 @@ class CallsMonthlySummary extends Command
                 $upcall = $this->updateCalllogs($localfile);
             }else{
                 $getfile = $this->getfileFTP($remotefile,$localfile);
+                dd($getfile);
                 if($getfile){
                     $upcall = $this->updateCalllogs($localfile);
                 }
