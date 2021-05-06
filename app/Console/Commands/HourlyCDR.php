@@ -60,6 +60,14 @@ class HourlyCDR extends Command
             $remotePath = '/Daily/'.$year.'/'.$month.'/';
 
             try {
+
+                $storageFiles = Storage::allFiles('/calllogs');
+                $searchFiles  = 'Mobile_'.Carbon::now()->format('Ym');
+                 $removeFiles = array_filter( $storageFiles, function( $storageFiles ) use ( $searchFiles ) {
+                            return ( stripos( $storageFiles, $searchFiles ) !== FALSE );
+                        });
+                Storage::delete($removeFiles);
+
                 $getfile    = $this->getfileFTP($remotePath);
 
                 $end_time   = microtime(true);
