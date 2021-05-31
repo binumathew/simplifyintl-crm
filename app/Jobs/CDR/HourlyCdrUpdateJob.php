@@ -106,7 +106,7 @@ class HourlyCdrUpdateJob implements ShouldQueue
             if(strval(trim($cdr[4])) == "G"){
                 if(preg_match('/SMS/', $service) || preg_match('/MMS/', $service)){
 
-                    $sms_duration   = (trim($cdr[6]) != "") ? trim($cdr[6]): 1;
+                    $sms_duration   = ($provider == "VF") ? 1 : trim($cdr[6]);
 
                     $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $sms_duration,  'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO', 'provider' => $provider];
 
