@@ -55,6 +55,9 @@ class HourlyCDR extends Command
             $start_time = microtime(true);
 
             $currday    = Carbon::now();
+            if(date('t') == date('d')){
+                $currday    = Carbon::now()->addMonthsNoOverflow();
+            }
             $year       = $currday->year;
             $month      = $currday->month;
             $remotePath = '/Daily/'.$year.'/'.$month.'/';
