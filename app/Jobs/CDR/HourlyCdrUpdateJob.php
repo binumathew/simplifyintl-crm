@@ -35,7 +35,7 @@ class HourlyCdrUpdateJob implements ShouldQueue
     public function handle()
     {
         $cdr_list  = $call_data = $data_history = $prev_call_data = $prev_data_history = [];
-        $prev_date = Carbon::now()->subMonth()->endOfMonth()->format('Y-m-d').' 23:59:59';
+        $prev_date = Carbon::now()->subMonthsNoOverflow()->endOfMonth()->format('Y-m-d').' 23:59:59';
 
         $seller_margin   = Helper::get_option('seller_percent');
         $reseller_margin = Helper::get_option('reseller_percent');
