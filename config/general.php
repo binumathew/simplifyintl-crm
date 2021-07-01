@@ -14,6 +14,7 @@ return [
     'settings' => [
         'sms_alert_email' => env('SMS_ALERT_MAIL','info@geokall.com'),
         'support_email'=>'info@geokall.com',
+        'technical_support'=>env('SUPPORT_EMAIL','arun@gencomtel.com'),
         'bcc_emails'=> [
                 [
                     'email' => 'sojan@gencomtel.com',
