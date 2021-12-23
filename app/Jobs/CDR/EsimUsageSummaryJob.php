@@ -38,8 +38,8 @@ class EsimUsageSummaryJob implements ShouldQueue
                             ->where('up.plan_type', 'sim')
                             ->where('u.status', 1)
                             ->where('up.status', 1)
-                            ->orderBy('up.plan_id')->get();
-        if($userlist->isNotEmpty()){
+                            ->orderBy('up.plan_id')->get()->toArray();
+        if(!empty($userlist)){
             foreach ($userlist as $user) {
                 $start_date  = Carbon::parse($user->created_at)->format('Y-m-d');
                 $end_date    = Carbon::parse($user->created_at)->addDays($user->period)->format('Y-m-d');
