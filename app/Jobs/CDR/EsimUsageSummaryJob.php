@@ -41,8 +41,8 @@ class EsimUsageSummaryJob implements ShouldQueue
                             ->orderBy('up.plan_id')->get();
         if($userlist->isNotEmpty()){
             foreach ($userlist as $user) {
-                $startdate  = Carbon::parse($user->created_at)->format('Y-m-d');
-                $enddate    = Carbon::parse($user->created_at)->addDays($user->period)->format('Y-m-d');
+                $start_date  = Carbon::parse($user->created_at)->format('Y-m-d');
+                $end_date    = Carbon::parse($user->created_at)->addDays($user->period)->format('Y-m-d');
                 UpdateUsageSummaryJob::dispatch($user,$start_date,$end_date);
             }
         }
