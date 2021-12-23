@@ -22,19 +22,19 @@ class UpdateUsageSummaryJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $user_id;
-    protected $user_plan_id;
-    protected $tbl_plan_id;
+    protected $data;
+    protected $startdate;
+    protected $enddate;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($user_id,$user_plan_id,$tbl_plan_id)
+    public function __construct($data,$startdate,$enddate)
     {
-        $this->user_id      = $user_id;
-        $this->user_plan_id = $user_plan_id;
-        $this->tbl_plan_id  = $tbl_plan_id;
+        $this->data      = $data;
+        $this->startdate = $startdate;
+        $this->enddate   = $enddate;
     }
 
     /**
@@ -44,79 +44,77 @@ class UpdateUsageSummaryJob implements ShouldQueue
      */
     public function handle()
     {
-        $user           = User::whereId($this->user_id)->first();
-        $plans          = TblPlan::find($this->tbl_plan_id);
-        $userplan       = UserPlan::whereId($this->user_plan_id)->first();
+        if(!empty($this->data)){
 
-        $serviceType    = $plans->network->service_type;
-        $plandate       = $userplan->created_at;
+            $userIds = array_column($this->data, 'id');
 
-        switch ($serviceType) {
-            case 1:
-                $startdate  = Carbon::parse($plandate)->format('Y-m-d');
-                $enddate    = Carbon::parse($plandate)->addDays($plans->period)->format('Y-m-d');
-                break;
-            case 2:
-                $startdate  = Carbon::parse($plandate)->startOfMonth()->format('Y-m-d');
-                $enddate    = Carbon::parse($startdate)->endOfMonth()->format('Y-m-d');
-                break;
-            default:
-                $startdate      = Carbon::parse($plandate)->startOfMonth()->format('Y-m-d');
-                $enddate    = Carbon::parse($startdate)->endOfMonth()->format('Y-m-d');
-                break;
-        }
-        $calllogs   = DB::table('user_calls')
-                        ->select(DB::raw("SUM(duration) as duration"),DB::raw("SUM(cost) as cost"),DB::raw("SUM(base_cost) as base_cost"),DB::raw("SUM(reseller_cost) as reseller_cost"),DB::raw("COUNT(user_id) as totalcalls"))                                
-                        ->whereDate('connect_date', '>=', $startdate)
-                        ->whereDate('connect_date', '<=', $enddate)
-                        ->where('user_id',$user->id)  
+            $getcalllogs  = DB::table('user_calls')
+                        ->select(DB::raw("SUM(duration) as duration"),DB::raw("SUM(cost) as cost"),DB::raw("SUM(base_cost) as base_cost"),DB::raw("SUM(reseller_cost) as reseller_cost"),DB::raw("COUNT(user_id) as totalcalls"),'user_id')                                
+                        ->whereDate('connect_date', '>=', $this->startdate)
+                        ->whereDate('connect_date', '<=', $this->enddate)
+                        ->whereIn('user_id',$userIds)  
                         ->where('history_from', 2)
                         ->whereIn('service_type',[1,3])
-                        ->first();
-        
-        $datalogs   = DB::table('usage_history')
-                        ->select(DB::raw("SUM(duration) as volume"),DB::raw("SUM(amount) as cost"),DB::raw("SUM(base_amount) as base_amount"),DB::raw("SUM(reseller_amount) as reseller_amount"))
+                        ->groupBy('user_id')
+                        ->get()->keyBy('user_id');
+
+            $getdatalogs   = DB::table('usage_history')
+                        ->select(DB::raw("SUM(duration) as volume"),DB::raw("SUM(amount) as cost"),DB::raw("SUM(base_amount) as base_amount"),DB::raw("SUM(reseller_amount) as reseller_amount"),'user_id')
                         ->where('service_type', 'DATA')
-                        ->where('user_id',$user->id)
-                        ->whereDate('date', '>=', $startdate)
-                        ->whereDate('date', '<=', $enddate)
-                        ->first();
+                        ->whereIn('user_id',$userIds)
+                        ->whereDate('date', '>=', $this->startdate)
+                        ->whereDate('date', '<=', $this->enddate)
+                        ->groupBy('user_id')
+                        ->get()->keyBy('user_id');
 
-        $smslogs    = DB::table('usage_history')
-                        ->select(DB::raw("SUM(amount) as cost"),DB::raw("SUM(duration) as totalsms"),DB::raw("SUM(base_amount) as base_amount"),DB::raw("SUM(reseller_amount) as reseller_amount"))
-                        ->whereDate('date', '>=', $startdate)
-                        ->whereDate('date', '<=', $enddate)
-                        ->where('user_id',$user->id)
+            $getsmslogs    = DB::table('usage_history')
+                        ->select(DB::raw("SUM(amount) as cost"),DB::raw("SUM(duration) as totalsms"),DB::raw("SUM(base_amount) as base_amount"),DB::raw("SUM(reseller_amount) as reseller_amount"),'user_id')
+                        ->whereDate('date', '>=', $this->startdate)
+                        ->whereDate('date', '<=', $this->enddate)
+                        ->groupBy('user_id')
                         ->where('service_type','SMS_MO')
-                        ->first();
+                        ->get()->keyBy('user_id');
 
-        if($calllogs){
-            $call_usage          =($calllogs->duration != 0) ? $calllogs->duration : 0;
-            $totalcalls          =($calllogs->totalcalls != 0) ? $calllogs->totalcalls : 0;
-            $call_cost          = ($calllogs->cost != 0) ? $calllogs->cost : 0;
-            $base_call_cost     = ($calllogs->base_cost != 0) ? $calllogs->base_cost : 0;
-            $reseller_call_cost = ($calllogs->reseller_cost != 0) ? $calllogs->reseller_cost : 0;
-        }
-        if($datalogs){
-            $data_usage          = ($datalogs->volume != 0) ? $datalogs->volume : 0;
-            $data_cost           = ($datalogs->cost != 0) ? $datalogs->cost : 0;
-            $base_data_cost      = ($datalogs->base_amount != 0) ? $datalogs->base_amount : 0;
-            $reseller_data_cost  = ($datalogs->reseller_amount != 0) ? $datalogs->reseller_amount : 0;
-        }
-        if($smslogs){
-            $sms_count              = ($smslogs->totalsms != 0) ? $smslogs->totalsms : 0;
-            $sms_cost               = ($smslogs->cost != 0) ? $smslogs->cost : 0;
-            $base_sms_cost          = ($smslogs->base_amount != 0) ? $smslogs->base_amount : 0;
-            $reseller_sms_cost      = ($smslogs->reseller_amount != 0) ? $smslogs->reseller_amount : 0;
-        }
-        $service_cost   = round($call_cost+ $data_cost + $sms_cost,2);
-        $base_cost      = round($base_call_cost+ $base_data_cost + $base_sms_cost,2);
-        $reseller_cost  = round($reseller_call_cost+ $reseller_data_cost + $reseller_sms_cost,2);
+            foreach ($this->data as $key => $user) {
 
-        $usageupdate    = DB::table('user_plans')
-                                ->whereId($this->user_plan_id)
+                $call_usage = $totalcalls = $call_cost = $base_call_cost = $reseller_call_cost = 0;
+                $data_usage = $data_cost = $base_data_cost = $reseller_data_cost = 0;
+                $sms_count  = $sms_cost = $base_sms_cost = $reseller_sms_cost = 0;
+                $service_cost = $base_cost = $reseller_cost = 0;
+
+                $calllogs = isset($getcalllogs[$user->id]) ? $getcalllogs[$user->id] : false;
+                $datalogs = isset($getdatalogs[$user->id]) ? $getdatalogs[$user->id] : false;
+                $smslogs = isset($getsmslogs[$user->id]) ? $getsmslogs[$user->id] : false;
+
+                if($calllogs){
+                    $call_usage  =($calllogs->duration != 0) ? $calllogs->duration : 0;
+                    $totalcalls  =($calllogs->totalcalls != 0) ? $calllogs->totalcalls : 0;
+                    $call_cost   = ($calllogs->cost != 0) ? $calllogs->cost : 0;
+                    $base_call_cost = ($calllogs->base_cost != 0) ? $calllogs->base_cost : 0;
+                    $reseller_call_cost = ($calllogs->reseller_cost != 0) ? $calllogs->reseller_cost : 0;
+                }
+                if($datalogs){
+                    $data_usage  = ($datalogs->volume != 0) ? $datalogs->volume : 0;
+                    $data_cost   = ($datalogs->cost != 0) ? $datalogs->cost : 0;
+                    $base_data_cost   = ($datalogs->base_amount != 0) ? $datalogs->base_amount : 0;
+                    $reseller_data_cost = ($datalogs->reseller_amount != 0) ? $datalogs->reseller_amount : 0;
+                }
+                if($smslogs){
+                    $sms_count  = ($smslogs->totalsms != 0) ? $smslogs->totalsms : 0;
+                    $sms_cost   = ($smslogs->cost != 0) ? $smslogs->cost : 0;
+                    $base_sms_cost =($smslogs->base_amount != 0) ? $smslogs->base_amount : 0;
+                    $reseller_sms_cost = ($smslogs->reseller_amount != 0) ? $smslogs->reseller_amount : 0;
+                }
+                $service_cost   = round($call_cost+ $data_cost + $sms_cost,2);
+                $base_cost      = round($base_call_cost+ $base_data_cost + $base_sms_cost,2);
+                $reseller_cost  = round($reseller_call_cost+ $reseller_data_cost + $reseller_sms_cost,2);
+                $usageupdate    = DB::table('user_plans')
+                                ->whereId($user->user_plan_id)
                                 ->update(['data_usage'=>$data_usage,'call_usage'=>$call_usage,'sms_count'=>$sms_count,'service_total'=>$service_cost,'data_cost'=>$data_cost,'call_cost'=>$call_cost,'total_calls'=>$totalcalls,'sms_cost'=>$sms_cost,'base_call_cost'=>$base_call_cost,'base_data_cost'=>$base_data_cost,'base_sms_cost'=>$base_sms_cost,'base_total'=>$base_cost,'reseller_call_cost'=>$reseller_call_cost,'reseller_data_cost'=>$reseller_data_cost,'reseller_sms_cost'=>$reseller_sms_cost,'reseller_total'=>$reseller_cost]);
-        // SimUsageAlertsJob::dispatch($user->id);
-        // SimOutofBundleAlertsJob::dispatch($user->id);
+            }
+            //SimUsageAlertsJob::dispatch($this->data);
+            //SimOutofBundleAlertsJob::dispatch($this->data);
+        }
+        
     }
 }

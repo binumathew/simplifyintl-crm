@@ -52,11 +52,11 @@ class SimUsageSummaryJob implements ShouldQueue
                             // ->where('up.status', 1)
                             ->whereDate('up.created_at', '>=',$start_date)
                             ->whereDate('up.created_at', '<=',$end_date)
-                            ->orderBy('up.plan_id')->get();
+                            ->orderBy('up.plan_id')->get()->toArray();
         
-        if($userlist->isNotEmpty()){
-            foreach ($userlist as $user) {
-                UpdateUsageSummaryJob::dispatch($user->id,$user->user_plan_id,$user->plan_id);
+        if(!empty($userlist)){
+            foreach (array_chunk($userlist,1000) as $user) {
+                UpdateUsageSummaryJob::dispatch($user,$start_date,$end_date);
             }
         }
         

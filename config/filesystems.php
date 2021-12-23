@@ -77,28 +77,31 @@ return [
             'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', null),
             'visibility' => 'private'
         ],
-
-        'ftp' => [
-            'driver' => 'ftp',
-            'host' => env('SIMFTP_HOST'),
-            'username' => env('SIMFTP_USERNAME') ,
-            'password' => env('SIMFTP_PASSWORD'),
-
-            // Optional FTP Settings...
-            'port' => env('SIMFTP_PORT'),
-            'root' => '',
-            'passive' => true,
-            'ssl' => true,
-            'timeout' => 300,
-            'ignorePassiveAddress' => true,
-        ],
-
         'sftp' => [
             'driver' => 'sftp',
-            'host' =>  env('SIMFTP_HOST'),
-            'username' => env('SIMFTP_USERNAME'),
-            'password' => env('SIMFTP_PASSWORD'),
-            'port' => 2222,
+            'host' => env('DAISY_SFTP_HOST'),
+            'username' => env('DAISY_SFTP_USERNAME'),
+            'password' => env('DAISY_SFTP_PASSWORD'),
+
+            // Optional SFTP Settings...
+            'port' => env('DAISY_SFTP_PORT'),
+            'root' => '',
+            'passive' => true,
+            'ignorePassiveAddress' => true,
+            'ssl' => true,
+            'timeout' => 300,
+        ],
+        'ftp' => [
+            'driver' => 'ftp',
+            'host' => env('DAISY_FTP_HOST'),
+            'username' => env('DAISY_FTP_USERNAME'),
+            'password' => env('DAISY_FTP_PASSWORD'),
+
+            // Optional FTP Settings...
+            'port' => env('DAISY_FTP_PORT'),
+            'root' => '',
+            'passive' => true,
+            'ignorePassiveAddress' => true,
             'ssl' => true,
             'timeout' => 300,
         ],

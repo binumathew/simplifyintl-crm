@@ -49,27 +49,19 @@ class HourlyCDR extends Command
      * @return mixed
      */
     public function handle()
-    {
+    {   
         $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
         if($task){
             $start_time = microtime(true);
-
             $currday    = Carbon::now();
             if(date('t') == date('d')){
                 $currday    = Carbon::now()->addMonthsNoOverflow();
             }
+            
             $year       = $currday->year;
             $month      = $currday->month;
             $remotePath = '/Daily/'.$year.'/'.$month.'/';
-
             try {
-
-                $storageFiles = Storage::allFiles('/calllogs');
-                $searchFiles  = 'Mobile_'.Carbon::now()->format('Ym');
-                 $removeFiles = array_filter( $storageFiles, function( $storageFiles ) use ( $searchFiles ) {
-                            return ( stripos( $storageFiles, $searchFiles ) !== FALSE );
-                        });
-                Storage::delete($removeFiles);
 
                 $getfile    = $this->getfileFTP($remotePath);
 
@@ -90,9 +82,8 @@ class HourlyCDR extends Command
             } catch (\Exception $e) {
 
                 $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
-                $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
-                Mail::to('jijo.joseph@gencomtel.com')
-                    ->bcc(['arun.raj610@gmail.com'])
+                $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').' '.Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
+                Mail::to(config('general.settings.technical_support'))
                     ->send(new CronFailure($obj));
             }
 
@@ -100,56 +91,50 @@ class HourlyCDR extends Command
     }
 
     private function getfileFTP($remotePath){
-        $ftp            = Storage::disk('ftp');
+        $ftp            = Storage::disk('sftp');
         try {
-            $allFiles       = $ftp->allFiles($remotePath);
+            $allFiles       = $ftp->listContents($remotePath);
             $lastrun        = strtotime(Helper::get_option('cdr_lastrun'));
             $triggersummary = false; 
             $cdr_files      = [];
+            $modified       = 0;
             foreach($allFiles as $key => $file){
 
-                $type = $ftp->mimeType($file);
-                $ext  = explode('/',$type)[1];
-
-                if($ftp->lastModified($file) > $lastrun && $ext == 'csv'){                                                           
-                    $filename = explode('/',$file)[3];
-                    $getFile = $ftp->get($file);
-                    $modified = date('Y-m-d H:i:s', $ftp->lastModified($file));
-                    Storage::disk('calllogs')->put($filename, $getFile);
-                    DB::table('options')
-                        ->where('name','cdr_lastrun')
-                        ->update(['value' => $modified]);
-
-                    $cdr_files[] = $filename;
+                if($file['timestamp'] > $lastrun && $file['extension'] == 'csv'){
+                    $modified = ($file['timestamp']  > $modified) ? $file['timestamp']: $modified;
+                    $getFile  = $ftp->readStream($file['path']);
+                    self::processUsage($getFile);  
                 }
             }
             $ftp->getDriver()->getAdapter()->disconnect();
         } catch (\Exception $e) {
             $ftp->getDriver()->getAdapter()->disconnect();
             $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
-            $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => 'Connection error'.$e->getMessage()];
-            Mail::to('jijo.joseph@gencomtel.com')
-                // ->bcc(['arun.raj610@gmail.com'])
+            $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').' '.Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => 'Connection error'.$e->getMessage()];
+            Mail::to(config('general.settings.technical_support'))
                 ->send(new CronFailure($obj));
         }
-        
-        if(!empty($cdr_files)){
-            foreach($cdr_files as $file){
-                try {  
-
-                    HourlyCdrUpdateJob::dispatch($file);
-                } catch (\Exception $e) {
-
-                    $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
-                    $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $filename.' Failed to retrieve and update '.$e->getMessage()];
-
-                    Mail::to('jijo.joseph@gencomtel.com')
-                        // ->bcc(['arun.raj610@gmail.com'])
-                        ->send(new CronFailure($obj));
-                }                
-            }
+        if($modified > 0 ){
+            DB::table('options')
+                        ->where('name','cdr_lastrun')
+                        ->update(['value' => date('Y-m-d H:i:s',$modified)]);
             SimUsageSummaryJob::dispatch();
-        }        
+        }     
         return true;
+    }
+    private function processUsage($file){
+        $cdrData    = [];
+        $skipheader = true;
+        while ($csvLine = fgetcsv($file, 1000, ",")) {
+            if($skipheader){ $skipheader = false; continue;}
+            else{
+                $cdrData[] = $csvLine;
+            }
+        }
+        if(!empty($cdrData)){
+            foreach (array_chunk($cdrData,1000) as $key => $list) {
+               HourlyCdrUpdateJob::dispatch($list);
+            }
+        }
     }
 }

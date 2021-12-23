@@ -31,7 +31,7 @@ class EsimUsageSummaryJob implements ShouldQueue
      */
     public function handle()
     {
-        $userlist   = DB::table('users as u')->select('u.id','up.id as user_plan_id','plan_id','up.created_at','prorata')
+        $userlist   = DB::table('users as u')->select('u.id','up.id as user_plan_id','plan_id','up.created_at','prorata','tp.period as period')
                             ->join('user_plans as up','up.user_id','=','u.id')
                             ->join('tbl_plans as tp','tp.id','=','up.plan_id')
                             ->whereIn('tp.provider', ['E_SIM'])
@@ -41,7 +41,9 @@ class EsimUsageSummaryJob implements ShouldQueue
                             ->orderBy('up.plan_id')->get();
         if($userlist->isNotEmpty()){
             foreach ($userlist as $user) {
-                UpdateUsageSummaryJob::dispatch($user->id,$user->user_plan_id,$user->plan_id);
+                $startdate  = Carbon::parse($user->created_at)->format('Y-m-d');
+                $enddate    = Carbon::parse($user->created_at)->addDays($user->period)->format('Y-m-d');
+                UpdateUsageSummaryJob::dispatch($user,$start_date,$end_date);
             }
         }
     }
