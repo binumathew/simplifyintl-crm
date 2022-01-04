@@ -75,6 +75,7 @@ class MonthlyCdrUpdateJob implements ShouldQueue
             $country_code = trim($cdr[9]);
             $dial_code = isset($country[$country_code]) ? $country[$country_code]->dial_code : '';
             //$dial_code = $country[$country_code]->dial_code;
+                $charge_code  = trim($cdr[18]);
             $user = $users->get($from);
             if(!is_null($user)){
                 $user_id = $user->user_id;
@@ -97,7 +98,7 @@ class MonthlyCdrUpdateJob implements ShouldQueue
                 // }
                 $duration = (double)trim($cdr[7]);
                 $duration = $duration*1024;
-                $data = ['user_id' => $user_id, 'from_number' => $from_number, 'to_number'=> "", 'date' => $connect, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'DATA', 'provider' => $provider];
+                    $data = ['user_id' => $user_id, 'from_number' => $from_number, 'to_number'=> "", 'date' => $connect, 'duration' => $duration, 'amount' => $endusercost, 'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'DATA', 'provider' => $provider,'charge_code'=>$charge_code];
                 $data_history[] = $data;
                 continue;
             }
@@ -111,7 +112,7 @@ class MonthlyCdrUpdateJob implements ShouldQueue
                 if(preg_match('/SMS/', $service) || preg_match('/MMS/', $service)){
                     $sms_duration   = (trim($cdr[6]) != "") ? trim($cdr[6]): 1;
 
-                    $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $sms_duration,  'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO', 'provider' => $provider];
+                        $smsdata = ['user_id'=> $user_id, 'from_number' => $from_number, 'to_number'=> $to_number, 'date' => $connect, 'duration' => $sms_duration,  'amount' => $endusercost,'base_amount'=>$basecost,'reseller_amount'=>$resellercost, 'service_type' => 'SMS_MO', 'provider' => $provider,'charge_code'=>$charge_code];
                     $data_history[] = $smsdata;
                     continue;
                 }
@@ -130,7 +131,7 @@ class MonthlyCdrUpdateJob implements ShouldQueue
                 $service_type = 3;
             }
 
-            $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $from_number, 'cli_in' => $from_number, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $endusercost,'base_cost'=>$basecost,'reseller_cost'=>$resellercost,'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name,'provider' => $provider];
+                $simhis_data = ['user_id' => $user_id, 'connect_date' => $connect, 'disconnect_date' => $disconnect, 'cli' => $from_number, 'cli_in' => $from_number, 'cld'=> $to_number, 'i_cdr' => $i_cdr, 'duration' => $duration, 'billed' => ceil($duration/60), 'cost' => $endusercost,'base_cost'=>$basecost,'reseller_cost'=>$resellercost,'history_from' => 2, 'service_type' => $service_type, 'country'=> $country_name,'provider' => $provider,'charge_code'=>$charge_code];
             $call_data[] = $simhis_data;
             $i_cdr++;
         }
