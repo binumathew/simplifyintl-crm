@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
+use Log;
 
 class SimStock extends Model
 {
@@ -24,5 +26,45 @@ class SimStock extends Model
     public function stockcode()
     {
         return $this->hasOne('App\Models\SimStockCode','stock_id','id');
+    }
+    public static function create($request){
+        try{
+            DB::beginTransaction();
+
+                $phone_number = self::Query()
+                                ->where('verified', 0)
+                                ->orderBy('id','desc')
+                                ->value('phone_number');
+
+                $dummy_number = ($phone_number) ? ( $phone_number + 1 ):'447590000000';
+            
+                $stock_id = self::insertGetId([
+                    'phone_number' => $dummy_number,
+                    'sim_number'  => trim($request->ssn),
+                    'imsi_number' => trim($request->ssn),
+                    'category' => 'normal',
+                    'price' =>'0.00',
+                    'status' => 1,
+                    'dealer_id'=> 1,
+                    'box_no'=> 'B1/1',
+                    'verified'=>0,
+                    'provider'=> trim($request->provider),
+                    'is_esim'=> 1 
+                ]);
+                SimStockCode::insertGetId([
+                    'stock_id'=> $stock_id,
+                    'qr_code'=>trim($request->qr)
+                ]);
+
+            DB::commit();
+
+            return true;
+
+        }catch(\Exception $e){
+            dd($e->getMessage());
+            DB::rollback();
+            Log::error($e->getMessage());
+            return false;
+        }
     }
 }
