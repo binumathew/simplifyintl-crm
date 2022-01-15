@@ -45,7 +45,7 @@ class SimStock extends Model
                     'category' => 'normal',
                     'price' =>'0.00',
                     'status' => 1,
-                    'dealer_id'=> 1,
+                    'dealer_id'=> 1001,
                     'box_no'=> 'B1/1',
                     'verified'=>0,
                     'provider'=> trim($request->provider),
