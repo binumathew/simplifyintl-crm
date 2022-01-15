@@ -61,7 +61,6 @@ class SimStock extends Model
             return true;
 
         }catch(\Exception $e){
-            dd($e->getMessage());
             DB::rollback();
             Log::error($e->getMessage());
             return false;
