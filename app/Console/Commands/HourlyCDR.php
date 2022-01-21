@@ -94,6 +94,7 @@ class HourlyCDR extends Command
         $ftp            = Storage::disk('sftp');
         try {
             $allFiles       = $ftp->listContents($remotePath);
+            dd($allFiles);
             $lastrun        = strtotime(Helper::get_option('cdr_lastrun'));
             $triggersummary = false; 
             $cdr_files      = [];
