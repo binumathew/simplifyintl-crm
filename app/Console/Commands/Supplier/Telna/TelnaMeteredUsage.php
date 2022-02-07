@@ -82,7 +82,7 @@ class TelnaMeteredUsage extends Command
         }
     }
     private function getfileSFTP($remotePath){
-        $sftp               = Storage::disk('calllogs');
+        $sftp               = Storage::disk('Telna-SFTP');
         try {
             $allFiles       = $sftp->listContents($remotePath);
             $getprovider    = Provider::where(['short_code'=>config('telna.short_code')])->first();
@@ -94,11 +94,11 @@ class TelnaMeteredUsage extends Command
                 dd($file);
                 //if($file['timestamp'] > $lastrun && $file['extension'] == 'csv'){
                     //$modified = ($file['timestamp']  > $modified) ? $file['timestamp']: $modified;
-                    $getFile  = $sftp->readStream('LIVE_GeoKall_CDR_20220205170634.csv');//$file['path']
-                    self::processUsage($getFile);  
+                    //$getFile  = $sftp->readStream('LIVE_GeoKall_CDR_20220205170634.csv');//$file['path']
+                    //self::processUsage($getFile);  
                 //}
             }
-            $sftp->getDriver()->getAdapter()->disconnect();
+            //$sftp->getDriver()->getAdapter()->disconnect();
         } catch (\Exception $e) {
             //$sftp->getDriver()->getAdapter()->disconnect();
             dd($e->getMessage());
