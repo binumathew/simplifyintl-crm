@@ -17,6 +17,7 @@ use App\Models\Provider;
 use App\Mail\CronFailure;
 
 use App\Jobs\Supplier\Telna\Metered\TelnaMeteredUsageJob;
+use App\Jobs\Supplier\Telna\Metered\TelnaUsageSummaryJob;
 class TelnaMeteredUsage extends Command
 {
     /**
@@ -73,7 +74,6 @@ class TelnaMeteredUsage extends Command
                     ->update(['run_time' => $exec_time,'next_run' => $next_run]);
 
             } catch (\Exception $e) {
-                dd($e->getMessage());
                 $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
                 $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').' '.Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => $e->getMessage()];
                 Mail::to(config('general.settings.technical_support'))
@@ -91,26 +91,24 @@ class TelnaMeteredUsage extends Command
             $cdr_files      = [];
             $modified       = 0;
             foreach($allFiles as $key => $file){
-                dd($file);
-                //if($file['timestamp'] > $lastrun && $file['extension'] == 'csv'){
-                    //$modified = ($file['timestamp']  > $modified) ? $file['timestamp']: $modified;
-                    //$getFile  = $sftp->readStream('LIVE_GeoKall_CDR_20220205170634.csv');//$file['path']
-                    //self::processUsage($getFile);  
-                //}
+                if($file['timestamp'] > $lastrun && $file['extension'] == 'csv'){
+                    $modified = ($file['timestamp']  > $modified) ? $file['timestamp']: $modified;
+                    $getFile  = $sftp->readStream($file['path']);
+                    self::processUsage($getFile);  
+                }
             }
-            //$sftp->getDriver()->getAdapter()->disconnect();
+            $sftp->getDriver()->getAdapter()->disconnect();
         } catch (\Exception $e) {
-            //$sftp->getDriver()->getAdapter()->disconnect();
-            dd($e->getMessage());
+            $sftp->getDriver()->getAdapter()->disconnect();
             $task = ScheduledTask::where(['command'=>$this->signature,'status'=>1])->first();
             $obj = (object)['subject' => 'Cron Failure '.config('settings.app_name').' '.Carbon::now()->format('Y-m-d'), 'heading' => 'Cron Failure '.config('settings.app_name'), 'cron' => $task->description, 'error' => 'Connection error'.$e->getMessage()];
             Mail::to(config('general.settings.technical_support'))
                 ->send(new CronFailure($obj));
         }
         if($modified > 0 ){
-            Provider::whereId($getprovider->id)
+            DB::table('tbl_providers')->whereId($getprovider->id)
                         ->update(['cdr_lastrun' => date('Y-m-d H:i:s',$modified)]);
-            //SimUsageSummaryJob::dispatch();
+            TelnaUsageSummaryJob::dispatch();
         }     
         return true;
     }
@@ -121,7 +119,7 @@ class TelnaMeteredUsage extends Command
             if($skipheader){ $skipheader = false; continue;}
             else{
                 $cdrData[] = $csvLine;
-                if(count($cdrData) == 1){
+                if(count($cdrData) == 1000){
                     TelnaMeteredUsageJob::dispatch($cdrData);
                     $cdrData = [];
                 }

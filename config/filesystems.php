@@ -112,7 +112,6 @@ return [
             'password' => env('TELNA_SFTP_PASSWORD'),
 
             // Optional SFTP Settings...
-            'port' => env('TELNA_SFTP_PORT'),
             'root' => '',
             'passive' => true,
             'ignorePassiveAddress' => true,
