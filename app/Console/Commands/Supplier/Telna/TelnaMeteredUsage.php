@@ -91,6 +91,7 @@ class TelnaMeteredUsage extends Command
             $cdr_files      = [];
             $modified       = 0;
             foreach($allFiles as $key => $file){
+                dd($file);
                 if($file['timestamp'] > $lastrun && $file['extension'] == 'csv'){
                     $modified = ($file['timestamp']  > $modified) ? $file['timestamp']: $modified;
                     $getFile  = $sftp->readStream($file['path']);
