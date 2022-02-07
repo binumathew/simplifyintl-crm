@@ -83,6 +83,7 @@ class TelnaMeteredUsage extends Command
     }
     private function getfileSFTP($remotePath){
         $sftp               = Storage::disk('Telna-SFTP');
+        dd($sftp);
         try {
             $allFiles       = $sftp->listContents($remotePath);
             $getprovider    = Provider::where(['short_code'=>config('telna.short_code')])->first();
