@@ -105,6 +105,20 @@ return [
             'ssl' => true,
             'timeout' => 300,
         ],
+        'Telna-SFTP' => [
+            'driver' => 'sftp',
+            'host' => env('TELNA_SFTP_HOST'),
+            'username' => env('TELNA_SFTP_USERNAME'),
+            'password' => env('TELNA_SFTP_PASSWORD'),
+
+            // Optional SFTP Settings...
+            'port' => env('TELNA_SFTP_PORT'),
+            'root' => '',
+            'passive' => true,
+            'ignorePassiveAddress' => true,
+            'ssl' => true,
+            'timeout' => 300,
+        ],
     ],
 
 ];
