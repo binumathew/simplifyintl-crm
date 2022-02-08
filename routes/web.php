@@ -588,3 +588,5 @@ Route::get('/cron', function () {
 //Route::get('/affinity-user','AffinityController@index');
 Route::get('/ts','AffinityController@ts');
 
+Route::get('/get-sim-info','TelnaController@get_sim_info');
+
