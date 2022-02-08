@@ -83,13 +83,13 @@ class TelnaMeteredUsage extends Command
     }
     private function getfileSFTP($remotePath){
         $sftp               = Storage::disk('Telna-SFTP');
+        $modified           = 0;
         try {
             $allFiles       = $sftp->listContents($remotePath);
             $getprovider    = Provider::where(['short_code'=>config('telna.short_code')])->first();
             $lastrun        = $getprovider->cdr_lastrun;
             $triggersummary = false; 
             $cdr_files      = [];
-            $modified       = 0;
             foreach($allFiles as $key => $file){
                 if($file['timestamp'] > $lastrun && $file['extension'] == 'csv'){
                     $modified = ($file['timestamp']  > $modified) ? $file['timestamp']: $modified;
@@ -126,7 +126,7 @@ class TelnaMeteredUsage extends Command
             }
         }
         if(!empty($cdrData)){
-            TelnaMeteredUsageJob::dispatch($list);
+            TelnaMeteredUsageJob::dispatch($cdrData);
         }
     }
 }
