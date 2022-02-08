@@ -437,6 +437,7 @@
                 $(document).ready(function(){
 
                     // $('#dataTable').DataTable({ responsive: true, bSort : true, pageLength: 25, language: { search: '' },});
+                    console.log("{{ config('services.stripe') }}");
                     var stripe   = Stripe("{{ config('services.stripe.key') }}");
                       var card;
                       var elements = stripe.elements({
