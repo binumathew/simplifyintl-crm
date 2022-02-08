@@ -12,7 +12,7 @@ use Carbon;
 
 use App\Models\Provider;
 
-class TelnaMeteredUsageJob implements ShouldQueue
+class TelnaMeteredUsageJob //implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $cdr_data;
@@ -132,6 +132,7 @@ class TelnaMeteredUsageJob implements ShouldQueue
                         $call_data[] = $simhis_data;
                     }
                 }
+                dd($data_history);
                 if(!empty($data_history)){
                     foreach (array_chunk($data_history,1000) as $history){
                         DB::table('usage_history')->insert($history);
