@@ -12,7 +12,7 @@ use Carbon;
 
 use App\Models\Provider;
 
-class TelnaMeteredUsageJob //implements ShouldQueue
+class TelnaMeteredUsageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private $cdr_data;
@@ -80,7 +80,7 @@ class TelnaMeteredUsageJob //implements ShouldQueue
                             'package_id'=>strval(trim($cdr[17]))
                         ];
                         $data_history[] = $data; 
-                        //continue;
+                        continue;
                     }
                     if(strval(trim($cdr[2])) == "SMS"){
                         $smsdata = [
@@ -104,7 +104,7 @@ class TelnaMeteredUsageJob //implements ShouldQueue
                             'package_id'=>strval(trim($cdr[17]))
                         ];
                         $data_history[] = $smsdata; 
-                        //continue;
+                        continue;
                     }
                     if(strval(trim($cdr[2])) == "CALL"){
                         $simhis_data = [
@@ -132,7 +132,6 @@ class TelnaMeteredUsageJob //implements ShouldQueue
                         $call_data[] = $simhis_data;
                     }
                 }
-                dd($data_history);
                 if(!empty($data_history)){
                     foreach (array_chunk($data_history,1000) as $history){
                         DB::table('usage_history')->insert($history);
