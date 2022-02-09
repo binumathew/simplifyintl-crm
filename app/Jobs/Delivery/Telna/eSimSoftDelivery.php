@@ -53,7 +53,7 @@ class eSimSoftDelivery implements ShouldQueue
                     $obj->subject   = config('settings.app_name').' eSim';
                     $obj->heading   = config('settings.app_name').' eSim';
                     $obj->date      = Carbon::now()->format('d M Y');
-                    $obj->token_link = config('app.live_url').'qrcode-link?token='.$token;
+                    $obj->token_link = config('app.front_endurl').'qrcode-link?token='.$token;
                     $obj->credentials = $this->credentials;
                     Mail::to($user->email)
                         ->bcc(config('general.settings.technical_support'))
