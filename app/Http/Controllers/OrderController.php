@@ -25,6 +25,11 @@ use App\Models\Throttle;
 use App\Models\Fraudster;
 use App\Models\SimRequest;
 use App\Models\Admins;
+use App\Models\AutoPlan;
+use App\Models\UserPlan;
+use App\Models\UserInvoice;
+use App\Models\UserInvoiceItem;
+use App\Models\UserInvoiceTransaction;
 use App\Jobs\OrderRequestJob;
 use Illuminate\Http\Request;
 use App\Models\PaymentGateway;
@@ -33,6 +38,16 @@ use App\Models\UserPayment;
 use App\Exports\CustomExport;
 use Illuminate\Support\Facades\Validator;
 use Log;
+
+use Utils;
+
+use Stripepayments;
+
+use TelnaService;
+
+use App\Jobs\Delivery\Telna\eSimSoftDelivery;
+
+use App\Notifications\Admin\Telna\ActivationFailedNotification;
 
 class OrderController extends Controller
 {
@@ -81,7 +96,8 @@ class OrderController extends Controller
         foreach ($providers as $provider) {
             $plans[$provider->short_code] = TblPlan::where('provider', $provider->short_code)
                                                 ->where('status',1)
-                                                ->where('dealer_id',$dealerid)->get();
+                                                // ->where('dealer_id',$dealerid)
+                                                ->get();
         }
         $plans['EE_O2'] = TblPlan::where('provider', 'EE_O2')->where('dealer_id',$dealerid)->get();
         
@@ -103,15 +119,14 @@ class OrderController extends Controller
         $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];     
         $credit  = 0; 
         foreach($request->product as $key => $quantity){
-            $is_esim = 0;
             $plan = TblPlan::where('id', $key)->first();
-
+            $is_esim = $plan->is_esim;
             if(in_array( $plan->sim_provider->short_code,['E_SIM'])){
                 $credit = array_filter(config('topup.topup_amounts'), function($ar) {
                             return ($ar['default'] == '1');
                         });
                 $credit = (!empty($credit)) ? $credit[array_key_first($credit)]['amount']/100 : 0;
-                $is_esim = $request->is_esim ?? 1; 
+                $is_esim = $plan->is_esim; 
             }
             if($quantity){ 
                 $credit = $credit * $quantity;               
@@ -320,7 +335,7 @@ class OrderController extends Controller
                 ]);
 
             $username = Helper::unique_code(16);
-            $username = 'GB-'.$username;
+            $username = $country->short_code.'-'.$username;
             $vm_password = Helper::random(10, implode(range('0','9')));
             $vp_password = Helper::unique_code(10);
 
@@ -664,6 +679,515 @@ class OrderController extends Controller
         // $card_expire = '';
     }
 
+    /**
+    *  Order Process Payment
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function order_process_payment(Request $request){
+        try{
+           $user_id = $request->session()->has('user_id')?$request->session()->get('user_id'):'';
+           if($user_id)
+            $user = User::whereId($user_id)->first();
+            if(!$user){
+                if ($request->ajax()) {
+                    return response()->json(['error' => true, 'message' => 'User details not found!!']);
+                }else{
+                    return redirect()->back()->with('error', 'User details not found!!');
+                }
+            }
+            $userDetail = $user->userDetail;
+            $cartIds = $request->session()->has('cart_id')?$request->session()->get('cart_id'):[];
+            if(!Cart::whereIn('id',$cartIds)->count()){
+                if ($request->ajax()) {
+                    return response()->json(['error' => true, 'message' => 'Please select your Data Package!']); 
+                }else{
+                  return redirect()->back()->with('error', 'Please select your Data Package!');  
+                }         
+            } 
+            $blocked = Helper::check_fraudster($user->id);   
+            if($blocked){
+                if ($request->ajax()) {
+                    return response()->json(['error' => true, 'message' => 'User Account is blocked, please contact our customer care!']);  
+                }else{
+                    return redirect()->back()->with('error', 'User Account is blocked, please contact our customer care!');
+                }         
+            }
+            $threshold = Helper::get_option('threshold_limit');
+            $period = Carbon::now()->subMinutes(60);
+            $countofattempt = Throttle::where('attempted_at', '>', $period)
+                            ->where('ip_address', $request->ip())
+                            ->orWhere('identifier', $user->email)->count(); 
+
+            if($countofattempt > $threshold){
+                Fraudster::create([
+                    'user_id' => $user->id,
+                    'ip_address' => $request->ip(),  
+                    'created_at' => Carbon::now()
+                ]);
+                if ($request->ajax()) {
+                    return response()->json(['error' => true, 'message' => 'Fraud Attempt, please contact our customer care!']);
+                }else{
+                  return redirect()->back()->with('error', 'Fraud Attempt, please contact our customer care!');  
+                }
+            }
+            $currency       = $user->country->currency;
+            $tax            = $user->country->tax;
+            $country_code   = $user->country->short_code;
+            $cart           = Cart::whereIn('id', $cartIds)->get();
+
+            $amount = $extra_credit = $sim_cost = $buy_price = $sim_bolt_p = $app_bolt_p = 0;
+            $discount_code = $promocode = '';
+
+            foreach($cart as $item){ 
+                if($item->provider == 4){
+                    $promocode = 'WEB';
+                }
+                $bolt = $item->selected_bolt();
+                if(!empty($bolt['sim_bolt'])){
+                    foreach($bolt['sim_bolt'] as $sim_bolt){
+                        $sim_bolt_price = count($sim_bolt) * $sim_bolt[0]['price'];
+                        $sim_bolt_p += $sim_bolt_price;
+                    }
+                }
+
+                if(!empty($bolt['app_bolt'])){
+                    foreach($bolt['app_bolt'] as $app_bolt){
+                        $app_bolt_price = count($app_bolt) * $app_bolt[0]['price'];
+                        $app_bolt_p += $app_bolt_price;
+                    }
+                }
+                $buy_price += $item->item_count * $item->product->buy_price;      
+                $amount += $item->amount;
+                $discount_code = $item->discount_code;
+                foreach ($item->list as $list) {
+                    $extra_credit += $list->credit;
+                    $sim_cost += $list->stock->price;
+                }
+            }
+            $getcreditamount = Helper::vataddCalculation($extra_credit,$tax);
+            $total = $amount + $sim_cost + $sim_bolt_p + $app_bolt_p + $getcreditamount->total_amount; 
+            $discount_amount = 0;
+            $now = Carbon::now()->format('Y-m-d');
+            $discount_coupon = DB::table('discount_coupons')->where('coupon_code', $discount_code)
+                            ->where('status', 1)
+                            ->where('expiry_date', '>=', $now)->first();
+            if($discount_coupon) {
+                if($discount_coupon->discount_value > 0){
+                    if($discount_coupon->is_fixed == 1) {
+                        $discount_amount = $discount_coupon->discount_value;
+                    }
+                    else {
+                        $discount_amount = $total * $discount_coupon->discount_value / 100;
+                    }
+                }
+            }
+            $total      = ($total - $discount_amount);
+            $getamount  = Helper::vatreduceCalculation($total,$user->country->tax);
+            $getgateway = DB::table('payment_gateway')
+                            ->where(['gateway'=>$request->gateway])
+                            ->first();
+            $gateway_processed = false;
+            if($getgateway->gateway == 'Stripe' && $getamount->total_amount != 0){
+                $stripe     = new Stripepayments();
+                $customer_id = $user->userDetail->stripe_customer;
+
+                if(!isset($request->credit_card)){
+                    if(isset($request->stripeToken) && $request->stripeToken != ""){
+                        $paymentMethodData = [
+                                                'type' => 'card',
+                                                'card' => [
+                                                'token' => $request->stripeToken
+                                            ],
+                                        ];
+                        $payment_method = $stripe->createPaymentMethod($paymentMethodData);
+                        if($payment_method){
+                            $payment_method_id = $payment_method->payment_method_id;  
+                        }
+                    }else{
+                        $payment_method_id = json_decode($data['paymentMethod'])->id;
+                    }
+
+                    if(is_null($customer_id) || $customer_id == ''){
+                        $customerData = [
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'payment_method' => $payment_method_id,
+                            "address" => [
+                                "city" => $userDetail->city, 
+                                "country" => $user->country->short_code, 
+                                "line1" => $userDetail->address, 
+                                "line2" => "", 
+                                "postal_code" => $userDetail->postal_code, 
+                                "state" => $userDetail->state
+                                ]
+                            ];
+                        $createCustomer = $stripe->createCustomer($customerData);
+                        if($createCustomer){
+                            $customer_id = $createCustomer->customerId;
+                            DB::table('user_data')->where('user_id', $user_id)
+                                    ->update(['stripe_customer' => $customer_id]);
+                        }
+                    }else{
+                        $attachCustomer = $stripe->attachPaymentMethod($customer_id,$payment_method_id); 
+                    }
+                    $intentData = [
+                                    'amount' => $getamount->total_amount * 100,
+                                    'currency' => $user->country->currency,
+                                    'customer' => $customer_id,
+                                    'payment_method' => $payment_method_id,
+                                    'off_session' => true,
+                                    'confirm' => true,
+                                    'description' => 'Stripe Payment for '.$user->name,
+                                ];
+                    $paymentresult = $stripe->createPaymentIntent($intentData);
+                }else{
+                    $credit = UserCreditCard::whereId(Crypt::decrypt($request->credit_card))->first();
+                    $intentData = [
+                                    'amount' => $getamount->total_amount * 100,
+                                    'currency' => $user->country->currency,
+                                    'customer' => $customer_id,
+                                    'payment_method' => $credit->transaction_id,
+                                    'off_session' => true,
+                                    'confirm' => true,
+                                    'description' => 'Stripe Payment for '.$user->name,
+                                ];
+                   $paymentresult = $stripe->createPaymentIntent($intentData); 
+                }
+                $gateway_processed = true;
+            }else if($getgateway->gateway == 'Cash'){
+                $paymentresult = (object)['status'=>true,'transaction_id'=>'','token'=>'','card_type'=>'','card_expire'=>''];
+                $gateway_processed = true;
+            }else if($getamount->total_amount == 0){
+                $paymentresult = (object)['status'=>true,'transaction_id'=>'','token'=>'','card_type'=>'','card_expire'=>''];
+            }else{
+                if ($request->ajax()) {
+                    return response()->json(['error'=>true,'message' => 'Opted Payment gateway not supported. Please contact customer support']); 
+                }else{
+                  return redirect()->back()->with('error', 'Opted Payment gateway not supported. Please contact customer support');  
+                }  
+            }
+            $payment = [
+                'user_id' => $user->id, 
+                'currency' => $user->country->currency, 
+                'amount' => $getamount->amount, 
+                'tax_amount' => $getamount->tax_amount, 
+                'total_amount' => $getamount->total_amount,
+                'discount_amount' => $discount_amount, 
+                'discount_coupon' => $discount_code, 
+                'buy_price' => $buy_price, 
+                'payment_method'=>isset($getgateway->gateway) ? ucfirst($getgateway->gateway) : '', 
+                'category' => 'sim',
+                'payment_for' => 'Sim Purchase, Plan Subscription and Extra Credit',
+                'description'=>'Sim Purchase/ Plan Subscription Payment - processed by '. Auth::user()->first_name.' '.Auth::user()->last_name
+             ];
+            if($paymentresult->status){
+                $card_type                  = $paymentresult->card_type;
+                $card_expire                = $paymentresult->card_expire;
+                $payment_token              = $paymentresult->token;
+                $transaction_id             = $paymentresult->transaction_id;
+                $payment['transaction_id']  = $transaction_id;
+                $payment['card_type']       = $card_type;
+                $payment['status']          = 1;
+
+                $payment_id = DB::table('user_payments')->insertGetId($payment);
+
+                if($gateway_processed){
+                    UserCreditCard::where('user_id', $user->id)->update(['is_default' => 0]);
+
+                    $billing = json_encode(['name'=>$user->name,'street'=>$userDetail->address.' '.$userDetail->city,'postal_code'=>$userDetail->postal_code]);
+
+                    $credit_card = UserCreditCard::updateOrCreate(['user_id' => $user->id, 'card_type' => $card_type, 'card_expiry' => $card_expire],['transaction_id' => $payment_token,'card_type' => $card_type, 'card_expiry' => $card_expire, 'gateway' => $getgateway->id, 'billing_address' => $billing, 'is_default' => 1]);
+                }
+
+                $sim_request = [
+                    'user_id' => $user->id,
+                    'payment_id'=>$payment_id,
+                    'order_id'=> config('app.platform').Utils::otp(8),
+                    'billing_address'=> $userDetail->billing_address,
+                    'shipping_address' => $userDetail->shipping_address,
+                    'promocode'=>($request->code_type == 'promo')?$request->promo_code:NULL,
+                    'referralcode'=>($request->code_type == 'referral')? $request->referal_code:NULL,
+                    'delivery_status'=>1
+                ];
+
+                $simReqid = DB::table('tbl_sim_request')->insertGetId($sim_request);
+
+                foreach($cart as $item) {
+                    if($item->category == 'plan') {
+                        $plan_id = $item->category_id;
+                        $plan = TblPlan::where('id', $plan_id)->first();
+                        $sell_price = $plan->sell_price;
+                        $bundle_id = $adv_pay = 0;
+                    } else {
+                        $plan_id = $item->product->plan_id;
+                        $bundle_id = $item->category_id;
+                        $plan = TblBundle::where('id', $bundle_id)->first();
+                        $sell_price = $plan->sell_price;
+                        $adv_pay = 0;
+                    }
+                    $getamount = Helper::vatreduceCalculation($sell_price,$user->country->tax);
+
+                    $item_list = $item->list;
+                    $list_key  = 0;
+                    for($i=1; $i<=$item->item_count; $i++){
+
+                        for($j=1; $j<=$item->sim_count; $j++){
+
+                            $stock      = DB::table('tbl_sim_stock')->whereId($item_list[$list_key]->stock_id)->first();
+                            $password   = Helper::unique_code(8); 
+
+                            if(!is_null($user->stock_id)){
+
+                                $parent   = User::whereId($user->id)->first();
+                                $phonrand = Utils::otp();            
+                                $user = User::create([
+                                    'name'=>$parent->name,
+                                    'first_name'=>$parent->first_name,
+                                    'last_name'=>$parent->last_name,
+                                    'email'=>  $parent->email,                      
+                                    'username' => $stock->phone_number.$phonrand,           
+                                    'phone' => '+'.$stock->phone_number.$phonrand,
+                                    'password' => Hash::make($password),                        
+                                    'country_id' => $parent->country_id,
+                                    'parent_id' => $parent->id,
+                                    'stock_id' => $stock->id,
+                                    'status' => 0
+                                ]); 
+                                $country     = Country::whereId($parent->country_id)->first();
+                                $username    = Helper::unique_code(16);
+                                $username    = $country->short_code.'-'.$username;
+                                $vm_password = Helper::random(10, implode(range('0','9')));
+                                $vp_password = Helper::unique_code(10);
+                                $call_settings = [
+                                    'accessnumber_support' => $country->accessnumber_support, 
+                                    'wifi_support' => $country->wifi_support, 
+                                    'callback_support' => $country->callback_support, 
+                                    'conference_support' => $country->wifi_support, 
+                                    'bundle_o' => 0
+                                ];
+                                $call_settings = json_encode($call_settings);
+
+                                $user_data = [
+                                    'user_id' => $user->id, 
+                                    'auth_name' => $username, 
+                                    'vm_password' => $vm_password, 
+                                    'vp_password' => $vp_password, 
+                                    'address' => $userDetail->address, 
+                                    'city' => $userDetail->city, 
+                                    'call_settings' => $call_settings, 
+                                    'state' => $userDetail->state, 
+                                    'postal_code' => $userDetail->postal_code, 
+                                    'ip_address' => $userDetail->ip_address, 
+                                    'user_platform' => config('app.platform'), 
+                                    'register_status' => 0
+                                ];
+                                DB::table('user_data')->insert($user_data);
+                                DB::table('account_balance')->insert(['user_id' => $user->id,'balance_amount' => 0, 'balance_minutes'=> 0]);
+                            }else{
+                                User::whereId($user->id)->update(['alt_phone' => $user->phone, 'stock_id' => $stock->id,'password'=>Hash::make($password)]); 
+                            }
+                            $autoPlanId = DB::table('auto_plan')->insertGetId([
+                                'user_id' => $user->id, 
+                                'user_list' => $user->id, 
+                                'plan_id' => $plan_id, 
+                                'bundle_id' => $bundle_id, 
+                                'transaction_id' => $payment_token, 
+                                'card_id' => isset($credit_card) ? $credit_card->id: 0,
+                                'amount' => $getamount->amount, 
+                                'tax' =>$getamount->tax_amount, 
+                                'total_amount' => $getamount->total_amount, 
+                                'card_expiry' => $card_expire, 
+                                'card_type' => $card_type, 
+                                'gateway' => ucfirst($getgateway->gateway), 
+                                'adv_pay' =>0,  
+                                'status' => 0
+                            ]);
+                            $sim_list = [
+                                'request_id'=> $simReqid,
+                                'autoplan_id'=> $autoPlanId,
+                                'stock_id'=> $item_list[$list_key]->stock_id,
+                                'credit'=>$item_list[$list_key]->credit,
+                                'port'=>$item_list[$list_key]->port,
+                                'sim_bolt'=>$item_list[$list_key]->sim_bolt,
+                                'app_bolt'=>$item_list[$list_key]->app_bolt,
+                                'porting_to'=>$item_list[$list_key]->porting_to,
+                                'pac_no'=>$item_list[$list_key]->pac_no,
+                                'provision_date'=>$item_list[$list_key]->provision_date
+                            ];
+
+                            if($item_list[$list_key]->port){
+                                $port_data = [
+                                    'stock_id'=>$item_list[$list_key]->stock_id,
+                                    'promocode'=> $sim_request['promocode'],
+                                    'porting_to'=>$item_list[$list_key]->porting_to,
+                                    'pac_number'=>$item_list[$list_key]->pac_no,
+                                    'status'=>0
+                                ];
+                                DB::table('tbl_porting')->insert($port_data);
+                            }
+                            DB::table('auto_plan_meta')->insert(['autoplan_id'=>$autoPlanId,'credit'=>$item_list[$list_key]->credit]);
+                            $simListId = DB::table('tbl_sim_list')->insertGetId($sim_list);
+                            DB::table('tbl_sim_stock')->where('id', $item_list[$list_key]->stock_id)->update(['status' => 0]);
+                            if($plan->is_esim && in_array($plan->provider, ['TEL'])){
+                                eSimSoftDelivery::dispatch($simListId,['email'=>$user->email,'password'=>$password]);
+                                $activation = self::sim_activation($stock->sim_number,$item->product->sim_billing_plan);
+                                if($activation){
+                                    DB::beginTransaction();
+                                    try{
+                                        AutoPlan::whereId($autoPlanId)->limit(1)
+                                                  ->update(['status'=>1,'start_date'=>now(),'next_renewal'=>Carbon::now()->addDays($item->product->period)->toDateString()]);
+
+                                        User::whereId($user->id)->limit(1)
+                                                ->update(['status'=>1]);
+
+                                        UserPlan::insertGetId([
+                                            'user_id'=>$user->id,
+                                            'plan_id'=>$plan_id,
+                                            'package_id'=>$activation['package_id'],
+                                            'payment_id'=>0,
+                                            'plan_type'=>'sim',
+                                            'status'=>1
+                                        ]);
+
+                                        SimList::where(['autoplan_id'=> $autoPlanId])->limit(1)
+                                                ->update(['reg_status'=>1,'provision'=>4]);
+
+                                        DB::commit();
+                                    }catch(\Exception $e){
+                                        DB::rollback();
+                                        Log::error('web:activation-failed',[
+                                            'error' =>   $e->getMessage(),
+                                            'user_id'=>$user->id,
+                                        ]);
+                                    }
+                                }else{
+                                    $dataObj = (object)[
+                                        'subject'=>config('settings.app_name').' Telna Activation Failed',
+                                        'heading'=>config('settings.app_name').' Telna Activation Failed',
+                                        'name' => ucfirst($user->first_name).' '.ucfirst($user->last_name),
+                                        'email' => $user->email,
+                                        'sim_number'=>$stock->sim_number,
+                                        'order_id' => $sim_request['order_id']
+                                    ];
+                                    Notify::route('mail' , null)
+                                            ->notify(new ActivationFailedNotification($dataObj));
+                                }
+                            }
+                            $list_key++;
+                        }                
+                    }
+                    try {
+                        $invoice = UserInvoice::where('user_id',$user->id)->where('subscription_id',$autoPlanId)->first();
+                        if(is_null($invoice) && $getamount->total_amount != 0){
+                            DB::beginTransaction();
+                                $getinv   = UserInvoice::insertGetId([
+                                    'user_id'=>$user->id,
+                                    'subscription_id'=>$autoPlanId,
+                                    'status'=>1,
+                                    'date'=> Carbon::now()->toDateString(),
+                                    'sub_total'=>$getamount->amount,
+                                    'tax'=>$getamount->tax_amount,
+                                    'total'=>$getamount->total_amount,
+                                    'amount_paid'=>$getamount->total_amount,
+                                    'currency_code'=>$user->country->currency,
+                                    'paid_at'=>Carbon::now()->toDateString()
+                                ]);
+                                UserInvoiceItem::insert([
+                                    'invoice_id' => $getinv,
+                                    'plan_id'=>$plan_id,
+                                    'description'=> null,
+                                    'quantity'=>1,
+                                    'price'=>$getamount->amount
+                                ]);
+                                UserInvoiceTransaction::insertGetId([
+                                    'invoice_id' => $getinv,
+                                    'payment_method_id'=>$credit_card->id,
+                                    'transaction_id'=>$transaction_id,
+                                    'date' => Carbon::now()->toDateString(),
+                                    'amount'=> $getamount->total_amount,
+                                    'status'=>1,
+                                    'currency_code'=>$user->country->currency,
+                                    'description'=> $payment['description'],
+                                ]);
+                            DB::commit();
+                        }
+                    }catch (\Exception $e) {
+                        DB::rollBack();
+                        Log::error('OrdercreationInvoiceGeneration',[
+                            'error' =>   $e->getMessage(),
+                            'user_id'=>$user->id,
+                        ]);
+                    }
+
+                    DB::table('tbl_cart')->where('id', $item->id)->delete();
+                    DB::table('tbl_cart_details')->where('cart_id', $item->id)->delete();
+                }
+                $request->session()->put('payment_id', Crypt::encrypt($payment_id));
+                if ($request->ajax()) {
+                    return response()->json(['error' => false, 'message' => 'Thank you!. Order created successfully!!']);
+                }
+                return redirect('success');
+            }else{
+                $payment['transaction_id']  = '';
+                $payment['description']     = 'error : Card error, '.$paymentresult->error;
+                $payment['status']          = 0;
+                DB::table('user_payments')->insert($payment);
+                Throttle::create([
+                    'identifier' => $user->email,
+                    'ip_address' => $request->ip(),
+                    'attempted_at' => Carbon::now()
+                ]);
+                if ($request->ajax()) {
+                    return response()->json(['error'=>true,'message' => 'Failed processing. Please contact customer support!']); 
+                }else{
+                  return redirect()->back()->with('error', 'Failed processing. Please contact customer support!');  
+                }   
+            }
+        }catch(\Exception $e){
+            Log::error('order-process-payment',[
+                'request'=> json_encode($request->all()),
+                'IP'=> $request->ip(),
+                'error' => $e->getMessage()
+            ]); 
+            if ($request->ajax()) {
+                return response()->json(['error'=>true,'message' => 'Failed processing. Please contact customer support!']); 
+            }else{
+              return redirect()->back()->with('error', 'Failed processing. Please contact customer support!');  
+            }   
+        }
+
+    }
+    private function sim_activation($iccid,$billing_plan){
+       try{
+            $TelnaService = new TelnaService;
+            $setdrain     = $TelnaService->set_sim_balance_drain(
+                            $iccid,
+                            ['drainFromParent' =>false]
+                        );
+            if($setdrain){
+                $activate = $TelnaService->sim_activate(
+                            $iccid,
+                            ['packageTypeId' =>$billing_plan,
+                            'packageStatus'=>'ACTIVE']
+                        );
+                if($activate){
+                    $setActivate = $TelnaService->set_sim_activate(
+                                    $activate->packageId,
+                                    ['packageStatus'=>'ACTIVE']
+                                );
+                    if($setActivate){
+                        return $response = [
+                            'package_id'=> $activate->packageId
+                        ];
+                    }
+                }
+            }
+            return false;
+        }catch(\Exception $e){
+            Log::error('web:sim-activation',['error'=>$e->getMessage()]);
+            return false;
+        } 
+    }
     /*
     * List all orders which are shipped 
     * Items which are activated and non activated are listed

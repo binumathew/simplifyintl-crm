@@ -10,8 +10,10 @@ use App\Models\UserCreditCard;
 use App\Models\UserData;
 class Stripepayments {
 
-    private function __construct(){
-       
+    private static $gateway;
+
+    public function __construct(){
+       self::$gateway = new \Stripe\StripeClient(config('services.stripe.secret'));
     }
 
     public static function directDebit($billamount,$mandate_id,$user_id,$metadata) {
@@ -244,4 +246,70 @@ class Stripepayments {
         return $response;
       }
     }
+    public static function createPaymentMethod($data){
+      try {
+          $payment_method =   self::$gateway->paymentMethods->create($data);
+          return $response = (object)['status'=>true,'payment_method_id'=>$payment_method->id];
+      }catch(\Exception $e) {
+        Log::error('createPaymentMethod',[
+            'error' =>   $e->getMessage(),
+            'data'=>$data
+        ]);
+        return $response = (object)['status'=>false,'error'=>$e->getMessage()];
+      }
+    }
+    public static function createCustomer($data){
+        try{
+            $result = self::$gateway->customers->create($data);
+            Log::info('create-customer',[
+                'data'=> json_encode($data),
+                'result' =>   json_encode($result)
+            ]);
+            return (object)['status'=>true,'customerId'=>$result->id];
+        }catch(\Exception $e){
+            Log::error('create-customer',[
+                'data'=> json_encode($data),
+                'error' => $e->getMessage()
+            ]);
+            return (object)['status'=>false,'error'=>$e->getMessage()];
+        }
+    }
+    public static function attachPaymentMethod($customer_id,$payment_method_id){
+      try{
+            $newcard = self::$gateway->paymentMethods->attach(
+                $payment_method_id,
+                ['customer' => $customer_id]
+            );
+        }catch (\Exception $e) {
+          Log::error('attach-payment-method',[
+                'data'=> json_encode($data),
+                'error' => $e->getMessage()
+            ]);
+            return (object)['status'=>false,'error'=>$e->getMessage()];
+        }
+    }
+    public static function createPaymentIntent($data){
+      try{
+            $intent = self::$gateway->paymentIntents->create($data);
+            Log::info('create-payment-intent',[
+                    'data'=> json_encode($data),
+                    'result' => json_encode($intent)
+                ]);
+            $txn_id      =  $intent->id;
+            $txn_card_id =  $intent->payment_method;
+            $stripeCard  = $intent->charges->data[0]->payment_method_details->card;
+            $card_type   = $stripeCard->network.' ****'.$stripeCard->last4;
+            $exp_day     = date('t',strtotime($stripeCard->exp_year.'-'.$stripeCard->exp_month));
+            $card_expire = $stripeCard->exp_year.'-'.$stripeCard->exp_month.'-'.$exp_day;
+            $response = (object)['status'=>true,'transaction_id'=>$intent->id,'token'=>$intent->payment_method,'card_type'=>$card_type,'card_expire'=>$card_expire];
+            return $response;
+        }catch (\Exception $e) {
+          Log::error('create-payment-intent',[
+                'data'=> json_encode($data),
+                'error' => $e->getMessage()
+            ]);
+            return (object)['status'=>false,'error'=>$e->getMessage()];
+        }
+    }
+
 }

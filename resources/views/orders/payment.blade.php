@@ -137,7 +137,7 @@
                                                 </div>
                                             @endif
                                             </form>
-                                            @if($gateway->gateway == 'Stripe')
+                                            @if($gateway->gateway == 'Stripe' && $purchase->total_amount != 0)
                                             <div class="col-md-12 d-flex justify-content-center">
 
                                                 @php $amount = ($purchase->total_amount * 100);
@@ -161,7 +161,7 @@
                                                 </form>
                                             </div>
                                             @endif
-                                            @if(($gateway->gateway != 'Stripe') || $gateway->cards->isNotEmpty())
+                                            @if(($gateway->gateway != 'Stripe') || $gateway->cards->isNotEmpty() || $purchase->total_amount == 0)
                                             <div class="row">
                                                 <div class="col-md-12 m-t-20">
                                                 	<span id="payment_status" class="text-danger"></span>

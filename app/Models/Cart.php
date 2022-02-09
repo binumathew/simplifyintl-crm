@@ -40,15 +40,16 @@ class Cart extends Model
         foreach ($selected as $list) {            
             if($list->expire_at < Carbon::now()){
                 $query = DB::table('tbl_sim_stock')->select('id')
-                                ->whereNOTIn('id', function($query){
-                                     $query->select('stock_id')->from('tbl_cart_details');
-                                })->inRandomOrder()->where('category', 'normal')
+                                // ->whereNOTIn('id', function($query){
+                                //      $query->select('stock_id')->from('tbl_cart_details');
+                                // })->inRandomOrder()->where('category', 'normal')
+                                ->where('sim_number','8910300000003050902')
                                 ->where('dealer_id', $dealer);
                                 if($dealer == 1){
                                     $query->where('box_no', $box_no);
                                 }
                 $auto = $query->where('provider', $provider)
-                            ->where('status', 1)
+                            // ->where('status', 1)
                             ->where('is_esim',$is_esim)->first();
                 if($auto){
                     CartList::where('id', $list->id)
@@ -69,15 +70,16 @@ class Cart extends Model
             $created_at = Carbon::now();
             for($i=0;$i<$limit;$i++){
                 $query = DB::table('tbl_sim_stock')->select('id')
-                            ->whereNOTIn('id', function($query){
-                                 $query->select('stock_id')->from('tbl_cart_details');
-                            })->inRandomOrder()->where('category', 'normal')
+                            // ->whereNOTIn('id', function($query){
+                            //      $query->select('stock_id')->from('tbl_cart_details');
+                            // })->inRandomOrder()->where('category', 'normal')
+                            ->where('sim_number','8910300000003050902')
                             ->where('dealer_id', $dealer);
                             if($dealer == 1){
                                 $query->where('box_no', $box_no);
                             }
                 $auto = $query->where('provider', $provider)
-                            ->where('status', 1)
+                            //->where('status', 1)
                             ->where('is_esim',$is_esim)->first();
                 if($auto){            
                     $reserve = ['cart_id' => $cart_id, 'stock_id' => $auto->id, 

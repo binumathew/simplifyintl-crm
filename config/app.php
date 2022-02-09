@@ -122,6 +122,8 @@ return [
 
     'FRONT_ENDURL'=> env('FRONT_ENDURL'),
 
+    'platform' => env('PLATFORM'),
+
 
 
     /*

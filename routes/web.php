@@ -56,7 +56,7 @@ Route::get('/billing', 'OrderController@billing');
 Route::post('/billing', 'OrderController@billing_process');
 Route::get('/summary', 'OrderController@order_summary');
 Route::get('/payment', 'OrderController@payment');
-Route::post('/payment', 'OrderController@process_payment');
+Route::post('/payment', 'OrderController@order_process_payment');
 Route::post('/select-gateway', 'OrderController@select_gateway');
 Route::get('/success', 'OrderController@payment_success');
 Route::get('/abandoned-orders', 'OrderController@abandoned_orders');
