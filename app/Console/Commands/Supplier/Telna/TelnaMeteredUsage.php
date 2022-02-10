@@ -87,7 +87,7 @@ class TelnaMeteredUsage extends Command
         try {
             $allFiles       = $sftp->listContents($remotePath);
             $getprovider    = Provider::where(['short_code'=>config('telna.short_code')])->first();
-            $lastrun        = $getprovider->cdr_lastrun;
+            $lastrun        = strtotime($getprovider->cdr_lastrun);
             $triggersummary = false; 
             $cdr_files      = [];
             foreach($allFiles as $key => $file){
