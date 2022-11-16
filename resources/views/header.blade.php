@@ -189,17 +189,16 @@
                                 </ul>
                             </li>
                             @if(Helper::has_permission('plans') || Helper::has_permission('plan_management', 'view_own'))
-                            <li class="has-submenu"><a><i class="mdi mdi-book-multiple"></i>Plans</a>
+                           <!--  <li class="has-submenu"><a><i class="mdi mdi-book-multiple"></i>Plans</a>
                                 <ul class="submenu">
                                     @if(Helper::has_permission('plan_management'))
                                     <li><a href="{{ url('/sim-plans') }}">Sim Plans</a></li>
                                     <li><a href="{{ url('/switch-plans') }}">{{ config('settings.app_name') }} App Plans</a></li>
-                                    <!-- <li><a href="{{ url('/conf-plans') }}">Conference Plans</a></li> -->
                                     @elseif(Helper::has_permission('plan_management', 'view_own'))
                                     <li><a href="{{ url('/sim-plans') }}">My Plans</a></li>
                                     @endif
                                 </ul>
-                            </li>
+                            </li> -->
                             @endif
                             <!-- <li class="has-submenu"><a><i class="mdi mdi-menu"></i>Settings</a>
                                 <ul class="submenu">
