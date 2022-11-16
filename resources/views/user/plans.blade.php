@@ -31,8 +31,10 @@
                             <td>
                                 @if($plan->status == 1) 
                                     <span class="badge badge-success">Active</span> 
-                                @else 
-                                    <span class="badge badge-warning">Inactive</span>                                
+                                @elseif($plan->status == 0) 
+                                    <span class="badge badge-warning">Inactive</span>
+                                @elseif($plan->status == 2) 
+                                    <span class="badge badge-danger">Failed</span>                                
                                 @endif
                             </td>
                             <td class="text-justify">{{ Helper::date_format($plan->created_at) }}</td>                            
