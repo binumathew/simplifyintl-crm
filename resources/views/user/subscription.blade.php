@@ -54,13 +54,7 @@
                                     </td>
                                     <td>{{ isset($plan->plan->provider) ? $plan->plan->provider : 'App' }}</td>
                                     <td>
-                                        @if($plan->plan_type == 'sim')
-                                            @foreach($plan->sim as $sim)
-                                                {{ $sim->stock->phone_number }} <br/>
-                                            @endforeach
-                                        @else
-                                            {{ $user->phone }}
-                                        @endif
+                                        {{ $user->phone }}
                                     </td>
                                     <td>{{ $currency.$plan->total_amount }}</td>
                                     <td>{{ ($plan->next_renewal)? Helper::date_format($plan->next_renewal,'M d, Y'):'' }}</td>
