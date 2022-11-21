@@ -1356,7 +1356,7 @@ class OrderController extends Controller
             //return DataTables::queryBuilder($order_list)->toJson();
             return Datatables::queryBuilder($order_list)
                     ->editColumn('promocode', function ($order) { 
-                        return (($order->promocode)?$order->promocode:'SJ100');
+                        return (($order->promocode)?$order->promocode:'WEB');
                     })->editColumn('date', function ($order) { 
                         return Helper::date_format($order->date);
                     })->editColumn('ship_date', function ($order) {

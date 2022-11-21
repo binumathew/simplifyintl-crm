@@ -45,11 +45,12 @@ class PaymentHistoryController extends Controller
         $where = DB::table('admins')->where('parent_id', $admin_id)->pluck('id')->toArray();        
         array_push($where, $admin_id);
 
-    	$payments = UserPayment::select('user_payments.id','usr.name','phone','transaction_id','currency_symbol','buy_price','total_amount','card_type','payment_method','description','user_payments.status as status','user_payments.created_at')->join('users as usr','usr.id','=','user_id')->join('country as c','usr.country_id','=','c.id')->where('currency_symbol',$request->currency);
+    	$payments = UserPayment::select('user_payments.id','usr.name','phone','transaction_id','currency_symbol','buy_price','total_amount','card_type','payment_method','description','user_payments.status as status','user_payments.created_at')->join('users as usr','usr.id','=','user_id')->join('country as c','usr.country_id','=','c.id');
+            //->where('currency_symbol',$request->currency);
 
         $total_sale = UserPayment::join('users as usr','usr.id','=','user_id')
-                        ->join('country as c','usr.country_id','=','c.id')
-                        ->where('currency_symbol',$request->currency);
+                        ->join('country as c','usr.country_id','=','c.id');
+                        //->where('currency_symbol',$request->currency);
         if ($request->transaction_id) {            
             $payments->where('transaction_id',$request->transaction_id);
             $total_sale->where('transaction_id',$request->transaction_id);
@@ -117,16 +118,17 @@ class PaymentHistoryController extends Controller
             return Datatables::eloquent($payments)
                 ->editColumn('name', function ($payment) {
                    return '<span class="font-600 text-muted">'.$payment->name .'</span>';  
-                })->editColumn('total_amount', function ($payment) { 
-                   return $payment->currency_symbol.Helper::number_format($payment->total_amount); 
+                })->editColumn('total_amount', function ($payment) use($request) { 
+                   return $request->currency.Helper::number_format($payment->total_amount); 
                 })->editColumn('created_at', function ($payment) { 
                    return Helper::date_format($payment->created_at); 
                 })->editColumn('action', function ($payment) {
                     $refund = '';
-                    if(Helper::has_permission('payment_history', 'edit') && $payment->status == 1){
-                        $refund = '<a href="javascript:void(0);" title="Refund" class="action_refund text-danger" data-id="'.Crypt::encrypt($payment->id).'" data-amount="'.$payment->total_amount.'" data-currency="'.$payment->currency_symbol.'"><i class="mdi mdi-undo-variant mdi-24px"></i></a>';
-                    }
-                    return '<form class="grid_form" method="post" action="'.url('/user-details').'">'.csrf_field().'<input type="hidden" name="identifier" value="'.$payment->phone.'"><a title="View Details"  href="javascript:void(0);"  class="show_user_data text-muted m-r-10"><i class="mdi mdi-eye mdi-24px"></i></a> '. $refund .'</form>';                   
+                    // if(Helper::has_permission('payment_history', 'edit') && $payment->status == 1){
+                    //     $refund = '<a href="javascript:void(0);" title="Refund" class="action_refund text-danger" data-id="'.Crypt::encrypt($payment->id).'" data-amount="'.$payment->total_amount.'" data-currency="'.$payment->currency_symbol.'"><i class="mdi mdi-undo-variant mdi-24px"></i></a>';
+                    // }
+                    // return '<form class="grid_form" method="post" action="'.url('/user-details').'">'.csrf_field().'<input type="hidden" name="identifier" value="'.$payment->phone.'"><a title="View Details"  href="javascript:void(0);"  class="show_user_data text-muted m-r-10"><i class="mdi mdi-eye mdi-24px"></i></a> '. $refund .'</form>';   
+                    return '';                
                 })
                 ->rawColumns(['name','action'])
                 ->with(['total_sum' => Helper::number_format($total), 'total_buy' => Helper::number_format($total_buy), 'refund' => Helper::number_format($total_refund), 'currency' => $request->currency])

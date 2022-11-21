@@ -113,9 +113,9 @@
                                             <div class="form-group">
                                                 <label>Currency</label>
                                                 <select name="currency" class="form-control custom-select">
-                                                    <option value="£" >GBP</option>
+                                                    <!-- <option value="£" >GBP</option> -->
                                                     <option value="$" selected>USD</option>
-                                                    <option value="€">EUR</option>
+                                                    <!-- <option value="€">EUR</option> -->
                                                 </select>
                                             </div>
                                         </div>
