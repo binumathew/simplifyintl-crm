@@ -197,7 +197,7 @@ class UserController extends Controller
                     '12'=>['revenue' => $yearly_total, 'expense'=> $yearly_expence, 'refund'=> $yearly_return, 'fee' => $yearly_fee, 'vat'=> $yearly_vat, 'profit' => $yearly_profit],
                     '24'=>['revenue' => $last_two_total, 'expense'=> $last_two_expence, 'refund'=> $last_two_return, 'fee' => $last_two_fee, 'vat'=> $last_two_vat, 'profit' => $last_two_profit]];
             }
-            $currency = $user->country->currency_symbol;
+            $currency = Helper::get_option('currency_symbol');//$user->country->currency_symbol;
             $notes = DB::table('enquiry_history')->where('user_id', $user->id)->get();
             $plan = UserPlan::where('user_id', $user->id)->where('plan_type', 'sim')->where('status', 1)->first();
             $children = User::where('parent_id',$user->id)->get();
