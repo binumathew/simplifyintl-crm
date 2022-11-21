@@ -222,7 +222,7 @@ class UserController extends Controller
         $user_id = Crypt::decrypt($request->user_id);
         $user = User::where('id', $user_id)->first();
         if($user){
-            $currency = $user->country->currency_symbol;
+            $currency = Helper::get_option('currency_symbol');//$user->country->currency_symbol;
             switch ($request->page) {
                 case 'overview':
                     $reports = [];

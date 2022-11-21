@@ -28,7 +28,7 @@
                                     <th>Plan</th>
                                     <th>Int Min</th>
                                     <th>Provider</th>
-                                    <th>Phone Number</th>
+                                    <th>Sim Number</th>
                                     <th>Amount</th>
                                     <th>Next Renewal</th>   
                                     <th>Card Detail</th>
@@ -54,7 +54,7 @@
                                     </td>
                                     <td>{{ isset($plan->plan->provider) ? $plan->plan->provider : 'App' }}</td>
                                     <td>
-                                        {{ $user->phone }}
+                                        {{ $plan->sim[0]->stock->sim_number }}
                                     </td>
                                     <td>{{ $currency.$plan->total_amount }}</td>
                                     <td>{{ ($plan->next_renewal)? Helper::date_format($plan->next_renewal,'M d, Y'):'' }}</td>
