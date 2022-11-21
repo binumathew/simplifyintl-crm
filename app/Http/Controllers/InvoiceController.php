@@ -144,8 +144,9 @@ class InvoiceController extends Controller
                 'total'=>(float)$planData->sum('total') + (float)$addData->sum('total')
             ];
             //$view = view('invoice.user_invoice', compact('invoiceData','user'))->render();
+            $sym   = $currency = Helper::get_option('currency_symbol');//$user->country->currency_symbol;
             $filename = explode('-',$invoice->date)[1].explode('-',$invoice->date)[0].'_'.$invoice->id.'_'.$user->userDetail->user_platform.$user->id.'.pdf';
-            $pdf = MPDF::loadView('invoice.user_invoice', compact('invoiceData','user'));
+            $pdf = MPDF::loadView('invoice.user_invoice', compact('invoiceData','user','sym'));
             return $pdf->download($filename);
             //return $pdf->stream($filename);
         }else{

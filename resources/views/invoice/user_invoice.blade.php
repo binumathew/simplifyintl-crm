@@ -151,9 +151,7 @@ td img{
 </style>
 </head>
 <body>
-@php
-$sym         = $user->country->currency_symbol;
-@endphp
+
 <htmlpagefooter name="page-footer">
     <hr>
     <div class="m_bottom" style="width:100%">
