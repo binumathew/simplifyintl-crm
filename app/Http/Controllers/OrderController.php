@@ -1273,9 +1273,9 @@ class OrderController extends Controller
         if (!Helper::has_permission('orders') && !Helper::has_permission('orders','view_own')) {
             abort(403,'Access denied');
         }
-
+        $currency = Helper::get_option('currency_symbol');
         $dealers = DB::table('admins')->select(DB::raw('concat(first_name," ",last_name) as dealer'),'promocode')->where('status', 1)->get();
-        return view('orders.orders', compact('dealers'));
+        return view('orders.orders', compact('dealers','currency'));
     }
 
     /*

@@ -20,7 +20,7 @@
                 </div>
             </div>
             @if(Helper::has_permission('reports'))
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-md-6 col-lg-6 col-xl-3">
                     <div class="mini-stat clearfix bg-white">
                         <span class="font-40 text-primary mr-0 float-right"><i class="mdi mdi-cart-outline"></i></span>
@@ -61,7 +61,7 @@
                         <p class=" mb-0 m-t-10 text-muted">Chargebacks <span class="pull-right"><i class="fa fa-caret-up text-success m-r-5"></i>7.10%</span></p>
                     </div>
                 </div>
-            </div>
+            </div> -->
             @endif
             <div class="row">
                 <div class="col-12">
@@ -109,9 +109,9 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                                <div class="btn btn-warning" style="display: inline-block; float: left; text-align: center;">
+                                                <!-- <div class="btn btn-warning" style="display: inline-block; float: left; text-align: center;">
                                                     <a href="{{url('/new-order')}}" style="color: #FFF;">New Order</a>
-                                                </div>
+                                                </div> -->
                                                 @if(Helper::has_permission('reports'))
                                                 <button type="submit" class="btn btn-info" id="export" name="exportdata" value="1" style="display: inline-block; margin-left:10px;">Export</button>
                                                 @endif
@@ -242,8 +242,9 @@
                         }, "name": "rq.delivery_status", "searchable": false},
                         {"data": function(data){
                             var route = "{{URL::to('/order-details')}}";
+                            var htmltemp = '';
                             var html = '<form method="post" id="view_order_'+data.id+'" action="'+route+'">@csrf<input type="hidden" name="order_id" value="'+data.order_id+'"></form><a data-toggle="tooltip" title="View Details" href="javascript:void(0);" class="view_order_details text-muted m-r-10" data-id="'+data.id+'"><i class="mdi mdi-eye mdi-24px"></i></a><a data-toggle="tooltip" title="Enquiry History" href="javascript:void(0);" class="enquiry_history text-muted m-r-10" data-id="'+data.id+'"><i class="mdi mdi-comment-text mdi-24px"></i></a><a href="javascript:void(0);" class="manage_promocode text-muted m-r-10" data-toggle="tooltip" data-placement="top" title="Edit Promocode" data-id="'+data.id+'"><i class="mdi mdi-account mdi-24px"></i></a>';
-                            return  html;
+                            return  htmltemp;
                         }, "name": "action","orderable": false, "searchable": false},
                         ],
                         'order':[[1, 'desc']],

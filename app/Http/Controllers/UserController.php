@@ -395,7 +395,7 @@ class UserController extends Controller
                 break;          
                 case 'invoice':
                     $invoice = UserInvoice::where('user_id',$user->id)->orderBy('date','DESC')->get();
-                    $html    = view('user.invoice', compact('user','invoice'))->render();
+                    $html    = view('user.invoice', compact('user','invoice','currency'))->render();
                 break;
                 default:
                     $html = 'error';

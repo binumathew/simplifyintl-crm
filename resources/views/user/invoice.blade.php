@@ -1,6 +1,4 @@
-@php 
-$currency = $user->country->currency_symbol;
-@endphp
+
 <div class="row">
     <div class="col-md-12">
         <div class="card m-b-20">
@@ -106,7 +104,7 @@ $currency = $user->country->currency_symbol;
                         </td> 
                         <td>
                             @if($inv->status == 8)
-                            <a href="javascript:void(0);"><button class="btn btn-primary btn-sm pay_link"  title="Send Payment Link" data-id="{{Crypt::encrypt($inv->id)}}">Pay Link</button></a>
+                            <!-- <a href="javascript:void(0);"><button class="btn btn-primary btn-sm pay_link"  title="Send Payment Link" data-id="{{Crypt::encrypt($inv->id)}}">Pay Link</button></a> -->
                             @endif
                         </td>   
                         <td>

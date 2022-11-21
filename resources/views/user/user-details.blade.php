@@ -94,7 +94,7 @@
                                 <p><b>{{ $user->userDetail->user_platform.$user->id }}</b></p>
                                <!--  <p><b>{{ $user->phone }}</b></p>
                                 <p><b>{{ $user->email }}</b></p> -->
-                                <a data-toggle="tooltip" title="" href="{{config('app.liveurl').'admin-authenticate/'.Crypt::encrypt($user->id) }}" target="_blank" data-original-title="Login" class="btn btn-sm btn-grey m-t-20">Login</a>
+<!--                                 <a data-toggle="tooltip" title="" href="{{config('app.liveurl').'admin-authenticate/'.Crypt::encrypt($user->id) }}" target="_blank" data-original-title="Login" class="btn btn-sm btn-grey m-t-20">Login</a>
                                 <a href="#" class="btn btn-sm btn-grey m-t-20" id="change_user_status">{{ ($user->status)?'Suspend':'Resume'}}</a>
                                 @if(Helper::has_permission('users','delete'))
                                     <a href="#" class="btn btn-sm btn-red m-t-20 delete_user" user-id="{{$user->id}}">Delete</a>
@@ -102,7 +102,7 @@
                                         @csrf
                                         <input type="hidden" name="user_key" value="{{ Crypt::encrypt($user->id) }}">
                                     </form>
-                                @endif
+                                @endif -->
                                 <input type="hidden" id="user_id" value="{{ Crypt::encrypt($user->id) }}">
                             </div>
 
