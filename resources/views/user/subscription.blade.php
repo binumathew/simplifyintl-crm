@@ -88,7 +88,7 @@
                                     <th>Plan</th>
                                     <th>Int Min</th>
                                     <th>Provider</th>
-                                    <th>Phone Number</th>
+                                    <th>Sim Number</th>
                                     <th>Amount</th>
                                     <th>Next Renewal</th>   
                                     <th>Card Detail</th>
