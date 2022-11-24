@@ -8,6 +8,7 @@ use DB;
 use Utils;
 use Validator;
 use Hash;
+use Log;
 
 use App\Models\{
     Country,
@@ -34,6 +35,9 @@ class eSimController extends Controller
         if (!Helper::has_permission('eSim_activation')) {
             abort(403,'Access denied');
         }
+        Log::error('web:bulk-activation',[
+                'request'=> $request->all()
+            ]);
         $countries  = Utils::countries();
         $currency   = Helper::get_option('currency_symbol');
         $provider = ['TEL'];

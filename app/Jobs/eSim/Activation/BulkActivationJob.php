@@ -14,7 +14,7 @@ use App\Models\UserPlan;
 use DB;
 use Carbon;
 use TelnaService;
-
+use Log;
 
 class BulkActivationJob implements ShouldQueue
 {
