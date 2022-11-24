@@ -29,7 +29,8 @@
         "twilio/sdk": "^6.15",
         "yajra/laravel-datatables-oracle": "~9.0",
         "league/flysystem-sftp": "~1.0",
-        "opencensus/opencensus": "~0.2"
+        "opencensus/opencensus": "~0.2",
+        "laravel/horizon": "3.7.2"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
