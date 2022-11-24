@@ -16,7 +16,7 @@ use Carbon;
 use TelnaService;
 use Log;
 
-class BulkActivationJob //implements ShouldQueue
+class BulkActivationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $autoplan_id;
