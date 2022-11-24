@@ -502,6 +502,102 @@ $("#conf-plans-actions-form").validate({
     }
 });
 /* End */
+/*Bulk eSim Activation */
+$("#eSim-bulk-activation-actions-form").validate({
+    errorClass: "invalid form-error",
+    errorElement: 'div',
+    errorPlacement: function(error, element) {
+        if (element.hasClass('select2-hidden-accessible')) {
+            error.appendTo( element.parent().parent().next("span") )
+        }
+        error.appendTo( element.parent().next("span") );
+    },
+    rules: {
+            first_name: {
+                required: true,
+            },
+            last_name: {
+                required: true,
+            },
+            country_id: {
+                required: true,
+            },
+            phone: {
+                required: true,
+            },
+            email: {
+                required: true,
+                email: true
+            },
+            "stock_id[]": {
+                required: true,
+                maxlength: 30,
+            },
+            plan_id: {
+                required: true,
+            },
+        },
+        messages: {
+            first_name: {
+                required : "First name required",
+            } ,
+            last_name: {
+                required : "Last name required",
+            } ,
+            country_id: {
+                required: 'Please choose country',
+            },
+            phone: {
+                required : "Phone number required",
+            } ,
+            email: {
+                required : "Email required",
+                email : "Not a valid email",
+            } ,
+            "stock_id[]": {
+                required: 'Please select at least 1 sim.',
+                maxlength: 'Reached Maximum allowed {0} sim.',
+            },
+            plan_id: {
+                required: 'Please select at least 1 plan.',
+            },
+        },
+    submitHandler: function (form) {
+        var data = $("#eSim-bulk-activation-actions-form").serialize();
+        alertify.confirm('Bulk Activation Confirmation', 'Are you sure continue with bulk activation.? Once Confirmed activation will be processed and is irreversible. Double check before continuing..',
+    function(){
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type:"POST",
+            data:data,
+            url: base_url+'/eSim-bulk-activation-actions',
+            dataType:"json",
+            beforeSend: function(){
+                $("#preloader,#status").show();
+            },
+            complete: function(){
+                $("#preloader,#status").hide();
+            },
+            success:function(data){
+                if(data.status == 200){
+                    alertify.success(data.msg);
+                    $('#eSim-bulk-activation-actions-form')[0].reset();
+                    $('#plan_id,#stock_id').val('').trigger('change'); 
+                    window.location.reload();
+                }else{
+                    $.each(data.msg,function(k,val){
+                        alertify.error(val);
+                    });
+                }
+            }
+        });
+    },function(){ alertify.error('cancelled')});
+    }
+});
+/* End */
+
 
 });
 });

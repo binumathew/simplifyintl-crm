@@ -285,8 +285,8 @@ class UserController extends Controller
                 case 'transaction':
                     $payments_a = DB::table('user_payments')
                         ->select('id','transaction_id','total_amount','payment_method','created_at','status','description','currency')
-                        ->whereIn('user_id', [$user->id])
-                        ->where('status', 1);
+                        ->whereIn('user_id', [$user->id]);
+                        //->where('status', 1);
                     $payments = DB::table('user_payment_requests')
                                 ->select('id','transaction_id','total as total_amount',DB::raw("'Stripe Direct Debit' as payment_method"),'created_at','status','comments as description',DB::raw("'GBP' as currency"))
                                 ->union($payments_a)

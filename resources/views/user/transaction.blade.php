@@ -118,7 +118,9 @@
                                 <td>{{ $pay_method }}</td>
                                 <td class="text-justify">{{ Helper::date_format($payment->created_at) }}</td>
                                 <td>
-                                	@if($payment->status == 1) 
+                                    @if($payment->status == 0) 
+                                        <span class="badge badge-info">Draft</span> 
+                                	@elseif($payment->status == 1) 
                                 		<span class="badge badge-success">Success</span> 
                                 	@elseif($payment->status == 2) 
                                 		<span class="badge badge-warning">Success/Error</span>

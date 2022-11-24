@@ -590,3 +590,5 @@ Route::get('/ts','AffinityController@ts');
 
 Route::get('/get-sim-info','TelnaController@get_sim_info');
 
+Route::get('/eSim-bulk-activation','eSimController@bulkActivation');
+Route::post('/eSim-bulk-activation-actions','eSimController@bulkActivationActions');

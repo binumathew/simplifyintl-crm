@@ -213,6 +213,13 @@
                                     @endif
                                 </ul>
                             </li> -->
+                            @if(Helper::has_permission('eSim_activation'))
+                            <li class="has-submenu"><a><i class="mdi mdi-menu"></i>Activation</a>
+                                <ul class="submenu">
+                                    <li><a href="{{ url('/eSim-bulk-activation') }}">eSim Bulk Activataion</a></li>
+                                </ul>
+                            </li>
+                            @endif
 
                         </ul>
                         <!-- End navigation menu -->
