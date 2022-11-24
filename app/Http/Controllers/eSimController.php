@@ -9,6 +9,7 @@ use Utils;
 use Validator;
 use Hash;
 use Log;
+use Carbon;
 
 use App\Models\{
     Country,
@@ -35,7 +36,7 @@ class eSimController extends Controller
         if (!Helper::has_permission('eSim_activation')) {
             abort(403,'Access denied');
         }
-        
+
         $countries  = Utils::countries();
         $currency   = Helper::get_option('currency_symbol');
         $provider = ['TEL'];
@@ -207,7 +208,7 @@ class eSimController extends Controller
                             'stock_id'=> $stock->id,
                         ]);
 
-                    BulkActivationJob::dispatch($autoPlanId,$user->id,$plan->id,$simListId,$stock->sim_number);
+                    BulkActivationJob::dispatch($autoPlanId,$user->id,$plan->id,$simListId,$stock->sim_number)->delay(Carbon::now()->addSeconds(10));
                 }
                 User::whereId($user->id)->limit(1)
                         ->update(['status'=>1]);
