@@ -59,7 +59,8 @@
                                     <td>{{ $currency.$plan->total_amount }}</td>
                                     <td>{{ ($plan->next_renewal)? Helper::date_format($plan->next_renewal,'M d, Y'):'' }}</td>
                                     <td id="plan_card_type_{{$plan->id}}">{{ $plan->card_type }}</td>
-                                    <td>{{ Helper::date_format($plan->card_expiry,'M d, Y') }}</td>
+                                    <td>{{ 
+                                        ($plan->card_expiry != '0000-00-00' ) ? Helper::date_format($plan->card_expiry,'M d, Y') : '' }}</td>
                                     <!-- <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input change_subsciption" id="renew_{{$plan->id}}" {{$checked}} title="Disable Subscription" data-renew_id="{{$plan->id}}" data-status="{{ $plan->status}}">
@@ -119,7 +120,7 @@
                                     <td>{{ $currency.$plan->total_amount }}</td>
                                     <td>{{ ($plan->next_renewal)? Helper::date_format($plan->next_renewal,'M d, Y'):'' }}</td>
                                     <td id="plan_card_type_{{$plan->id}}">{{ $plan->card_type }}</td>
-                                    <td>{{ Helper::date_format($plan->card_expiry,'M d, Y') }}</td>
+                                    <td>{{ ($plan->card_expiry != '0000-00-00' ) ? Helper::date_format($plan->card_expiry,'M d, Y') : '' }}</td>
                                     <!-- <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input change_subsciption" id="renew_{{$plan->id}}" {{$checked}} title="Enable Subscription" data-renew_id="{{$plan->id}}" data-status="{{ $plan->status}}">
