@@ -48,7 +48,7 @@ class BulkActivationJob implements ShouldQueue
     public function handle()
     {
         $plan       = TblPlan::whereId($this->plan_id)->first();
-        $activation= self::sim_activation($this->sim_number,$plan->sim_billing_plan);
+        $activation = true;//self::sim_activation($this->sim_number,$plan->sim_billing_plan);
         if($activation){
             DB::beginTransaction();
             try{
