@@ -368,7 +368,6 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class,
         Superbalist\LaravelGoogleCloudStorage\GoogleCloudStorageServiceProvider::class,
-        App\Providers\HorizonServiceProvider::class,
 
     ],
 
