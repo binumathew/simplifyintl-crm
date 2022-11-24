@@ -33,8 +33,8 @@
                                     <th>Next Renewal</th>   
                                     <th>Card Detail</th>
                                     <th>Card Expire On</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <!-- <th>Status</th>
+                                    <th>Action</th> -->
                                 </tr>
                             </thead>
                             <tbody> 
@@ -60,19 +60,19 @@
                                     <td>{{ ($plan->next_renewal)? Helper::date_format($plan->next_renewal,'M d, Y'):'' }}</td>
                                     <td id="plan_card_type_{{$plan->id}}">{{ $plan->card_type }}</td>
                                     <td>{{ Helper::date_format($plan->card_expiry,'M d, Y') }}</td>
-                                    <td>
+                                    <!-- <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input change_subsciption" id="renew_{{$plan->id}}" {{$checked}} title="Disable Subscription" data-renew_id="{{$plan->id}}" data-status="{{ $plan->status}}">
                                             <label class="custom-control-label" for="renew_{{$plan->id}}"></label>
                                         </div>
-                                    </td>
-                                    <td>                                        
+                                    </td> -->
+                                    <!-- <td>                                        
                                         <a class="change_card m-r-10" id="change_card_{{$plan->id}}" data-original-title="Change Card" data-id="{{Crypt::encrypt($plan->id)}}"><i class="mdi mdi-credit-card mdi-24px"></i></a>
                                         <a class="renew_subscription m-r-10" data-original-title="Renew Plan" data-plan_id="{{$plan->id}}"><i class="mdi mdi-rotate-3d mdi-24px"></i></a>
                                         @if($plan->status_changeon != null)
                                             <span class="m-r-10" title="Disable on {{ Helper::date_format($plan->status_changeon, 'd M, Y') }}"><i class="mdi mdi-information-outline mdi-24px"></i></span>
                                         @endif
-                                    </td>
+                                    </td> -->
                                 </tr>                                       
                                 @endforeach
                                 @endif 
@@ -93,8 +93,8 @@
                                     <th>Next Renewal</th>   
                                     <th>Card Detail</th>
                                     <th>Card Expire On</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                   <!--  <th>Status</th>
+                                    <th>Action</th> -->
                                 </tr>
                             </thead>
                             <tbody> 
@@ -120,19 +120,19 @@
                                     <td>{{ ($plan->next_renewal)? Helper::date_format($plan->next_renewal,'M d, Y'):'' }}</td>
                                     <td id="plan_card_type_{{$plan->id}}">{{ $plan->card_type }}</td>
                                     <td>{{ Helper::date_format($plan->card_expiry,'M d, Y') }}</td>
-                                    <td>
+                                    <!-- <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input change_subsciption" id="renew_{{$plan->id}}" {{$checked}} title="Enable Subscription" data-renew_id="{{$plan->id}}" data-status="{{ $plan->status}}">
                                             <label class="custom-control-label" for="renew_{{$plan->id}}"></label>
                                         </div>
-                                    </td>
-                                    <td>
+                                    </td> -->
+                                    <!-- <td>
                                         <a class="change_card m-r-10" id="change_card_{{$plan->id}}" data-original-title="Change Card" data-id="{{Crypt::encrypt($plan->id)}}"><i class="mdi mdi-credit-card mdi-24px"></i></a>
                                         <a class="renew_subscription m-r-10" data-original-title="Renew Plan" data-plan_id="{{$plan->id}}"><i class="mdi mdi-rotate-3d mdi-24px"></i></a>
                                         @if($plan->status_changeon != null)
                                             <span class="m-r-10" title="Disable on {{ Helper::date_format($plan->status_changeon, 'd M, Y') }}"><i class="mdi mdi-information-outline mdi-24px"></i></span>
                                         @endif
-                                    </td>
+                                    </td> -->
                                 </tr>                                       
                                 @endforeach
                                 @endif 
