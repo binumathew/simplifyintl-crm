@@ -58,7 +58,7 @@ class BulkActivationJob implements ShouldQueue
                 UserPlan::insertGetId([
                     'user_id'=>$this->user_id,
                     'plan_id'=>$plan->id,
-                    'package_id'=> $activation['package_id'],
+                    'package_id'=> 33,//$activation['package_id'],
                     'payment_id'=>0,
                     'plan_type'=>'sim',
                     'status'=>1
