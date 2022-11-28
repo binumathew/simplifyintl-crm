@@ -16,7 +16,7 @@ use Carbon;
 use TelnaService;
 use Log;
 
-class BulkActivationJob implements ShouldQueue
+class BulkActivationJob //implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $autoplan_id;
@@ -48,7 +48,7 @@ class BulkActivationJob implements ShouldQueue
     public function handle()
     {
         $plan       = TblPlan::whereId($this->plan_id)->first();
-        $activation = true;//self::sim_activation($this->sim_number,$plan->sim_billing_plan);
+        $activation = self::sim_activation($this->sim_number,$plan->sim_billing_plan);
         if($activation){
             DB::beginTransaction();
             try{
@@ -58,7 +58,7 @@ class BulkActivationJob implements ShouldQueue
                 UserPlan::insertGetId([
                     'user_id'=>$this->user_id,
                     'plan_id'=>$plan->id,
-                    'package_id'=> 33,//$activation['package_id'],
+                    'package_id'=> $activation['package_id'],
                     'payment_id'=>0,
                     'plan_type'=>'sim',
                     'status'=>1
