@@ -15,7 +15,11 @@ use App\Models\{
     Country,
     User,
     TblPlan,
-    SimStock
+    SimStock,
+    UserInvoice,
+    UserInvoiceItem,
+    UserInvoiceTransaction
+
 };
 use App\Jobs\eSim\Activation\BulkActivationJob;
 
@@ -188,15 +192,17 @@ class eSimController extends Controller
 
                 foreach ($stocks as $key => $stock) {
 
+                    $getSingleamount  = Helper::vatreduceCalculation($plan->sell_price,$countryTax);
+
                     $autoPlanId = DB::table('auto_plan')->insertGetId([
                             'user_id' => $user->id, 
                             'user_list' => $user->id, 
                             'plan_id' => $plan->id, 
                             'bundle_id' => 0, 
                             'card_id' => 0,
-                            'amount' => $plan->sell_price, 
-                            'tax' =>$getamount->tax_amount, 
-                            'total_amount' => $plan->sell_price, 
+                            'amount' => $getSingleamount->amount, 
+                            'tax' =>$getSingleamount->tax_amount, 
+                            'total_amount' => $getSingleamount->total_amount, 
                             'adv_pay' =>0, 
                             'switch_billing_plan' => 0,  
                             'status' => 0
@@ -209,6 +215,37 @@ class eSimController extends Controller
                         ]);
 
                     BulkActivationJob::dispatch($autoPlanId,$user->id,$plan->id,$simListId,$stock->sim_number)->delay(Carbon::now()->addSeconds(10));
+
+                    try {
+                        $invoice = UserInvoice::where('user_id',$user->id)->where('subscription_id',$autoPlanId)->first();
+                        if(is_null($invoice)){
+                            DB::beginTransaction();
+                                $getinv   = UserInvoice::insertGetId([
+                                    'user_id'=>$user->id,
+                                    'subscription_id'=>$autoPlanId,
+                                    'status'=>0,
+                                    'date'=> Carbon::now()->toDateString(),
+                                    'sub_total'=>$getSingleamount->amount,
+                                    'tax'=>$getSingleamount->tax_amount,
+                                    'total'=>$getSingleamount->total_amount,
+                                    'currency_code'=>$currency,
+                                ]);
+                                UserInvoiceItem::insert([
+                                    'invoice_id' => $getinv,
+                                    'plan_id'=>$plan->id,
+                                    'description'=> null,
+                                    'quantity'=>1,
+                                    'price'=>$getSingleamount->amount
+                                ]);
+                            DB::commit();
+                        }
+                    }catch (\Exception $e) {
+                        DB::rollBack();
+                        Log::error('BulkOrderInvoiceGeneration',[
+                            'error' =>   $e->getMessage(),
+                            'user_id'=>$user->id,
+                        ]);
+                    }
                 }
                 User::whereId($user->id)->limit(1)
                         ->update(['status'=>1]);
