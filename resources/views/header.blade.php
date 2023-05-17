@@ -200,26 +200,31 @@
                                 </ul>
                             </li> -->
                             @endif
-                            <!-- <li class="has-submenu"><a><i class="mdi mdi-menu"></i>Settings</a>
-                                <ul class="submenu">
-                                    @if(Helper::has_permission('settings'))
-                                    <li><a href="{{ url('/settings') }}">System Settings</a></li>
-                                    @endif
-                                    @if(Helper::has_permission('stock','view_own'))
-                                    <li><a href="{{ url('/stock-list') }}">Stock List</a></li>
-                                    @endif
-                                    @if(Helper::has_permission('staff') || Helper::has_permission('staff', 'view_own'))
-                                    <li><a href="{{ url('/staff-list') }}">Portal Users</a></li>
-                                    @endif
-                                </ul>
-                            </li> -->
+                            
                             @if(Helper::has_permission('eSim_activation'))
                             <li class="has-submenu"><a><i class="mdi mdi-menu"></i>Activation</a>
                                 <ul class="submenu">
+                                @if(Helper::has_permission('orders') || Helper::has_permission('orders', 'view_own'))
+                                    <!-- <li><a href="{{ url('/orders-webreq') }}">Web Request</a></li> -->
+                                    <li><a href="{{ url('/orders') }}">Orders</a></li>
+                                    @endif
                                     <li><a href="{{ url('/eSim-bulk-activation') }}">eSim Bulk Activataion</a></li>
                                 </ul>
                             </li>
                             @endif
+                            <li class="has-submenu"><a><i class="mdi mdi-menu"></i>Settings</a>
+                                <ul class="submenu">
+                                    <!-- @if(Helper::has_permission('settings'))
+                                    <li><a href="{{ url('/settings') }}">System Settings</a></li>
+                                    @endif
+                                    @if(Helper::has_permission('stock','view_own'))
+                                    <li><a href="{{ url('/stock-list') }}">Stock List</a></li>
+                                    @endif -->
+                                    @if(Helper::has_permission('staff') || Helper::has_permission('staff', 'view_own'))
+                                    <li><a href="{{ url('/staff-list') }}">Portal Users</a></li>
+                                    @endif
+                                </ul>
+                            </li>
 
                         </ul>
                         <!-- End navigation menu -->
