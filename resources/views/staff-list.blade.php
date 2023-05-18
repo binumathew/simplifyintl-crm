@@ -11,10 +11,10 @@
                         <div class="btn-group pull-right">
                             <ol class="breadcrumb hide-phone p-0 m-0">
                                 <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-                                <li class="breadcrumb-item active">Staff</li>
+                                <li class="breadcrumb-item active">Portal Users</li>
                             </ol>
                         </div>
-                        <h4 class="page-title">Staff List</h4>
+                        <h4 class="page-title">Portal Users List</h4>
                     </div>
                 </div>
             </div>
@@ -27,7 +27,7 @@
                             <h3 class="counter font-light mt-0" id="total_user">0</h3>
                         </div>
                         <div class="clearfix"></div>
-                        <p class=" mb-0 m-t-10 text-muted">Total Staff<span class="pull-right"></span></p>
+                        <p class=" mb-0 m-t-10 text-muted">Total Portal Users<span class="pull-right"></span></p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6 col-xl-3">
@@ -37,7 +37,7 @@
                             <h3 class="counter font-light mt-0" id="active_user">0</h3>
                         </div>
                         <div class="clearfix"></div>
-                        <p class=" mb-0 m-t-10 text-muted">Active Staff<span class="pull-right"></span></p>
+                        <p class=" mb-0 m-t-10 text-muted">Active Portal Users<span class="pull-right"></span></p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6 col-xl-3">
@@ -47,7 +47,7 @@
                             <h3 class="counter font-light mt-0" id="inactive_user">0</h3>
                         </div>
                         <div class="clearfix"></div>
-                        <p class=" mb-0 m-t-10 text-muted">Not Active Staff <span class="pull-right">
+                        <p class=" mb-0 m-t-10 text-muted">Not Active Portal Users <span class="pull-right">
                             </span></p>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                                 <div class="col-md-12 m-b-20">
                                     @if(Helper::has_permission('staff','create'))
                                     <div class=" text-right">
-                                        <a href="{{ url('/create-staff') }}" class="btn btn-primary ">Add Staff</a>
+                                        <a href="{{ url('/create-staff') }}" class="btn btn-primary ">Create New</a>
                                     </div>
                                     @endif
                                 </div>
