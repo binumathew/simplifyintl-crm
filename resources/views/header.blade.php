@@ -222,6 +222,7 @@
                                     @endif -->
                                     @if(Helper::has_permission('staff') || Helper::has_permission('staff', 'view_own'))
                                     <li><a href="{{ url('/staff-list') }}">Portal Users</a></li>
+                                    <li><a href="{{ url('/dealers') }}">Dealers</a></li>
                                     @endif
                                 </ul>
                             </li>
