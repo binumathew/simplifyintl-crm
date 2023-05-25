@@ -43,7 +43,7 @@
 										</span>
 									</p>
 									Best Regards,<br />
-									{{ json_decode(config('settings.company_details'))->company_website }}
+									{{ config('settings.app_name') }}
 								</div>
 							</div>							
 						</div>

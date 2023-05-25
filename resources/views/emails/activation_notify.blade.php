@@ -62,7 +62,7 @@
 									</p>
                                     
 									Best Regards,<br />
-									{{ config('settings.company_website') }}
+									{{ config('settings.app_name') }}
 								</div>
 							</div>							
 						</div>
