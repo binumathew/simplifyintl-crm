@@ -366,7 +366,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
 
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class,
+        //Meneses\LaravelMpdf\LaravelMpdfServiceProvider::class,
         Superbalist\LaravelGoogleCloudStorage\GoogleCloudStorageServiceProvider::class,
 
     ],
@@ -485,7 +485,7 @@ return [
 
         'AttHelper' => App\Helpers\AttHelper::class,
 
-        'MPDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class,
+//        'MPDF' => Meneses\LaravelMpdf\Facades\LaravelMpdf::class,
 
 	    'Stripepayments' => App\Helpers\PaymentGateways\Stripepayments::class,
 
