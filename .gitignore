@@ -19,3 +19,4 @@ yarn.lock
 /storage/framework/*
 /storage/logs/*
 /resources/keys/*
+archive.tgz
