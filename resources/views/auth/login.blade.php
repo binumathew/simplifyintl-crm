@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-        <title>{{config('settings.app_name')}} Login</title>
+        <title>simplifyintl Login</title>
         <!-- App Icons -->
         <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/icon">
         <!-- Basic Css files -->
@@ -26,7 +26,7 @@
                     </h3>
                     <div class="p-3">
                         <h4 class="font-18 m-b-5 text-center">Welcome Back !</h4>
-                        <p class="text-muted text-center">Sign in to continue to {{config('settings.app_name')}}.</p>
+                        <p class="text-muted text-center">Sign in to continue to simplifyintl.</p>
                         <form method="POST" action="{{ url('/login') }}" class="form-horizontal m-t-30" >
                             @csrf
                             <div class="form-group">
@@ -73,7 +73,7 @@
             </div>
             <div class="m-t-40 text-center">
                 <!-- <p class="">Don't have an account ? <a href="#" class="font-500 font-14 font-secondary green-link"> Signup Now </a> </p> -->
-                <p class="">Copyright © {{ date('Y') }} {{config('settings.app_name')}}. All Rights Reserved.</p>
+                <p class="">Copyright © {{ date('Y') }} simplifyintl. All Rights Reserved.</p>
             </div>
         </div>
         <!-- jQuery  -->

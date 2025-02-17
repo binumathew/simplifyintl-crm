@@ -16,7 +16,7 @@
 									<span style="font-size: 16px;">
 										
 										@if($status == 1)
-                                        <p>Pleased to inform you that your monthly charges for {{Config('settings.app_name')}} was successfully processed.</p>
+                                        <p>Pleased to inform you that your monthly charges for simplifyintl was successfully processed.</p>
 										<p>Thank you for your business.</p>
 										@endif
 									</span>

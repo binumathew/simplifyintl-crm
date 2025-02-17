@@ -70,7 +70,7 @@ $accountno   = $arraydata['account_no'];
     <td align="right">
         <div class="" style="width:100%">
             <img alt="" src="{{ asset('images/logo.png') }}" width="60" style="margin-right:2%;"/>
-            <h5 class="" style="float:right">{{config('settings.app_name')}}</h5>
+            <h5 class="" style="float:right">simplifyintl</h5>
         </div>
     </td>
   </tr>
